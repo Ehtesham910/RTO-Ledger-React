@@ -1,0 +1,199 @@
+/* =========================
+   PREMIUM NAVBAR STYLING
+========================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --nav-bg: rgba(255, 255, 255, 0.85);
+    --nav-border: rgba(226, 232, 240, 0.8);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-light: #f8fafc;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background-color: #f1f5f9;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    
+    /* Glassmorphism Effect */
+    background: var(--nav-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--nav-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    
+    z-index: 1000;
+}
+
+/* =========================
+   LOGO
+========================= */
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #4f46e5, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+}
+
+/* =========================
+   SEARCH BAR
+========================= */
+.navbar-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 40px;
+}
+
+.navbar-search {
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    height: 44px;
+    background: var(--bg-light);
+    border: 1px solid #e2e8f0;
+    border-radius: 99px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.navbar-search:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    background: #fff;
+}
+
+.navbar-search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 0 20px;
+    font-size: 14px;
+    color: var(--text-main);
+    outline: none;
+    font-family: inherit;
+}
+
+.navbar-search input::placeholder {
+    color: #94a3b8;
+}
+
+.navbar-search button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0 24px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.navbar-search button:hover {
+    background: var(--primary-hover);
+}
+
+/* =========================
+   USER PROFILE
+========================= */
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-menu {
+    position: relative;
+}
+
+.user-trigger {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 16px 6px 6px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.user-trigger:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.user-greet {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-main);
+}
+
+/* =========================
+   DROPDOWN (For Future Use)
+========================= */
+.user-dropdown {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    min-width: 160px;
+    padding: 8px 0;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0 16px;
+    }
+    .navbar-center {
+        display: none; /* Hide search on small screens for cleaner look */
+    }
+    .user-greet {
+        display: none;
+    }
+    .user-trigger {
+        padding: 6px;
+    }
+}
