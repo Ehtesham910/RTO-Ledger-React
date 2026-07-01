@@ -1,51 +1,27 @@
-// import React from 'react';
-// import Navbar from './components/layout/Navbar';
-// import Sidebar from './components/layout/Sidebar'; // Aapne ye import kiya hai
-// import VehicleCard from './components/cards/VehicleCard';
-
-// function App() {
-//     return (
-//         <div>
-//             <Navbar />
-            
-//             {/* Navbar ke theek neeche Sidebar add karein */}
-//             <Sidebar />
-            
-//             {/* Note: Sidebar left me fix rahega, isliye main content ko thoda right push karna padta hai */}
-//             <main style={{ padding: '20px', textAlign: 'center', marginLeft: '260px', marginTop: '72px' }}>
-//                 <h2>Welcome to RTO ledger!</h2>
-//                 <p>The best platform for vehicle challan management.</p>
-
-//                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-//                     <VehicleCard
-//                         ownerName="Rahul Sharma"
-//                         vehicleNumber="MH 12 AB 1234"
-//                         status="Active"
-//                     />
-//                 </div>
-//             </main>
-//         </div>
-//     );
-// }
-
-// export default App;
-
-
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
+import Customers from './pages/Customers';
+import Vehicles from './pages/Vehicles';
+import Services from './pages/Services';
+import ServiceRequests from './pages/ServiceRequests';
+import Ledger from './pages/Ledger';
+import Receipts from './pages/Receipts';
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* / path par Layout ke andar Dashboard load hoga */}
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Dashboard />} />
                     <Route path="dashboard" element={<Dashboard />} />
-                    
-                    {/* Baad me hum yahan Customers aur Vehicles pages bhi add karenge */}
+                    <Route path="customers" element={<Customers />} />
+                    <Route path="vehicles" element={<Vehicles />} />
+                    <Route path="services" element={<Services />} />
+                    <Route path="services/requests" element={<ServiceRequests />} />
+                    <Route path="ledger" element={<Ledger />} />
+                    <Route path="receipts" element={<Receipts />} />
                 </Route>
             </Routes>
         </BrowserRouter>
@@ -53,4 +29,3 @@ function App() {
 }
 
 export default App;
-

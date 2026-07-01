@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
 function Sidebar() {
     // Services dropdown ko open/close karne ke liye State
     const [isServicesOpen, setIsServicesOpen] = useState(false);
+    const location = useLocation();
+
+    // Helper to check active path
+    const isActive = (path) => {
+        if (path === '/dashboard' && location.pathname === '/') return true;
+        if (location.pathname === path) return true;
+        if (path !== '/' && path !== '/dashboard' && location.pathname.startsWith(path + '/')) return true;
+        return false;
+    };
 
     return (
         <aside className='sidebar'>
             <ul className='sidebar-menu'>
 
                 {/* Dashboard */}
-                <li className="menu-item active">
-                    <a href="/dashboard">
+                <li className={`menu-item ${isActive('/dashboard') ? 'active' : ''}`}>
+                    <Link to="/dashboard">
                         <span className="menu-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" />
@@ -19,12 +29,12 @@ function Sidebar() {
                             </svg>
                         </span>
                         <span className="menu-label">Dashboard</span>
-                    </a>
+                    </Link>
                 </li>
 
                 {/* Customer */}
-                <li className="menu-item">
-                    <a href="/customers">
+                <li className={`menu-item ${isActive('/customers') ? 'active' : ''}`}>
+                    <Link to="/customers">
                         <span className="menu-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -33,12 +43,12 @@ function Sidebar() {
                             </svg>
                         </span>
                         <span className="menu-label">Customers</span>
-                    </a>
+                    </Link>
                 </li>
 
                 {/* Vehicles */}
-                <li className='menu-item'>
-                    <a href="/vehicles">
+                <li className={`menu-item ${isActive('/vehicles') ? 'active' : ''}`}>
+                    <Link to="/vehicles">
                         <span className="menu-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v9a2 2 0 0 1-2 2h-2" />
@@ -46,12 +56,12 @@ function Sidebar() {
                             </svg>
                         </span>
                         <span className="menu-label">Vehicles</span>
-                    </a>
+                    </Link>
                 </li>
 
                 {/* Services Dropdown */}
-                <li className={`menu-item service-menu ${isServicesOpen ? 'open' : ''}`}>
-                    <a className="menu-toggle" onClick={() => setIsServicesOpen(!isServicesOpen)}>
+                <li className={`menu-item service-menu ${isActive('/services') || isServicesOpen ? 'open' : ''} ${isActive('/services') ? 'active' : ''}`}>
+                    <a className="menu-toggle" onClick={() => setIsServicesOpen(!isServicesOpen)} style={{ cursor: 'pointer' }}>
                         <span className="menu-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="3" />
@@ -68,23 +78,23 @@ function Sidebar() {
                     {/* Submenu List */}
                     <ul className="submenu">
                         <li>
-                            <a href="/services">
+                            <Link to="/services" className={location.pathname === '/services' ? 'active-submenu' : ''}>
                                 <span className="submenu-dot"></span>
                                 Service List
-                            </a>
+                            </Link>
                         </li>
                         <li>
-                            <a href="/services/requests">
+                            <Link to="/services/requests" className={location.pathname === '/services/requests' ? 'active-submenu' : ''}>
                                 <span className="submenu-dot"></span>
                                 Service Requests
-                            </a>
+                            </Link>
                         </li>
                     </ul>
                 </li>
 
                 {/* Ledger */}
-                <li className="menu-item">
-                    <a href="/ledger">
+                <li className={`menu-item ${isActive('/ledger') ? 'active' : ''}`}>
+                    <Link to="/ledger">
                         <span className="menu-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -94,7 +104,7 @@ function Sidebar() {
                             </svg>
                         </span>
                         <span className="menu-label">Ledger</span>
-                    </a>
+                    </Link>
                 </li>
             </ul>
         </aside >
