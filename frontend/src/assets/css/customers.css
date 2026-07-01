@@ -1,0 +1,141 @@
+/* Page Container Setup */
+.page-container {
+    padding: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header Area */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.page-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Primary Button */
+.btn-add {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-add:hover {
+    background-color: #1d4ed8;
+}
+
+/* Card Container for Table */
+.card {
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+/* Data Table Styling */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.875rem;
+}
+
+.data-table th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    padding: 0.75rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    color: #334155;
+    vertical-align: middle;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* Small UI Elements */
+.badge {
+    background-color: #e0e7ff;
+    color: #4338ca;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.font-medium {
+    font-weight: 500;
+    color: #0f172a;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Action Buttons */
+.btn-action {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.375rem;
+    margin-left: 0.5rem;
+    border-radius: 0.25rem;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.btn-action.edit:hover {
+    background-color: #fef3c7;
+    color: #d97706;
+}
+
+.btn-action.view:hover {
+    background-color: #e0f2fe;
+    color: #0284c7;
+}
+
+/* States */
+.loading-state, .empty-state {
+    padding: 3rem;
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+}

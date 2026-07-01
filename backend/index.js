@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+BigInt.prototype.toJSON = function () {
+    return this.toString();
+};
+
 // Import your routes
 const customerRoutes = require('./routes/customerRoutes');
 
