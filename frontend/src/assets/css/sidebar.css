@@ -128,3 +128,13 @@
     border-top: 1px solid #e2e8f0;
     margin: 16px 0;
 }
+
+.submenu li a.active-submenu {
+    color: #4f46e5;
+    background: #f8fafc;
+    font-weight: 600;
+}
+
+.submenu li a.active-submenu .submenu-dot {
+    background: #4f46e5;
+}
