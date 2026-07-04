@@ -27,6 +27,16 @@ function Ledger() {
         return date.toLocaleDateString('en-IN'); 
     }
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum;
+    };
+
     return (
         <div className="page-container">
             <div className="page-header">
@@ -63,7 +73,7 @@ function Ledger() {
                                 <tr key={record.id}>
                                     <td>{index + 1}</td>
                                     
-                                    <td className="font-medium" style={{ color: '#0f172a' }}>
+                                    <td className="font-medium" style={{ color: '#0043deff', whiteSpace: 'nowrap' }} >
                                         {record.customers?.name || 'Unknown'} <br/>
                                         <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'normal' }}>
                                             {record.customers?.customer_code ? `${record.customers.customer_code}` : ''}
@@ -71,8 +81,8 @@ function Ledger() {
                                     </td>
                                     
                                     <td>
-                                        <span className="badge">
-                                            {record.vehicles?.vehicle_number || '-'}
+                                        <span className="badge" style={{ whiteSpace: 'nowrap' }}>
+                                            {formatVehicleNumber(record.vehicles?.vehicle_number)}
                                         </span>
                                     </td>
                                     

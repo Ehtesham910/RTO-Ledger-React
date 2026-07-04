@@ -60,7 +60,9 @@ function Receipts() {
                                     <td>{index + 1}</td>
                                     
                                     <td className="font-medium" style={{ color: '#4f46e5' }}>
-                                        {receipt.receipt_no}
+                                        <span className="badge">
+                                            {receipt.receipt_no}
+                                        </span>
                                     </td>
                                     
                                     <td className="font-medium" style={{ color: '#64748b' }}>

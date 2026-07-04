@@ -49,6 +49,16 @@ function Vehicles(){
         return date.toLocaleDateString('en-IN'); // Indian date format
     }
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum; // fallback
+    };
+
     return (
         <div className="page-container">
             <div className="page-header">
@@ -89,7 +99,7 @@ function Vehicles(){
                                             </div>
                                         </td>
                                         <td>
-                                            <span className="badge font-medium">{vehicle.vehicle_number}</span>
+                                            <span className="badge" style={{ whiteSpace: 'nowrap' }}>{formatVehicleNumber(vehicle.vehicle_number)}</span>
                                         </td>
                                         <td>{vehicle.vehicle_type || '-'}</td>
                                         
