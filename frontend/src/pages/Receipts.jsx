@@ -63,7 +63,7 @@ function Receipts() {
                                         {receipt.receipt_no}
                                     </td>
                                     
-                                    <td className="font-medium" style={{ color: '#0f172a' }}>
+                                    <td className="font-medium" style={{ color: '#64748b' }}>
                                         {receipt.ledgers?.customers?.name || 'Unknown'}
                                     </td>
                                     

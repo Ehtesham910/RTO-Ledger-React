@@ -84,7 +84,7 @@ function Vehicles(){
                                     <tr key={vehicle.id}>
                                         <td>{index + 1}</td>
                                         <td>
-                                            <div className="font-medium" style={{ color: '#0f172a' }}>
+                                            <div className="font-medium" style={{ color: '#64748b' }}>
                                                 {vehicle.customers?.name || 'Unknown'}
                                             </div>
                                         </td>
