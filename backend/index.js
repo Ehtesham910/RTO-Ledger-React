@@ -12,6 +12,8 @@ const vehicleRoutes = require('./routes/vehicleRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const serviceRequestRoutes = require('./routes/serviceRequestRoutes');
 const ledgerRoutes = require('./routes/ledgerRoutes');
+const receiptRoutes = require('./routes/receiptRoutes');
+
 
 const app = express();
 
@@ -25,6 +27,8 @@ app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/servicerequests', serviceRequestRoutes);
 app.use('/api/ledger', ledgerRoutes);
+app.use('/api/receipts', receiptRoutes);
+
 
 // Basic test route
 app.get('/', (req, res) => {
