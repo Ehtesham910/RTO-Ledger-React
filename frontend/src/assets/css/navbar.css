@@ -25,7 +25,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 72px;
+    height: 60px;
     
     display: flex;
     align-items: center;
@@ -74,7 +74,7 @@ body {
     display: flex;
     width: 100%;
     max-width: 500px;
-    height: 44px;
+    height: 40px;
     background: var(--bg-light);
     border: 1px solid #e2e8f0;
     border-radius: 99px;
@@ -134,7 +134,9 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 6px 16px 6px 6px;
+    padding: 0 16px 0 6px;
+    height: 40px;
+    box-sizing: border-box;
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 99px;

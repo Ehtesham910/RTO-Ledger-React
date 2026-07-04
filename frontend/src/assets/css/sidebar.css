@@ -4,10 +4,10 @@
 
 .sidebar {
     position: fixed;
-    top: 72px; /* Navbar ke theek niche se start hoga */
+    top: 60px; /* Navbar ke theek niche se start hoga */
     left: 0;
-    width: 260px;
-    height: calc(100vh - 72px);
+    width: 220px;
+    height: calc(100vh - 60px);
     
     background: #ffffff;
     border-right: 1px solid rgba(226, 232, 240, 0.8);
