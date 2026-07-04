@@ -11,6 +11,7 @@ const customerRoutes = require('./routes/customerRoutes');
 const vehicleRoutes = require('./routes/vehicleRoutes');
 const serviceRoutes = require('./routes/serviceRoutes');
 const serviceRequestRoutes = require('./routes/serviceRequestRoutes');
+const ledgerRoutes = require('./routes/ledgerRoutes');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/servicerequests', serviceRequestRoutes);
+app.use('/api/ledger', ledgerRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {

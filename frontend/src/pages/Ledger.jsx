@@ -1,10 +1,129 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import '../assets/css/ledger.css'; 
 
 function Ledger() {
+    const [ledgers, setLedgers] = useState(() => {
+        const savedData = localStorage.getItem('ledgerData');
+        return savedData ? JSON.parse(savedData) : [];
+    });
+
+    useEffect(() => {
+        // Fetch Ledger data from backend
+        axios.get('http://localhost:5000/api/ledger')
+            .then((response) => {
+                setLedgers(response.data);
+                localStorage.setItem('ledgerData', JSON.stringify(response.data));
+            })
+            .catch((error) => {
+                console.error("Error fetching ledger:", error);
+            });
+    }, []);
+
+    // Date formatting helper
+    const formatDate = (dateString) => {
+        if (!dateString) return '-';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-IN'); 
+    }
+
     return (
-        <div>
-            <h1>Ledger</h1>
-            <p>Welcome to the Ledger page.</p>
+        <div className="page-container">
+            <div className="page-header">
+                <div>
+                    <h2 className="page-title">Ledger</h2>
+                    <p className="page-subtitle">Track customer dues, payments, and financial records</p>
+                </div>
+                <button className="btn-add">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Record Payment
+                </button>
+            </div>
+
+            <div className="card">
+                <div className="table-responsive">
+                    <table className="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Customer</th>
+                                <th>Vehicle No.</th>
+                                <th>Request No.</th>
+                                <th>Service Name</th>
+                                <th>Total Fee</th>
+                                <th>Amount Paid</th>
+                                <th>Due Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th className="text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ledgers.map((record, index) => (
+                                <tr key={record.id}>
+                                    <td>{index + 1}</td>
+                                    
+                                    <td className="font-medium" style={{ color: '#0f172a' }}>
+                                        {record.customers?.name || 'Unknown'} <br/>
+                                        <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'normal' }}>
+                                            {record.customers?.customer_code ? `${record.customers.customer_code}` : ''}
+                                        </span>
+                                    </td>
+                                    
+                                    <td>
+                                        <span className="badge">
+                                            {record.vehicles?.vehicle_number || '-'}
+                                        </span>
+                                    </td>
+                                    
+                                    <td>{record.service_requests?.request_no || '-'}</td>
+                                    
+                                    <td>{record.service_requests?.services?.service_name || '-'}</td>
+                                    
+                                    <td style={{ fontWeight: '500', color: '#334155' }}>
+                                        ₹ {record.service_fee || 0}
+                                    </td>
+                                    <td style={{ fontWeight: '500', color: '#16a34a' }}>
+                                        ₹ {record.amount_paid || 0}
+                                    </td>
+                                    <td style={{ fontWeight: '600', color: '#ef4444' }}>
+                                        ₹ {record.due_amount || 0}
+                                    </td>
+                                    
+                                    <td>
+                                        <span style={{
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            fontSize: '12px',
+                                            fontWeight: '500',
+                                            backgroundColor: record.status === 'Paid' ? '#dcfce7' : (record.status === 'Partial' ? '#fef9c3' : '#fee2e2'),
+                                            color: record.status === 'Paid' ? '#166534' : (record.status === 'Partial' ? '#854d0e' : '#991b1b')
+                                        }}>
+                                            {record.status || 'Pending'}
+                                        </span>
+                                    </td>
+
+                                    <td>{formatDate(record.created_at)}</td>
+                                    
+                                    <td className="text-right">
+                                        <button className="btn-action view" title="View Details">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+
+                            {ledgers.length === 0 && (
+                                <tr>
+                                    <td colSpan="10" className="empty-state">
+                                        No ledger records found. 
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     );
 }
