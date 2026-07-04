@@ -8,6 +8,7 @@ BigInt.prototype.toJSON = function () {
 
 // Import your routes
 const customerRoutes = require('./routes/customerRoutes');
+const vehicleRoutes = require('./routes/vehicleRoutes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(express.json());
 
 // Define Routes
 app.use('/api/customers', customerRoutes);
+app.use('/api/vehicles', vehicleRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {
