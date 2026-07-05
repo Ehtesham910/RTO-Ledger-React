@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { getLedger } = require('../controllers/ledgerController');
+const { getLedger, updateLedger } = require('../controllers/ledgerController');
 
 router.get('/', getLedger);
+router.put('/:id', updateLedger);
 
 module.exports = router;
