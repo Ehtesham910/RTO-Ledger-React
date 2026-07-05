@@ -82,4 +82,16 @@ const updateVehicle = async (req, res) => {
     }
 };
 
-module.exports = { getVehicles, createVehicle, updateVehicleStatus, updateVehicle };
+const deleteVehicle = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.vehicles.delete({
+            where: { id: BigInt(id) }
+        });
+        res.json({ message: "Vehicle deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getVehicles, createVehicle, updateVehicleStatus, updateVehicle, deleteVehicle };

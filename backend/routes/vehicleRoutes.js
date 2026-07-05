@@ -14,4 +14,7 @@ router.put('/:id/status', vehicleController.updateVehicleStatus);
 // PUT /api/vehicles/:id
 router.put('/:id', vehicleController.updateVehicle);
 
+// DELETE /api/vehicles/:id
+router.delete('/:id', vehicleController.deleteVehicle);
+
 module.exports = router;
