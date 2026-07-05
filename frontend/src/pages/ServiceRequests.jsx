@@ -60,7 +60,7 @@ function ServiceRequests() {
                             {requests.map((req, index) => (
                                 <tr key={req.id}>
                                     <td>{index + 1}</td>
-                                    <td><span className="badge font-medium">{req.request_no}</span></td>
+                                    <td><span className="badge">{req.request_no}</span></td>
                                     
                                     <td className="font-medium" style={{ color: '#0f172a' }}>
                                         {req.customers?.name || 'Unknown'}
@@ -83,8 +83,17 @@ function ServiceRequests() {
                                             borderRadius: '4px',
                                             fontSize: '12px',
                                             fontWeight: '500',
-                                            backgroundColor: req.status === 'Completed' ? '#dcfce7' : '#fef9c3',
-                                            color: req.status === 'Completed' ? '#166534' : '#854d0e'
+                                            whiteSpace: 'nowrap',
+                                            backgroundColor: 
+                                                req.status === 'Completed' ? '#dcfce7' : 
+                                                req.status === 'In Progress' ? '#dbeafe' : 
+                                                req.status === 'Cancelled' ? '#fee2e2' : 
+                                                '#fef9c3',
+                                            color: 
+                                                req.status === 'Completed' ? '#166534' : 
+                                                req.status === 'In Progress' ? '#1e40af' : 
+                                                req.status === 'Cancelled' ? '#991b1b' : 
+                                                '#854d0e'
                                         }}>
                                             {req.status || 'Pending'}
                                         </span>
