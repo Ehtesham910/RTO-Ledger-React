@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/css/customers.css';
-import AddCustomerModal from '../components/modals/AddCustomerModal'; 
+import AddCustomerModal from '../components/modals/AddCustomerModal';
+import ViewCustomerModal from '../components/modals/ViewCustomerModal';
 
 function Customers() {
-    const [isModalOpen, setIsModalOpen] = useState(false); 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
 
     const [customers, setCustomers] = useState(() => {
         const savedData = localStorage.getItem('customersData');
@@ -28,17 +31,17 @@ function Customers() {
     const handleStatusToggle = async (id, currentStatus) => {
         try {
             const newStatus = !currentStatus;
-            
+
             // Instantly update UI (Optimistic update)
-            const updatedCustomers = customers.map(c => 
+            const updatedCustomers = customers.map(c =>
                 c.id === id ? { ...c, is_active: newStatus } : c
             );
             setCustomers(updatedCustomers);
             localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
-            
+
             // Backend update
             await axios.put(`http://localhost:5000/api/customers/${id}/status`, { is_active: newStatus });
-            
+
         } catch (error) {
             console.error("Error updating status:", error);
             // Agar API fail hui toh wapas purana state set karne ka logic (optional)
@@ -51,12 +54,12 @@ function Customers() {
             try {
                 // Backend delete
                 await axios.delete(`http://localhost:5000/api/customers/${id}`);
-                
+
                 // Update UI
                 const updatedCustomers = customers.filter(c => c.id !== id);
                 setCustomers(updatedCustomers);
                 localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
-                
+
             } catch (error) {
                 console.error("Error deleting customer:", error);
                 alert("Failed to delete customer.");
@@ -67,7 +70,7 @@ function Customers() {
     // Calculate Next Customer Code
     const getNextCustomerCode = () => {
         if (!customers || customers.length === 0) return 'CUST-001';
-        
+
         let maxNum = 0;
         customers.forEach(c => {
             if (c.customer_code) {
@@ -81,13 +84,13 @@ function Customers() {
                 }
             }
         });
-        
+
         // Agar pehle se stored customers me koi valid number na mile, 
         // toh array ke length ke hisaab se number dega (eg. 10 customers hain toh maxNum 10 ho jayega)
         if (maxNum === 0) {
             maxNum = customers.length;
         }
-        
+
         const nextNum = maxNum + 1;
         return `CUST-${nextNum.toString().padStart(3, '0')}`;
     };
@@ -146,7 +149,14 @@ function Customers() {
                                     </td>
                                     <td>
                                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
-                                            <button className="btn-action view" title="View Vehicles">
+                                            <button
+                                                className="btn-action view"
+                                                title="View Details"
+                                                onClick={() => {
+                                                    setSelectedCustomer(customer);
+                                                    setIsViewModalOpen(true);
+                                                }}
+                                            >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </button>
                                             <button className="btn-action edit" title="Edit">
@@ -172,19 +182,19 @@ function Customers() {
                 </div>
             </div>
 
-            <AddCustomerModal 
-                isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)} 
+            <AddCustomerModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
                 nextCode={nextCode}
                 onSave={async (newCustomerData) => {
                     try {
                         const response = await axios.post('http://localhost:5000/api/customers', newCustomerData);
-                        
+
                         // Update UI instantly
                         const updatedCustomers = [response.data, ...customers];
                         setCustomers(updatedCustomers);
                         localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
-                        
+
                         console.log("Customer saved successfully!", response.data);
                         setIsModalOpen(false); // form close on success
                     } catch (error) {
@@ -192,6 +202,12 @@ function Customers() {
                         alert("Failed to save customer. Please check the backend connection.");
                     }
                 }}
+            />
+
+            <ViewCustomerModal
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                customer={selectedCustomer}
             />
         </div>
     );
