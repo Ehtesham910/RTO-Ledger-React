@@ -51,7 +51,7 @@ function Receipts() {
                                 <th>Payment Mode</th>
                                 <th>Reference No.</th>
                                 <th>Date</th>
-                                <th className="text-right">Actions</th>
+                                <th className="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,10 +85,15 @@ function Receipts() {
 
                                     <td>{formatDate(receipt.received_at)}</td>
                                     
-                                    <td className="text-right">
-                                        <button className="btn-action view" title="Print Receipt">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                                        </button>
+                                    <td>
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+                                            <button className="btn-action view" title="View Details">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </button>
+                                            <button className="btn-action print" title="Print Receipt">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}

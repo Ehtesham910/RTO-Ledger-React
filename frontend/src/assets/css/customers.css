@@ -146,6 +146,14 @@
     background-color: #fecaca;
 }
 
+.btn-action.print {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+.btn-action.print:hover {
+    background-color: #e5e7eb;
+}
+
 /* States */
 .loading-state, .empty-state {
     padding: 3rem;

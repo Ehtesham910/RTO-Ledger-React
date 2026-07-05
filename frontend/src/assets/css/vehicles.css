@@ -122,14 +122,36 @@
     transition: all 0.2s;
 }
 
-.btn-action.edit:hover {
+.btn-action.edit {
     background-color: #fef3c7;
     color: #d97706;
 }
+.btn-action.edit:hover {
+    background-color: #fde68a;
+}
 
-.btn-action.view:hover {
+.btn-action.view {
     background-color: #e0f2fe;
     color: #0284c7;
+}
+.btn-action.view:hover {
+    background-color: #bae6fd;
+}
+
+.btn-action.delete {
+    background-color: #fee2e2;
+    color: #ef4444;
+}
+.btn-action.delete:hover {
+    background-color: #fecaca;
+}
+
+.btn-action.print {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+.btn-action.print:hover {
+    background-color: #e5e7eb;
 }
 
 /* States */
