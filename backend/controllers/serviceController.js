@@ -59,4 +59,19 @@ const updateService = async (req, res) => {
     }
 };
 
-module.exports = { getServices, updateServiceStatus, createService, updateService };
+const deleteService = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await prisma.services.delete({
+            where: { id: BigInt(id) }
+        });
+        res.json({ message: "Service deleted successfully" });
+    } catch (error) {
+        if (error.code === 'P2003') {
+            return res.status(400).json({ error: "Cannot delete service. It is associated with existing service requests." });
+        }
+        res.status(500).json({ error: error.message || "Internal server error" });
+    }
+};
+
+module.exports = { getServices, updateServiceStatus, createService, updateService, deleteService };
