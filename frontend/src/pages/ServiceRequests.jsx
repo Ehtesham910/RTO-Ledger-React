@@ -3,10 +3,12 @@ import axios from 'axios';
 import '../assets/css/serviceRequests.css';
 import ViewServiceRequestModal from '../components/modals/ViewServiceRequestModal';
 import AddServiceRequestModal from '../components/modals/AddServiceRequestModal';
+import EditServiceRequestModal from '../components/modals/EditServiceRequestModal';
 
 function ServiceRequests() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
 
     const [requests, setRequests] = useState(() => {
@@ -59,6 +61,24 @@ function ServiceRequests() {
             return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
         }
         return vNum; 
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this service request?")) {
+            try {
+                await axios.delete(`http://localhost:5000/api/servicerequests/${id}`);
+                const updatedRequests = requests.filter(req => req.id !== id);
+                setRequests(updatedRequests);
+                localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+            } catch (error) {
+                if (error.response && error.response.data && error.response.data.error) {
+                    alert(error.response.data.error);
+                } else {
+                    console.error("Error deleting service request:", error);
+                    alert("Failed to delete service request.");
+                }
+            }
+        }
     };
 
     return (
@@ -151,10 +171,21 @@ function ServiceRequests() {
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </button>
-                                            <button className="btn-action edit" title="Edit Request">
+                                            <button 
+                                                className="btn-action edit" 
+                                                title="Edit Request"
+                                                onClick={() => {
+                                                    setSelectedRequest(req);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                            >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                             </button>
-                                            <button className="btn-action delete" title="Delete Request" onClick={() => console.log('Delete', req.id)}>
+                                            <button 
+                                                className="btn-action delete" 
+                                                title="Delete Request" 
+                                                onClick={() => handleDelete(req.id)}
+                                            >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                                             </button>
                                         </div>
@@ -198,6 +229,28 @@ function ServiceRequests() {
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 request={selectedRequest}
+            />
+
+            <EditServiceRequestModal 
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                request={selectedRequest}
+                onSave={async (updatedData) => {
+                    setIsEditModalOpen(false); // Close instantly
+                    try {
+                        const response = await axios.put(`http://localhost:5000/api/servicerequests/${updatedData.id}`, updatedData);
+                        
+                        // Update UI
+                        const updatedRequests = requests.map(req => 
+                            req.id === updatedData.id ? response.data : req
+                        );
+                        setRequests(updatedRequests);
+                        localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+                    } catch (error) {
+                        console.error("Error updating service request:", error);
+                        alert("Failed to update service request.");
+                    }
+                }}
             />
         </div>
     );
