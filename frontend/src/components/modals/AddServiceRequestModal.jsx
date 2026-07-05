@@ -14,7 +14,9 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
         service_id: '',
         amount: '',
         status: 'Pending',
-        remarks: ''
+        remarks: '',
+        payment_method: 'Pay Later (Unpaid)',
+        amount_paid: ''
     });
 
     useEffect(() => {
@@ -37,7 +39,9 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
                 service_id: '',
                 amount: '',
                 status: 'Pending',
-                remarks: ''
+                remarks: '',
+                payment_method: 'Pay Later (Unpaid)',
+                amount_paid: ''
             });
             setFilteredVehicles([]);
         }
@@ -54,10 +58,18 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
             setFormData({ ...formData, customer_id: value, vehicle_id: '' }); // reset vehicle on customer change
         } else if (name === 'service_id') {
             const selectedService = services.find(s => String(s.id) === String(value));
+            const newAmount = selectedService ? selectedService.default_fee : '';
             setFormData({ 
                 ...formData, 
                 service_id: value, 
-                amount: selectedService ? selectedService.default_fee : '' 
+                amount: newAmount,
+                amount_paid: formData.payment_method === 'Pay Later (Unpaid)' ? 0 : newAmount
+            });
+        } else if (name === 'payment_method') {
+            setFormData({
+                ...formData,
+                payment_method: value,
+                amount_paid: value === 'Pay Later (Unpaid)' ? 0 : formData.amount
             });
         } else {
             setFormData({ ...formData, [name]: value });
@@ -138,6 +150,29 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
                                 <option value="Completed">Completed</option>
                                 <option value="Cancelled">Cancelled</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <div className="form-row">
+                        <div className="form-group">
+                            <label>Payment Method (New Requests Only) <span style={{color: 'red'}}>*</span></label>
+                            <select name="payment_method" value={formData.payment_method} onChange={handleChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
+                                <option value="Pay Later (Unpaid)">Pay Later (Unpaid)</option>
+                                <option value="Cash (Paid)">Cash (Paid)</option>
+                                <option value="Razorpay (Online)">Razorpay (Online)</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label>Payable Amount (₹)</label>
+                            <input 
+                                type="number" 
+                                name="amount_paid" 
+                                placeholder="Enter Amount Paid" 
+                                value={formData.amount_paid} 
+                                onChange={handleChange} 
+                                disabled={formData.payment_method === 'Pay Later (Unpaid)'}
+                                style={{ backgroundColor: formData.payment_method === 'Pay Later (Unpaid)' ? '#f8fafc' : 'white' }}
+                            />
                         </div>
                     </div>
 

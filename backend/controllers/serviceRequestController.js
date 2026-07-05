@@ -26,7 +26,9 @@ const getServiceRequests = async (req, res) => {
 
 const createServiceRequest = async (req, res) => {
     try {
-        const { request_no, customer_id, vehicle_id, service_id, amount, status, remarks } = req.body;
+        const { request_no, customer_id, vehicle_id, service_id, amount, status, remarks, payment_method, amount_paid } = req.body;
+        
+        // 1. Create the Service Request
         const newRequest = await prisma.service_requests.create({
             data: {
                 request_no,
@@ -43,6 +45,32 @@ const createServiceRequest = async (req, res) => {
                 services: { select: { service_name: true } }
             }
         });
+
+        // 2. Calculate Ledger details
+        const fee = parseFloat(amount) || 0;
+        const paid = payment_method === 'Pay Later (Unpaid)' ? 0 : (parseFloat(amount_paid) || 0);
+        const due = fee - paid > 0 ? fee - paid : 0;
+        
+        let ledgerStatus = 'Pending';
+        if (paid >= fee && fee > 0) {
+            ledgerStatus = 'Paid';
+        } else if (paid > 0 && paid < fee) {
+            ledgerStatus = 'Partial';
+        }
+
+        // 3. Create ledger entry
+        await prisma.ledgers.create({
+            data: {
+                customer_id: BigInt(customer_id),
+                vehicle_id: BigInt(vehicle_id),
+                service_request_id: newRequest.id,
+                service_fee: fee,
+                amount_paid: paid,
+                due_amount: due,
+                status: ledgerStatus
+            }
+        });
+
         res.status(201).json(newRequest);
     } catch (error) {
         res.status(500).json({ error: error.message });
