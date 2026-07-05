@@ -11,6 +11,9 @@ router.post('/', customerController.createCustomer);
 // PUT /api/customers/:id/status
 router.put('/:id/status', customerController.updateCustomerStatus);
 
+// PUT /api/customers/:id
+router.put('/:id', customerController.updateCustomer);
+
 // DELETE /api/customers/:id
 router.delete('/:id', customerController.deleteCustomer);
 

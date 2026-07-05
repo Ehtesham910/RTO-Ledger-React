@@ -3,11 +3,14 @@ import axios from 'axios';
 import '../assets/css/customers.css';
 import AddCustomerModal from '../components/modals/AddCustomerModal';
 import ViewCustomerModal from '../components/modals/ViewCustomerModal';
+import EditCustomerModal from '../components/modals/EditCustomerModal';
 
 function Customers() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEditCustomer, setSelectedEditCustomer] = useState(null);
 
     const [customers, setCustomers] = useState(() => {
         const savedData = localStorage.getItem('customersData');
@@ -159,7 +162,14 @@ function Customers() {
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </button>
-                                            <button className="btn-action edit" title="Edit">
+                                            <button 
+                                                className="btn-action edit" 
+                                                title="Edit"
+                                                onClick={() => {
+                                                    setSelectedEditCustomer(customer);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                            >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                             </button>
                                             <button className="btn-action delete" title="Delete" onClick={() => handleDelete(customer.id)}>
@@ -208,6 +218,30 @@ function Customers() {
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 customer={selectedCustomer}
+            />
+
+            <EditCustomerModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                customer={selectedEditCustomer}
+                onSave={async (updatedCustomerData) => {
+                    try {
+                        const response = await axios.put(`http://localhost:5000/api/customers/${updatedCustomerData.id}`, updatedCustomerData);
+                        
+                        // Update UI instantly
+                        const updatedCustomers = customers.map(c => 
+                            c.id === updatedCustomerData.id ? response.data : c
+                        );
+                        setCustomers(updatedCustomers);
+                        localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
+                        
+                        console.log("Customer updated successfully!", response.data);
+                        setIsEditModalOpen(false);
+                    } catch (error) {
+                        console.error("Error updating customer:", error);
+                        alert("Failed to update customer. Please check the backend connection.");
+                    }
+                }}
             />
         </div>
     );

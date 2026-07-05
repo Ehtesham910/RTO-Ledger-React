@@ -45,6 +45,20 @@ const updateCustomerStatus = async (req, res) => {
     }
 };
 
+const updateCustomer = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, mobile, email, address } = req.body;
+        const updatedCustomer = await prisma.customers.update({
+            where: { id: BigInt(id) },
+            data: { name, mobile, email, address }
+        });
+        res.json(updatedCustomer);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const deleteCustomer = async (req, res) => {
     try {
         const { id } = req.params;
@@ -57,4 +71,4 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
-module.exports = { getCustomers, createCustomer, updateCustomerStatus, deleteCustomer };
+module.exports = { getCustomers, createCustomer, updateCustomerStatus, updateCustomer, deleteCustomer };
