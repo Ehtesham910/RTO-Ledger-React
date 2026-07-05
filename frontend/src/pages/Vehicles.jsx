@@ -184,16 +184,16 @@ function Vehicles(){
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 onSave={async (newVehicleData) => {
+                    setIsModalOpen(false); // Close modal instantly
                     try {
                         const response = await axios.post('http://localhost:5000/api/vehicles', newVehicleData);
                         
-                        // Update UI instantly
+                        // Update UI
                         const updatedVehicles = [response.data, ...vehicles];
                         setVehicles(updatedVehicles);
                         localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
                         
                         console.log("Vehicle saved successfully!", response.data);
-                        setIsModalOpen(false);
                     } catch (error) {
                         console.error("Error saving vehicle:", error);
                         alert("Failed to save vehicle. Please check the backend connection.");
@@ -212,10 +212,11 @@ function Vehicles(){
                 onClose={() => setIsEditModalOpen(false)}
                 vehicle={selectedEditVehicle}
                 onSave={async (updatedVehicleData) => {
+                    setIsEditModalOpen(false); // Close modal instantly
                     try {
                         const response = await axios.put(`http://localhost:5000/api/vehicles/${updatedVehicleData.id}`, updatedVehicleData);
                         
-                        // Update UI instantly
+                        // Update UI
                         const updatedVehicles = vehicles.map(v => 
                             v.id === updatedVehicleData.id ? response.data : v
                         );
@@ -223,7 +224,6 @@ function Vehicles(){
                         localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
                         
                         console.log("Vehicle updated successfully!", response.data);
-                        setIsEditModalOpen(false);
                     } catch (error) {
                         console.error("Error updating vehicle:", error);
                         alert("Failed to update vehicle. Please check the backend connection.");

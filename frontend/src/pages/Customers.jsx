@@ -197,16 +197,16 @@ function Customers() {
                 onClose={() => setIsModalOpen(false)}
                 nextCode={nextCode}
                 onSave={async (newCustomerData) => {
+                    setIsModalOpen(false); // Close modal instantly
                     try {
                         const response = await axios.post('http://localhost:5000/api/customers', newCustomerData);
 
-                        // Update UI instantly
+                        // Update UI
                         const updatedCustomers = [response.data, ...customers];
                         setCustomers(updatedCustomers);
                         localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
 
                         console.log("Customer saved successfully!", response.data);
-                        setIsModalOpen(false); // form close on success
                     } catch (error) {
                         console.error("Error saving customer:", error);
                         alert("Failed to save customer. Please check the backend connection.");
@@ -225,10 +225,11 @@ function Customers() {
                 onClose={() => setIsEditModalOpen(false)}
                 customer={selectedEditCustomer}
                 onSave={async (updatedCustomerData) => {
+                    setIsEditModalOpen(false); // Close modal instantly
                     try {
                         const response = await axios.put(`http://localhost:5000/api/customers/${updatedCustomerData.id}`, updatedCustomerData);
                         
-                        // Update UI instantly
+                        // Update UI
                         const updatedCustomers = customers.map(c => 
                             c.id === updatedCustomerData.id ? response.data : c
                         );
@@ -236,7 +237,6 @@ function Customers() {
                         localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
                         
                         console.log("Customer updated successfully!", response.data);
-                        setIsEditModalOpen(false);
                     } catch (error) {
                         console.error("Error updating customer:", error);
                         alert("Failed to update customer. Please check the backend connection.");
