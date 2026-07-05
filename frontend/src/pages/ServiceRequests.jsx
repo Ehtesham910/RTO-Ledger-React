@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/css/serviceRequests.css';
 import ViewServiceRequestModal from '../components/modals/ViewServiceRequestModal';
+import AddServiceRequestModal from '../components/modals/AddServiceRequestModal';
 
 function ServiceRequests() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState(null);
 
@@ -31,6 +33,34 @@ function ServiceRequests() {
         return date.toLocaleDateString('en-IN'); 
     }
 
+    const getNextRequestNo = () => {
+        if (!requests || requests.length === 0) return 'REQ-0001';
+        let maxNum = 0;
+        requests.forEach(r => {
+            if (r.request_no) {
+                const numMatch = String(r.request_no).match(/\d+/);
+                if (numMatch) {
+                    const numPart = parseInt(numMatch[0], 10);
+                    if (numPart > maxNum) maxNum = numPart;
+                }
+            }
+        });
+        if (maxNum === 0) maxNum = requests.length;
+        return `REQ-${(maxNum + 1).toString().padStart(4, '0')}`;
+    };
+
+    const nextRequestNo = getNextRequestNo();
+
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum; 
+    };
+
     return (
         <div className="page-container">
             <div className="page-header">
@@ -38,7 +68,7 @@ function ServiceRequests() {
                     <h2 className="page-title">Service Requests</h2>
                     <p className="page-subtitle">Manage all customer service requests and their status</p>
                 </div>
-                <button className="btn-add">
+                <button className="btn-add" onClick={() => setIsModalOpen(true)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     New Request
                 </button>
@@ -70,7 +100,11 @@ function ServiceRequests() {
                                         {req.customers?.name || 'Unknown'}
                                     </td>
                                     
-                                    <td>{req.vehicles?.vehicle_number || '-'}</td>
+                                    <td>
+                                        <span className="badge" style={{ whiteSpace: 'nowrap' }}>
+                                            {formatVehicleNumber(req.vehicles?.vehicle_number)}
+                                        </span>
+                                    </td>
                                     
                                     <td>{req.services?.service_name || '-'}</td>
                                     
@@ -139,6 +173,26 @@ function ServiceRequests() {
                     </table>
                 </div>
             </div>
+
+            <AddServiceRequestModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                nextRequestNo={nextRequestNo}
+                onSave={async (newRequestData) => {
+                    setIsModalOpen(false); // Close instantly
+                    try {
+                        const response = await axios.post('http://localhost:5000/api/servicerequests', newRequestData);
+                        
+                        // Update UI
+                        const updatedRequests = [response.data, ...requests];
+                        setRequests(updatedRequests);
+                        localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+                    } catch (error) {
+                        console.error("Error saving service request:", error);
+                        alert("Failed to create service request.");
+                    }
+                }}
+            />
 
             <ViewServiceRequestModal 
                 isOpen={isViewModalOpen}

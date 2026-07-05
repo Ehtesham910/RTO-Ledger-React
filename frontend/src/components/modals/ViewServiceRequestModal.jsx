@@ -10,6 +10,16 @@ const ViewServiceRequestModal = ({ isOpen, onClose, request }) => {
         return date.toLocaleDateString('en-IN');
     };
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum;
+    };
+
     const getStatusStyle = (status) => {
         switch (status) {
             case 'Completed':
@@ -50,7 +60,7 @@ const ViewServiceRequestModal = ({ isOpen, onClose, request }) => {
                     </div>
                     <div className="form-group">
                         <label>Vehicle No.</label>
-                        <input type="text" value={request.vehicles?.vehicle_number || "-"} readOnly />
+                        <input type="text" value={formatVehicleNumber(request.vehicles?.vehicle_number)} readOnly />
                     </div>
                 </div>
                 
