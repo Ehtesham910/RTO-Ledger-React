@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/css/vehicles.css'; 
+import AddVehicleModal from '../components/modals/AddVehicleModal';
 import ViewVehicleModal from '../components/modals/ViewVehicleModal';
 import EditVehicleModal from '../components/modals/EditVehicleModal';
 
 function Vehicles(){
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedVehicle, setSelectedVehicle] = useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -71,9 +73,9 @@ function Vehicles(){
             <div className="page-header">
                 <div>
                     <h2 className="page-title">Vehicles</h2>
-                    <p className="page-subtitle">Manage all registered vehicles and their details</p>           
+                    <p className="page-subtitle">Manage customer vehicles and their details</p>
                 </div>
-                 <button className="btn-add">
+                <button className="btn-add" onClick={() => setIsModalOpen(true)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Add Vehicle
                 </button>
@@ -177,6 +179,27 @@ function Vehicles(){
                         </table>
                     </div>
             </div>
+
+            <AddVehicleModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={async (newVehicleData) => {
+                    try {
+                        const response = await axios.post('http://localhost:5000/api/vehicles', newVehicleData);
+                        
+                        // Update UI instantly
+                        const updatedVehicles = [response.data, ...vehicles];
+                        setVehicles(updatedVehicles);
+                        localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
+                        
+                        console.log("Vehicle saved successfully!", response.data);
+                        setIsModalOpen(false);
+                    } catch (error) {
+                        console.error("Error saving vehicle:", error);
+                        alert("Failed to save vehicle. Please check the backend connection.");
+                    }
+                }}
+            />
 
             <ViewVehicleModal 
                 isOpen={isViewModalOpen}

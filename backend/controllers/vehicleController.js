@@ -17,6 +17,35 @@ const getVehicles = async(req,res) => {
     }
 };
 
+const createVehicle = async (req, res) => {
+    try {
+        const { customer_id, vehicle_number, vehicle_type, chassis_number, engine_number, registration_date, driver_name, driver_mobile, is_active } = req.body;
+        
+        let data = { 
+            customer_id: BigInt(customer_id),
+            vehicle_number, 
+            vehicle_type, 
+            chassis_number, 
+            engine_number, 
+            driver_name, 
+            driver_mobile,
+            is_active: is_active ?? true
+        };
+        
+        if (registration_date) {
+            data.registration_date = new Date(registration_date);
+        }
+
+        const newVehicle = await prisma.vehicles.create({
+            data,
+            include: { customers: { select: { name: true } } }
+        });
+        res.status(201).json(newVehicle);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 const updateVehicleStatus = async (req, res) => {
     try {
         const { id } = req.params;
@@ -53,4 +82,4 @@ const updateVehicle = async (req, res) => {
     }
 };
 
-module.exports = { getVehicles, updateVehicleStatus, updateVehicle };
+module.exports = { getVehicles, createVehicle, updateVehicleStatus, updateVehicle };

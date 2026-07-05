@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import '../../assets/css/addCustomerModal.css'; 
 
-const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
+const AddVehicleModal = ({ isOpen, onClose, onSave }) => {
+    const [customers, setCustomers] = useState([]);
     const [formData, setFormData] = useState({
+        customer_id: '',
         vehicle_number: '',
         vehicle_type: '',
         chassis_number: '',
@@ -13,27 +16,27 @@ const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
     });
 
     useEffect(() => {
-        if (vehicle) {
-            // Format date for date input type (YYYY-MM-DD)
-            let formattedDate = '';
-            if (vehicle.registration_date) {
-                const date = new Date(vehicle.registration_date);
-                formattedDate = date.toISOString().split('T')[0];
-            }
-
+        if (isOpen) {
+            // Fetch customers for the dropdown
+            axios.get('http://localhost:5000/api/customers')
+                .then(res => setCustomers(res.data.filter(c => c.is_active)))
+                .catch(err => console.error(err));
+            
+            // Reset form
             setFormData({
-                vehicle_number: vehicle.vehicle_number || '',
-                vehicle_type: vehicle.vehicle_type || '',
-                chassis_number: vehicle.chassis_number || '',
-                engine_number: vehicle.engine_number || '',
-                registration_date: formattedDate,
-                driver_name: vehicle.driver_name || '',
-                driver_mobile: vehicle.driver_mobile || ''
+                customer_id: '',
+                vehicle_number: '',
+                vehicle_type: '',
+                chassis_number: '',
+                engine_number: '',
+                registration_date: '',
+                driver_name: '',
+                driver_mobile: ''
             });
         }
-    }, [vehicle]);
+    }, [isOpen]);
 
-    if (!isOpen || !vehicle) return null;
+    if (!isOpen) return null;
 
     const formatVehicleNumber = (val) => {
         const raw = val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
@@ -106,7 +109,7 @@ const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault(); 
-        onSave({ id: vehicle.id, ...formData });
+        onSave(formData);
     };
 
     return (
@@ -114,25 +117,30 @@ const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
             <div className="modal-container" onClick={(e) => e.stopPropagation()}>
                 
                 <div className="modal-header">
-                    <h2>Edit Vehicle</h2>
+                    <h2>Add New Vehicle</h2>
                     <button type="button" className="close-btn" onClick={onClose}>&times;</button>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Customer Name</label>
-                            <input type="text" value={vehicle.customers?.name || "Unknown"} readOnly disabled style={{ backgroundColor: '#f8fafc' }} />
+                            <label>Customer <span style={{color: 'red'}}>*</span></label>
+                            <select name="customer_id" value={formData.customer_id} onChange={handleChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
+                                <option value="" disabled>Select Customer</option>
+                                {customers.map(c => (
+                                    <option key={c.id} value={c.id}>{c.name} ({c.customer_code})</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="form-group">
-                            <label>Vehicle No.</label>
+                            <label>Vehicle No. <span style={{color: 'red'}}>*</span></label>
                             <input type="text" placeholder="Enter Vehicle No." required name="vehicle_number" value={formData.vehicle_number} onChange={handleChange} />
                         </div>
                     </div>
                     
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Vehicle Type</label>
+                            <label>Vehicle Type <span style={{color: 'red'}}>*</span></label>
                             <select name="vehicle_type" value={formData.vehicle_type} onChange={handleChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
                                 <option value="" disabled>Select Type</option>
                                 <option value="2-Wheeler">2-Wheeler</option>
@@ -145,7 +153,7 @@ const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
                         </div>
                         <div className="form-group">
                             <label>Registration Date</label>
-                            <input type="date" name="registration_date" value={formData.registration_date} onChange={handleChange} required />
+                            <input type="date" name="registration_date" value={formData.registration_date} onChange={handleChange} />
                         </div>
                     </div>
 
@@ -188,7 +196,7 @@ const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
                     </div>
 
                     <div className="modal-footer">
-                        <button type="submit" className="save-btn">Update Vehicle</button>
+                        <button type="submit" className="save-btn">Save Vehicle</button>
                     </div>
                 </form>
 
@@ -197,4 +205,4 @@ const EditVehicleModal = ({ isOpen, onClose, onSave, vehicle }) => {
     );
 };
 
-export default EditVehicleModal;
+export default AddVehicleModal;

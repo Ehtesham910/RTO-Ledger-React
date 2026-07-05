@@ -5,6 +5,9 @@ const vehicleController = require('../controllers/vehicleController');
 // GET /api/vehicles
 router.get('/', vehicleController.getVehicles);
 
+// POST /api/vehicles
+router.post('/', vehicleController.createVehicle);
+
 // PUT /api/vehicles/:id/status
 router.put('/:id/status', vehicleController.updateVehicleStatus);
 
