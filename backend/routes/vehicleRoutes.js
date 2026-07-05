@@ -8,4 +8,7 @@ router.get('/', vehicleController.getVehicles);
 // PUT /api/vehicles/:id/status
 router.put('/:id/status', vehicleController.updateVehicleStatus);
 
+// PUT /api/vehicles/:id
+router.put('/:id', vehicleController.updateVehicle);
+
 module.exports = router;
