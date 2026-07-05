@@ -57,4 +57,31 @@ const updateLedger = async (req, res) => {
     }
 };
 
-module.exports = { getLedger, updateLedger };
+const getCustomerLedger = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ledgerRecords = await prisma.ledgers.findMany({
+            where: { customer_id: BigInt(id) },
+            include: {
+                customers: {
+                    select: { name: true, customer_code: true }
+                },
+                vehicles: {
+                    select: { vehicle_number: true }
+                },
+                service_requests: {
+                    select: { 
+                        request_no: true,
+                        services: { select: { service_name: true } }
+                    }
+                }
+            },
+            orderBy: { created_at: 'desc' }
+        });
+        res.json(ledgerRecords);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getLedger, updateLedger, getCustomerLedger };

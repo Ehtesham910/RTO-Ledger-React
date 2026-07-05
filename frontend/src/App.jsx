@@ -7,6 +7,7 @@ import Vehicles from './pages/Vehicles';
 import Services from './pages/Services';
 import ServiceRequests from './pages/ServiceRequests';
 import Ledger from './pages/Ledger';
+import CustomerLedger from './pages/CustomerLedger';
 import Receipts from './pages/Receipts';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
                     <Route path="services" element={<Services />} />
                     <Route path="services/requests" element={<ServiceRequests />} />
                     <Route path="ledger" element={<Ledger />} />
+                    <Route path="ledger/customer/:id" element={<CustomerLedger />} />
                     <Route path="receipts" element={<Receipts />} />
                 </Route>
             </Routes>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/css/ledger.css'; 
 import ViewLedgerModal from '../components/modals/ViewLedgerModal';
 import EditLedgerModal from '../components/modals/EditLedgerModal';
 
 function Ledger() {
+    const navigate = useNavigate();
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedLedger, setSelectedLedger] = useState(null);
@@ -50,10 +52,6 @@ function Ledger() {
                     <h2 className="page-title">Ledger</h2>
                     <p className="page-subtitle">Track customer dues, payments, and financial records</p>
                 </div>
-                <button className="btn-add">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                    Record Payment
-                </button>
             </div>
 
             <div className="card">
@@ -127,8 +125,12 @@ function Ledger() {
                                                 className="btn-action view" 
                                                 title="View Details"
                                                 onClick={() => {
-                                                    setSelectedLedger(record);
-                                                    setIsViewModalOpen(true);
+                                                    if (record.customer_id) {
+                                                        navigate(`/ledger/customer/${record.customer_id}`);
+                                                    } else {
+                                                        setSelectedLedger(record);
+                                                        setIsViewModalOpen(true);
+                                                    }
                                                 }}
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
