@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/css/services.css';
+import ViewServiceModal from '../components/modals/ViewServiceModal';
 
 function Services() {
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [selectedService, setSelectedService] = useState(null);
+
     const [services, setServices] = useState(() => {
         const savedData = localStorage.getItem('servicesData');
         return savedData ? JSON.parse(savedData) : [];
@@ -83,7 +87,14 @@ function Services() {
                                     </td>
                                     <td>
                                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
-                                            <button className="btn-action view" title="View Details">
+                                            <button 
+                                                className="btn-action view" 
+                                                title="View Details"
+                                                onClick={() => {
+                                                    setSelectedService(service);
+                                                    setIsViewModalOpen(true);
+                                                }}
+                                            >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </button>
                                             <button className="btn-action edit" title="Edit Service">
@@ -108,6 +119,12 @@ function Services() {
                     </table>
                 </div>
             </div>
+
+            <ViewServiceModal 
+                isOpen={isViewModalOpen}
+                onClose={() => setIsViewModalOpen(false)}
+                service={selectedService}
+            />
         </div>
     );
 }
