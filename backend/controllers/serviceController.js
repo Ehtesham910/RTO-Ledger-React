@@ -23,4 +23,21 @@ const updateServiceStatus = async (req, res) => {
     }
 };
 
-module.exports = { getServices, updateServiceStatus };
+const createService = async (req, res) => {
+    try {
+        const { service_name, default_fee, description, is_active } = req.body;
+        const newService = await prisma.services.create({
+            data: {
+                service_name,
+                default_fee: default_fee ? parseFloat(default_fee) : 0,
+                description,
+                is_active: is_active ?? true
+            }
+        });
+        res.status(201).json(newService);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getServices, updateServiceStatus, createService };

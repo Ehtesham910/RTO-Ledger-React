@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../assets/css/services.css';
+import AddServiceModal from '../components/modals/AddServiceModal';
 import ViewServiceModal from '../components/modals/ViewServiceModal';
 
 function Services() {
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedService, setSelectedService] = useState(null);
 
@@ -46,7 +48,7 @@ function Services() {
                     <h2 className="page-title">Services</h2>
                     <p className="page-subtitle">Manage service offerings and their fees</p>
                 </div>
-                <button className="btn-add">
+                <button className="btn-add" onClick={() => setIsModalOpen(true)}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     Add Service
                 </button>
@@ -119,6 +121,25 @@ function Services() {
                     </table>
                 </div>
             </div>
+
+            <AddServiceModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={async (newServiceData) => {
+                    setIsModalOpen(false); // Close instantly
+                    try {
+                        const response = await axios.post('http://localhost:5000/api/services', newServiceData);
+                        
+                        // Update UI
+                        const updatedServices = [response.data, ...services];
+                        setServices(updatedServices);
+                        localStorage.setItem('servicesData', JSON.stringify(updatedServices));
+                    } catch (error) {
+                        console.error("Error saving service:", error);
+                        alert("Failed to save service.");
+                    }
+                }}
+            />
 
             <ViewServiceModal 
                 isOpen={isViewModalOpen}
