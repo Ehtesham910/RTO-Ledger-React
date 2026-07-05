@@ -35,7 +35,7 @@ const getLedger = async (req, res) => {
 const updateLedger = async (req, res) => {
     try {
         const { id } = req.params;
-        const { service_fee, amount_paid, due_amount, status } = req.body;
+        const { service_fee, amount_paid, due_amount, status, payment_mode } = req.body;
         
         const updatedRecord = await prisma.ledgers.update({
             where: { id: BigInt(id) },

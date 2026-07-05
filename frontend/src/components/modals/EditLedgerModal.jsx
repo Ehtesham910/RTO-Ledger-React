@@ -7,7 +7,8 @@ const EditLedgerModal = ({ isOpen, onClose, onSave, record }) => {
         service_fee: '',
         amount_paid: '',
         due_amount: '',
-        status: 'Pending'
+        status: 'Pending',
+        payment_mode: 'Cash (Paid)'
     });
 
     useEffect(() => {
@@ -17,7 +18,8 @@ const EditLedgerModal = ({ isOpen, onClose, onSave, record }) => {
                 service_fee: record.service_fee || 0,
                 amount_paid: record.amount_paid || 0,
                 due_amount: record.due_amount || 0,
-                status: record.status || 'Pending'
+                status: record.status || 'Pending',
+                payment_mode: record.payment_mode || 'Cash (Paid)'
             });
         }
     }, [isOpen, record]);
@@ -101,8 +103,8 @@ const EditLedgerModal = ({ isOpen, onClose, onSave, record }) => {
                     {/* Editable Details */}
                     <div className="form-row">
                         <div className="form-group">
-                            <label>Total Fee (₹) <span style={{color: 'red'}}>*</span></label>
-                            <input type="number" name="service_fee" placeholder="Enter Total Fee" required value={formData.service_fee} onChange={handleChange} />
+                            <label>Service Fee (₹)</label>
+                            <input type="number" name="service_fee" value={formData.service_fee} readOnly disabled style={{ backgroundColor: '#f8fafc' }} />
                         </div>
                         <div className="form-group">
                             <label>Amount Paid (₹) <span style={{color: 'red'}}>*</span></label>
@@ -112,9 +114,20 @@ const EditLedgerModal = ({ isOpen, onClose, onSave, record }) => {
 
                     <div className="form-row">
                         <div className="form-group">
+                            <label>Payment Mode <span style={{color: 'red'}}>*</span></label>
+                            <select name="payment_mode" value={formData.payment_mode} onChange={handleChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
+                                <option value="Cash (Paid)">Cash (Paid)</option>
+                                <option value="Razorpay (Online)">Razorpay (Online)</option>
+                                <option value="Pay Later (Unpaid)">Pay Later (Unpaid)</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
                             <label>Due Amount (₹)</label>
                             <input type="number" name="due_amount" value={formData.due_amount} readOnly style={{ backgroundColor: '#f8fafc' }} />
                         </div>
+                    </div>
+
+                    <div className="form-row">
                         <div className="form-group">
                             <label>Status <span style={{color: 'red'}}>*</span></label>
                             <select name="status" value={formData.status} onChange={handleChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
@@ -122,6 +135,8 @@ const EditLedgerModal = ({ isOpen, onClose, onSave, record }) => {
                                 <option value="Partial">Partial</option>
                                 <option value="Paid">Paid</option>
                             </select>
+                        </div>
+                        <div className="form-group">
                         </div>
                     </div>
 
