@@ -5,7 +5,13 @@ const customerController = require('../controllers/customerController');
 // GET /api/customers
 router.get('/', customerController.getCustomers);
 
+// POST /api/customers (Create new customer)
+router.post('/', customerController.createCustomer);
+
 // PUT /api/customers/:id/status
 router.put('/:id/status', customerController.updateCustomerStatus);
+
+// DELETE /api/customers/:id
+router.delete('/:id', customerController.deleteCustomer);
 
 module.exports = router;
