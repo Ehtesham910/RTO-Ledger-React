@@ -1,14 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../../assets/css/addCustomerModal.css'; // Reusing standard modal styles
 
-function AddServiceModal({ isOpen, onClose, onSave }) {
+function EditServiceModal({ isOpen, onClose, service, onSave }) {
     const [formData, setFormData] = useState({
         service_name: '',
         default_fee: '',
         description: ''
     });
 
-    if (!isOpen) return null;
+    useEffect(() => {
+        if (service) {
+            setFormData({
+                service_name: service.service_name || '',
+                default_fee: service.default_fee || '',
+                description: service.description || ''
+            });
+        }
+    }, [service]);
+
+    if (!isOpen || !service) return null;
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -16,21 +26,14 @@ function AddServiceModal({ isOpen, onClose, onSave }) {
 
     const handleSubmit = (e) => {
         e.preventDefault(); 
-        onSave(formData);
-        
-        // Reset form for next time
-        setFormData({
-            service_name: '',
-            default_fee: '',
-            description: ''
-        });
+        onSave({ id: service.id, ...formData });
     };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-container" onClick={(e) => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Add New Service</h2>
+                    <h2>Edit Service</h2>
                     <button type="button" className="close-btn" onClick={onClose}>&times;</button>
                 </div>
 
@@ -52,7 +55,7 @@ function AddServiceModal({ isOpen, onClose, onSave }) {
                     </div>
 
                     <div className="modal-footer">
-                        <button type="submit" className="save-btn">Save Service</button>
+                        <button type="submit" className="save-btn">Update Service</button>
                     </div>
                 </form>
             </div>
@@ -60,4 +63,4 @@ function AddServiceModal({ isOpen, onClose, onSave }) {
     );
 }
 
-export default AddServiceModal;
+export default EditServiceModal;
