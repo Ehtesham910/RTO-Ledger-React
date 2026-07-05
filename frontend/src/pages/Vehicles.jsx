@@ -65,7 +65,7 @@ function Vehicles(){
 
             } catch (error) {
                 console.error("Error deleting vehicle:", error);
-                alert("Failed to delete vehicle.");
+                alert(error.response?.data?.error || "Failed to delete vehicle. Please try again.");
             }
         }
     };

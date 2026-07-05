@@ -90,7 +90,10 @@ const deleteVehicle = async (req, res) => {
         });
         res.json({ message: "Vehicle deleted successfully" });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        if (error.code === 'P2003') {
+            return res.status(400).json({ error: "Cannot delete vehicle. It is linked to existing ledgers or service requests." });
+        }
+        res.status(500).json({ error: error.message || "Internal server error" });
     }
 };
 
