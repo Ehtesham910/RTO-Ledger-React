@@ -10,6 +10,8 @@ import Ledger from './pages/Ledger';
 import CustomerLedger from './pages/CustomerLedger';
 import Receipts from './pages/Receipts';
 import ViewReceipt from './pages/ViewReceipt';
+import Roles from './pages/Roles';
+import Users from './pages/Users';
 
 function App() {
     return (
@@ -26,6 +28,8 @@ function App() {
                     <Route path="ledger/customer/:id" element={<CustomerLedger />} />
                     <Route path="receipts" element={<Receipts />} />
                     <Route path="receipts/:id" element={<ViewReceipt />} />
+                    <Route path="roles" element={<Roles />} />
+                    <Route path="users" element={<Users />} />
                 </Route>
             </Routes>
         </BrowserRouter>

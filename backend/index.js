@@ -13,6 +13,7 @@ const serviceRoutes = require('./routes/serviceRoutes');
 const serviceRequestRoutes = require('./routes/serviceRequestRoutes');
 const ledgerRoutes = require('./routes/ledgerRoutes');
 const receiptRoutes = require('./routes/receiptRoutes');
+const roleRoutes = require('./routes/roleRoutes');
 
 
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api/services', serviceRoutes);
 app.use('/api/servicerequests', serviceRequestRoutes);
 app.use('/api/ledger', ledgerRoutes);
 app.use('/api/receipts', receiptRoutes);
+app.use('/api/roles', roleRoutes);
 
 
 // Basic test route

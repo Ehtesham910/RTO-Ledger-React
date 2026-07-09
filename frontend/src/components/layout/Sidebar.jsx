@@ -106,7 +106,7 @@ function Sidebar() {
                         <span className="menu-label">Ledger</span>
                     </Link>
                 </li>
-                
+
                 {/* Receipts Menu Item */}
                 <li className={`menu-item ${isActive('/receipts') ? 'active' : ''}`}>
                     <Link to="/receipts">
@@ -122,7 +122,33 @@ function Sidebar() {
                         <span className="menu-label">Receipts</span>
                     </Link>
                 </li>
-
+                
+                <hr className="sidebar-divider" />
+                
+                {/* Roles & Permissions Menu Item */}
+                <li className={`menu-item ${isActive('/roles') ? 'active' : ''}`}>
+                    <Link to="/roles">
+                        <span className="menu-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </span>
+                        <span className="menu-label">Roles & Permissions</span>
+                    </Link>
+                </li>
+                {/* Users & Permissions Menu Item */}
+                <li className={`menu-item ${isActive('/users') ? 'active' : ''}`}>
+                    <Link to="/users">
+                        <span className="menu-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                                <path d="M18 14l2 2 4-4" stroke-width="2" />
+                            </svg>
+                        </span>
+                        <span className="menu-label">Users & Permissions</span>
+                    </Link>
+                </li>
             </ul>
         </aside >
     );
