@@ -20,10 +20,6 @@ function Users() {
     const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [roleFilter, setRoleFilter] = useState('All');
-    const [statusFilter, setStatusFilter] = useState('All');
-
     const fetchData = async () => {
         try {
             const [usersRes, permsRes] = await Promise.all([
@@ -104,19 +100,6 @@ function Users() {
         }
     };
 
-    const filteredUsers = users.filter(user => {
-        const matchesSearch = user.username.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                              user.email.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesRole = roleFilter === 'All' || (user.roles && user.roles.name === roleFilter);
-        const matchesStatus = statusFilter === 'All' || 
-                              (statusFilter === 'Active' && user.is_active) || 
-                              (statusFilter === 'Inactive' && !user.is_active);
-        
-        return matchesSearch && matchesRole && matchesStatus;
-    });
-
-    const uniqueRoles = ['All', ...new Set(users.map(u => u.roles?.name).filter(Boolean))];
-
     return (
         <div className="page-container">
             <div className="page-header">
@@ -133,34 +116,6 @@ function Users() {
                 </button>
             </div>
 
-            <div className="controls-bar" style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                <input 
-                    type="text" 
-                    placeholder="Search by name or email..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', flex: '1', minWidth: '200px' }}
-                />
-                <select 
-                    value={roleFilter} 
-                    onChange={(e) => setRoleFilter(e.target.value)}
-                    style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', minWidth: '150px' }}
-                >
-                    {uniqueRoles.map(role => (
-                        <option key={role} value={role}>{role === 'All' ? 'All Roles' : role}</option>
-                    ))}
-                </select>
-                <select 
-                    value={statusFilter} 
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                    style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', minWidth: '150px' }}
-                >
-                    <option value="All">All Status</option>
-                    <option value="Active">Active</option>
-                    <option value="Inactive">Inactive</option>
-                </select>
-            </div>
-
             <div className="card">
                 <div className="table-responsive">
                     <table className="data-table">
@@ -175,7 +130,7 @@ function Users() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredUsers.map((user, index) => (
+                            {users.map((user, index) => (
                                 <tr key={user.id}>
                                     <td>{index + 1}</td>
                                     <td className="font-medium">{user.username}</td>
@@ -245,10 +200,10 @@ function Users() {
                                 </tr>
                             ))}
 
-                            {filteredUsers.length === 0 && (
+                            {users.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="empty-state" style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
-                                        No users found matching your criteria.
+                                        No users found.
                                     </td>
                                 </tr>
                             )}

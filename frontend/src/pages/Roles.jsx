@@ -21,8 +21,6 @@ function Roles() {
     const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
     const [selectedRole, setSelectedRole] = useState(null);
 
-    const [searchQuery, setSearchQuery] = useState('');
-
     const fetchRoles = async () => {
         try {
             const response = await axios.get('http://localhost:5000/api/roles');
@@ -88,12 +86,6 @@ function Roles() {
         }
     };
 
-    // Filter Logic
-    const filteredRoles = roles.filter(role => {
-        return role.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-               (role.description && role.description.toLowerCase().includes(searchQuery.toLowerCase()));
-    });
-
     return (
         <div className="page-container">
             <div className="page-header">
@@ -110,16 +102,6 @@ function Roles() {
                 </button>
             </div>
 
-            <div className="controls-bar" style={{ display: 'flex', gap: '15px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                <input 
-                    type="text" 
-                    placeholder="Search roles by name or description..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ padding: '8px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', flex: '1', minWidth: '200px' }}
-                />
-            </div>
-
             <div className="card">
                 <div className="table-responsive">
                     <table className="data-table">
@@ -132,7 +114,7 @@ function Roles() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredRoles.map((role, index) => (
+                            {roles.map((role, index) => (
                                 <tr key={role.id}>
                                     <td>{index + 1}</td>
                                     <td className="font-medium">{role.name}</td>
@@ -187,10 +169,10 @@ function Roles() {
                                 </tr>
                             ))}
 
-                            {filteredRoles.length === 0 && (
+                            {roles.length === 0 && (
                                 <tr>
                                     <td colSpan="4" className="empty-state" style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
-                                        No roles found matching your criteria.
+                                        No roles found.
                                     </td>
                                 </tr>
                             )}
