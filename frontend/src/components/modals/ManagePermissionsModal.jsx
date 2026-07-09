@@ -61,7 +61,7 @@ const ManagePermissionsModal = ({ isOpen, onClose, role, allPermissions, onSave 
                                     />
                                     <div>
                                         <strong style={{ fontSize: '13.5px', color: '#1e293b', display: 'block' }}>
-                                            {perm.code.replace(/_/g, ' ').toUpperCase()}
+                                            {perm.code.replace(/[._]/g, ' ').toUpperCase()}
                                         </strong>
                                         <span style={{ fontSize: '11.5px', color: '#64748b' }}>{perm.description || 'No description'}</span>
                                     </div>
