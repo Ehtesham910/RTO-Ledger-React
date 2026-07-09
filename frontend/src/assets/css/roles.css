@@ -163,3 +163,33 @@
     color: #64748b;
     font-style: italic;
 }
+
+/* Dashboard Grid Layouts */
+.dashboard-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.dashboard-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 1400px) {
+    .dashboard-charts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .dashboard-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-charts-grid {
+        grid-template-columns: 1fr;
+    }
+}

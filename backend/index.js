@@ -15,6 +15,7 @@ const ledgerRoutes = require('./routes/ledgerRoutes');
 const receiptRoutes = require('./routes/receiptRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const userRoutes = require('./routes/userRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/api/ledger', ledgerRoutes);
 app.use('/api/receipts', receiptRoutes);
 app.use('/api/roles', roleRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 
 // Basic test route
