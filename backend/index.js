@@ -39,9 +39,13 @@ app.get('/', (req, res) => {
     res.send('RTO Ledger Backend is running');
 });
 
+const seedDatabase = require('./dbSeed');
 const PORT = process.env.PORT || 5000;
 
 // Start Server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
     console.log(`Server is running on port ${PORT}`);
+    await seedDatabase();
 });
+
+// Triggering restart to clear DB connections
