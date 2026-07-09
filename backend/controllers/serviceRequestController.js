@@ -1,4 +1,5 @@
 const prisma = require("../prismaClient");
+const { generateReceiptNo } = require("./receiptController");
 
 const getServiceRequests = async (req, res) => {
     try {
@@ -59,7 +60,7 @@ const createServiceRequest = async (req, res) => {
         }
 
         // 3. Create ledger entry
-        await prisma.ledgers.create({
+        const newLedger = await prisma.ledgers.create({
             data: {
                 customer_id: BigInt(customer_id),
                 vehicle_id: BigInt(vehicle_id),
@@ -70,6 +71,24 @@ const createServiceRequest = async (req, res) => {
                 status: ledgerStatus
             }
         });
+
+        // 4. Create receipt if payment is made
+        if (paid > 0) {
+            const defaultUser = await prisma.users.findFirst();
+            const receivedByUserId = defaultUser ? defaultUser.id : null;
+            const receiptNo = await generateReceiptNo();
+            await prisma.receipts.create({
+                data: {
+                    receipt_no: receiptNo,
+                    ledger_id: newLedger.id,
+                    amount_received: paid,
+                    payment_mode: payment_method || 'Cash',
+                    transaction_reference: null,
+                    remarks: "Auto-generated on service request creation",
+                    received_by: receivedByUserId
+                }
+            });
+        }
 
         res.status(201).json(newRequest);
     } catch (error) {

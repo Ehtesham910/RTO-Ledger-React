@@ -9,6 +9,7 @@ import ServiceRequests from './pages/ServiceRequests';
 import Ledger from './pages/Ledger';
 import CustomerLedger from './pages/CustomerLedger';
 import Receipts from './pages/Receipts';
+import ViewReceipt from './pages/ViewReceipt';
 
 function App() {
     return (
@@ -24,6 +25,7 @@ function App() {
                     <Route path="ledger" element={<Ledger />} />
                     <Route path="ledger/customer/:id" element={<CustomerLedger />} />
                     <Route path="receipts" element={<Receipts />} />
+                    <Route path="receipts/:id" element={<ViewReceipt />} />
                 </Route>
             </Routes>
         </BrowserRouter>
