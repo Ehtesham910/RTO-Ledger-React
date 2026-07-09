@@ -2,12 +2,17 @@ const express = require('express');
 const router = express.Router();
 const prisma = require('../prismaClient');
 
-// 1. Get all users with their assigned roles (to display in table)
+// 1. Get all users with their assigned roles and specific permissions
 router.get('/', async (req, res) => {
     try {
         const allUsers = await prisma.users.findMany({
             include: {
-                roles: true
+                roles: true,
+                user_permissions: {
+                    include: {
+                        permissions: true
+                    }
+                }
             }
         });
         res.json(allUsers);
@@ -55,7 +60,62 @@ router.put('/:id/status', async (req, res) => {
     }
 });
 
-// 4. Delete a User
+// 4. Update a User
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { username, email, password, role_id } = req.body;
+        
+        const dataToUpdate = {
+            username,
+            email,
+            role_id: role_id ? BigInt(role_id) : null
+        };
+        
+        // Only update password if provided
+        if (password) {
+            dataToUpdate.password_hash = password;
+        }
+
+        const updatedUser = await prisma.users.update({
+            where: { id: BigInt(id) },
+            data: dataToUpdate,
+            include: {
+                roles: true
+            }
+        });
+        res.json(updatedUser);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 5. Update permissions for a specific user
+router.post('/:id/permissions', async (req, res) => {
+    try {
+        const userId = BigInt(req.params.id);
+        const { permissionIds } = req.body; 
+
+        await prisma.$transaction([
+            prisma.user_permissions.deleteMany({
+                where: { user_id: userId }
+            }),
+            prisma.user_permissions.createMany({
+                data: permissionIds.map(pId => ({
+                    user_id: userId,
+                    permission_id: BigInt(pId)
+                }))
+            })
+        ]);
+
+        res.json({ message: "User permissions updated successfully" });
+    } catch (error) {
+        console.error("Error updating user permissions:", error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 6. Delete a User
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;

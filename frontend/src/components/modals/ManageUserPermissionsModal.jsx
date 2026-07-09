@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import '../../assets/css/addCustomerModal.css';
 
-const ManagePermissionsModal = ({ isOpen, onClose, role, allPermissions, onSave }) => {
+const ManageUserPermissionsModal = ({ isOpen, onClose, user, allPermissions, onSave }) => {
     const [selectedPermissions, setSelectedPermissions] = useState([]);
 
-    // Role ke load hote hi selected checkboxes config instantly local context me complete ho jayegi
     useEffect(() => {
-        if (isOpen && role) {
-            const assignedIds = role.role_permissions.map(rp => String(rp.permission_id));
+        if (isOpen && user) {
+            const assignedIds = user.user_permissions ? user.user_permissions.map(up => String(up.permission_id)) : [];
             setSelectedPermissions(assignedIds);
         }
-    }, [isOpen, role]);
+    }, [isOpen, user]);
 
-    if (!isOpen || !role) return null;
+    if (!isOpen || !user) return null;
 
     const handleCheckboxChange = (permId) => {
         const idStr = String(permId);
@@ -25,15 +24,19 @@ const ManagePermissionsModal = ({ isOpen, onClose, role, allPermissions, onSave 
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSave(role.id, selectedPermissions);
+        onSave(user.id, selectedPermissions);
     };
 
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-container" onClick={(e) => e.stopPropagation()} style={{ width: '650px' }}>
                 <div className="modal-header">
-                    <h2>Manage Permissions: {role.name}</h2>
+                    <h2>Manage User Permissions: {user.username}</h2>
                     <button type="button" className="close-btn" onClick={onClose}>&times;</button>
+                </div>
+
+                <div style={{ marginBottom: '15px', fontSize: '13.5px', color: '#475569' }}>
+                    <strong>Note:</strong> Permissions granted here are <em>in addition</em> to any permissions this user receives from their assigned role ({user.roles?.name || 'No Role'}).
                 </div>
 
                 <form onSubmit={handleSubmit}>
@@ -81,4 +84,4 @@ const ManagePermissionsModal = ({ isOpen, onClose, role, allPermissions, onSave 
     );
 };
 
-export default ManagePermissionsModal;
+export default ManageUserPermissionsModal;

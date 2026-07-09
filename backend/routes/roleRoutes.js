@@ -69,7 +69,22 @@ router.post('/:id/permissions', async (req, res) => {
     }
 });
 
-// 5. Delete a role
+// 5. Update a role
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description } = req.body;
+        const updatedRole = await prisma.roles.update({
+            where: { id: BigInt(id) },
+            data: { name, description }
+        });
+        res.json(updatedRole);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 6. Delete a role
 router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
