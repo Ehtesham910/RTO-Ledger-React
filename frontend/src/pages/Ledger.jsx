@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../assets/css/ledger.css'; 
 import ViewLedgerModal from '../components/modals/ViewLedgerModal';
 import EditLedgerModal from '../components/modals/EditLedgerModal';
+import Pagination from '../components/Pagination';
 
 function Ledger() {
     const navigate = useNavigate();
@@ -16,6 +17,10 @@ function Ledger() {
         return savedData ? JSON.parse(savedData) : [];
     });
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
+
     useEffect(() => {
         // Fetch Ledger data from backend
         axios.get('http://localhost:5000/api/ledger')
@@ -27,6 +32,11 @@ function Ledger() {
                 console.error("Error fetching ledger:", error);
             });
     }, []);
+
+    const totalPages = Math.ceil(ledgers.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedLedgers = ledgers.slice(indexOfFirstItem, indexOfLastItem);
 
     // Date formatting helper
     const formatDate = (dateString) => {
@@ -73,9 +83,9 @@ function Ledger() {
                             </tr>
                         </thead>
                         <tbody>
-                            {ledgers.map((record, index) => (
+                            {paginatedLedgers.map((record, index) => (
                                 <tr key={record.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     
                                     <td className="font-medium" style={{ color: '#0043deff', whiteSpace: 'nowrap' }} >
                                         {record.customers?.name || 'Unknown'} <br/>
@@ -150,9 +160,9 @@ function Ledger() {
                                 </tr>
                             ))}
 
-                            {ledgers.length === 0 && (
+                            {paginatedLedgers.length === 0 && (
                                 <tr>
-                                    <td colSpan="10" className="empty-state">
+                                    <td colSpan="11" className="empty-state">
                                         No ledger records found. 
                                     </td>
                                 </tr>
@@ -160,6 +170,13 @@ function Ledger() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={ledgers.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <ViewLedgerModal 

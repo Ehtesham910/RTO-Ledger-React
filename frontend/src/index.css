@@ -1,0 +1,55 @@
+/* Global Layout Overrides for Sticky Headers */
+
+/* 1. Make the Page Header Sticky */
+.page-header {
+    position: sticky !important;
+    top: 60px !important; /* Top margin equal to Navbar height */
+    z-index: 20 !important;
+    background-color: #f1f5f9 !important; /* Match layout background */
+    padding: 10px 0 !important;
+    margin-top: -10px !important;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+/* Optional: add a subtle shadow when scrolling (can be done with JS, but static works for now) */
+
+/* 2. Make Table Header Sticky */
+.table-responsive {
+    flex-grow: 1;
+    overflow-y: auto !important;
+    overflow-x: auto !important;
+    overscroll-behavior: contain !important;
+    
+    /* Hide scrollbars (the "lining") */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.table-responsive::-webkit-scrollbar {
+    display: none !important;
+}
+
+.data-table th {
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    background-color: #f8fafc !important; /* Match table header background */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+
+.card:has(.pagination-container) {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 190px); /* Reduced height to leave gap at the bottom of the screen */
+}
+
+/* Ensure the pagination stays below the table and doesn't scroll inside the table */
+.pagination-container {
+    position: relative;
+    z-index: 5;
+    margin-top: auto;
+    margin-bottom: 10px;
+    padding: 8px 16px !important; /* Reduced padding to make height smaller */
+}

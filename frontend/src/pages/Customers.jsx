@@ -4,6 +4,7 @@ import '../assets/css/customers.css';
 import AddCustomerModal from '../components/modals/AddCustomerModal';
 import ViewCustomerModal from '../components/modals/ViewCustomerModal';
 import EditCustomerModal from '../components/modals/EditCustomerModal';
+import Pagination from '../components/Pagination';
 
 function Customers() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +18,9 @@ function Customers() {
         return savedData ? JSON.parse(savedData) : [];
     });
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     useEffect(() => {
         // Backend se data la rahe hain
@@ -29,6 +33,11 @@ function Customers() {
                 console.error("Error fetching customers:", error);
             });
     }, []);
+
+    const totalPages = Math.ceil(customers.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedCustomers = customers.slice(indexOfFirstItem, indexOfLastItem);
 
     // Status toggle logic
     const handleStatusToggle = async (id, currentStatus) => {
@@ -131,9 +140,9 @@ function Customers() {
                             </tr>
                         </thead>
                         <tbody>
-                            {customers.map((customer, index) => (
+                            {paginatedCustomers.map((customer, index) => (
                                 <tr key={customer.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     <td><span className="badge">{customer.customer_code}</span></td>
                                     <td className="font-medium">{customer.name}</td>
                                     <td>{customer.mobile}</td>
@@ -180,7 +189,7 @@ function Customers() {
                                 </tr>
                             ))}
 
-                            {customers.length === 0 && (
+                            {paginatedCustomers.length === 0 && (
                                 <tr>
                                     <td colSpan="8" className="empty-state">
                                         No customers found. Click 'Add Customer' to create one.
@@ -190,6 +199,13 @@ function Customers() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={customers.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <AddCustomerModal

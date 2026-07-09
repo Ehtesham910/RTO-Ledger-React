@@ -4,6 +4,7 @@ import '../assets/css/roles.css';
 import AddUserModal from '../components/modals/AddUserModal';
 import EditUserModal from '../components/modals/EditUserModal';
 import ManageUserPermissionsModal from '../components/modals/ManageUserPermissionsModal';
+import Pagination from '../components/Pagination';
 
 function Users() {
     const [users, setUsers] = useState(() => {
@@ -19,6 +20,10 @@ function Users() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const fetchData = async () => {
         try {
@@ -38,6 +43,11 @@ function Users() {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const totalPages = Math.ceil(users.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedUsers = users.slice(indexOfFirstItem, indexOfLastItem);
 
     const handleAddUser = async (newUserData) => {
         setIsAddModalOpen(false);
@@ -130,9 +140,9 @@ function Users() {
                             </tr>
                         </thead>
                         <tbody>
-                            {users.map((user, index) => (
+                            {paginatedUsers.map((user, index) => (
                                 <tr key={user.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     <td className="font-medium">{user.username}</td>
                                     <td>{user.email}</td>
                                     <td>
@@ -210,6 +220,13 @@ function Users() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={users.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <AddUserModal

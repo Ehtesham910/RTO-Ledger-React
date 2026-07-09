@@ -4,6 +4,7 @@ import '../assets/css/serviceRequests.css';
 import ViewServiceRequestModal from '../components/modals/ViewServiceRequestModal';
 import AddServiceRequestModal from '../components/modals/AddServiceRequestModal';
 import EditServiceRequestModal from '../components/modals/EditServiceRequestModal';
+import Pagination from '../components/Pagination';
 
 function ServiceRequests() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,6 +17,10 @@ function ServiceRequests() {
         return savedData ? JSON.parse(savedData) : [];
     });
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
     useEffect(() => {
         // Fetch Service Requests from backend
         axios.get('http://localhost:5000/api/servicerequests')
@@ -27,6 +32,11 @@ function ServiceRequests() {
                 console.error("Error fetching service requests:", error);
             });
     }, []);
+
+    const totalPages = Math.ceil(requests.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedRequests = requests.slice(indexOfFirstItem, indexOfLastItem);
 
     // Date formatting function
     const formatDate = (dateString) => {
@@ -111,9 +121,9 @@ function ServiceRequests() {
                             </tr>
                         </thead>
                         <tbody>
-                            {requests.map((req, index) => (
+                            {paginatedRequests.map((req, index) => (
                                 <tr key={req.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     <td><span className="badge">{req.request_no}</span></td>
                                     
                                     <td className="font-medium" style={{ color: '#0f172a' }}>
@@ -193,7 +203,7 @@ function ServiceRequests() {
                                 </tr>
                             ))}
 
-                            {requests.length === 0 && (
+                            {paginatedRequests.length === 0 && (
                                 <tr>
                                     <td colSpan="9" className="empty-state">
                                         No service requests found. Click 'New Request' to generate one.
@@ -203,6 +213,13 @@ function ServiceRequests() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={requests.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <AddServiceRequestModal

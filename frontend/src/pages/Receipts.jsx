@@ -4,6 +4,7 @@ import axios from 'axios';
 import '../assets/css/receipts.css'; 
 import ViewReceiptModal from '../components/modals/ViewReceiptModal';
 import AddReceiptModal from '../components/modals/AddReceiptModal';
+import Pagination from '../components/Pagination';
 
 function Receipts() {
     const navigate = useNavigate();
@@ -15,6 +16,10 @@ function Receipts() {
         const savedData = localStorage.getItem('receiptsData');
         return savedData ? JSON.parse(savedData) : [];
     });
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
 
     const fetchReceipts = () => {
         axios.get('http://localhost:5000/api/receipts')
@@ -30,6 +35,11 @@ function Receipts() {
     useEffect(() => {
         fetchReceipts();
     }, []);
+
+    const totalPages = Math.ceil(receipts.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedReceipts = receipts.slice(indexOfFirstItem, indexOfLastItem);
 
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -66,9 +76,9 @@ function Receipts() {
                             </tr>
                         </thead>
                         <tbody>
-                            {receipts.map((receipt, index) => (
+                            {paginatedReceipts.map((receipt, index) => (
                                 <tr key={receipt.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     
                                     <td className="font-medium" style={{ color: '#4f46e5' }}>
                                         <span className="badge">
@@ -120,7 +130,7 @@ function Receipts() {
                                 </tr>
                             ))}
 
-                            {receipts.length === 0 && (
+                            {paginatedReceipts.length === 0 && (
                                 <tr>
                                     <td colSpan="8" className="empty-state">
                                         No receipts generated yet. 
@@ -130,6 +140,13 @@ function Receipts() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={receipts.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <ViewReceiptModal 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import '../assets/css/ledger.css'; 
+import Pagination from '../components/Pagination';
 
 function CustomerLedger() {
     const { id } = useParams();
@@ -9,6 +10,10 @@ function CustomerLedger() {
     const [ledgers, setLedgers] = useState([]);
     const [customerName, setCustomerName] = useState("");
     const [isLoading, setIsLoading] = useState(true);
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
 
     useEffect(() => {
         const fetchCustomerLedger = async () => {
@@ -29,6 +34,11 @@ function CustomerLedger() {
             fetchCustomerLedger();
         }
     }, [id]);
+
+    const totalPages = Math.ceil(ledgers.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedLedgers = ledgers.slice(indexOfFirstItem, indexOfLastItem);
 
     const formatVehicleNumber = (vNum) => {
         if (!vNum) return '-';
@@ -98,12 +108,12 @@ function CustomerLedger() {
                         <tbody>
                             {isLoading ? (
                                 <tr><td colSpan="8" className="empty-state">Loading records...</td></tr>
-                            ) : ledgers.length === 0 ? (
+                            ) : paginatedLedgers.length === 0 ? (
                                 <tr><td colSpan="8" className="empty-state">No records found for this customer.</td></tr>
                             ) : (
-                                ledgers.map((item, index) => (
+                                paginatedLedgers.map((item, index) => (
                                     <tr key={item.id.toString()}>
-                                        <td>{ledgers.length - index}</td>
+                                        <td>{indexOfFirstItem + index + 1}</td>
                                         <td>
                                             <span className="badge" style={{ whiteSpace: 'nowrap' }}>
                                                 {formatVehicleNumber(item.vehicles?.vehicle_number)}
@@ -134,6 +144,15 @@ function CustomerLedger() {
                         </tbody>
                     </table>
                 </div>
+                {!isLoading && (
+                    <Pagination 
+                        currentPage={currentPage} 
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage} 
+                        totalItems={ledgers.length} 
+                        itemsPerPage={itemsPerPage} 
+                    />
+                )}
             </div>
         </div>
     );

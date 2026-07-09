@@ -4,6 +4,7 @@ import '../assets/css/services.css';
 import AddServiceModal from '../components/modals/AddServiceModal';
 import ViewServiceModal from '../components/modals/ViewServiceModal';
 import EditServiceModal from '../components/modals/EditServiceModal';
+import Pagination from '../components/Pagination';
 
 function Services() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +18,10 @@ function Services() {
         return savedData ? JSON.parse(savedData) : [];
     });
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 15;
+
     useEffect(() => {
         axios.get('http://localhost:5000/api/services')
             .then((response) => {
@@ -27,6 +32,11 @@ function Services() {
                 console.error("Error fetching services:", error);
             });
     }, []);
+
+    const totalPages = Math.ceil(services.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedServices = services.slice(indexOfFirstItem, indexOfLastItem);
 
     const handleStatusToggle = async (id, currentStatus) => {
         try {
@@ -89,9 +99,9 @@ function Services() {
                             </tr>
                         </thead>
                         <tbody>
-                            {services.map((service, index) => (
+                            {paginatedServices.map((service, index) => (
                                 <tr key={service.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     <td className="font-medium">{service.service_name}</td>
                                     <td>
                                         <span className="badge">₹ {service.default_fee}</span>
@@ -138,7 +148,7 @@ function Services() {
                                 </tr>
                             ))}
 
-                            {services.length === 0 && (
+                            {paginatedServices.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="empty-state">
                                         No services found. Click 'Add Service' to create one.
@@ -148,6 +158,13 @@ function Services() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={services.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <AddServiceModal

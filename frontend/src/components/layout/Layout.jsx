@@ -8,7 +8,7 @@ function Layout() {
         <div>
             <Navbar />
             <Sidebar />
-            <main style={{ marginLeft: '205px', marginTop: '60px', padding: '24px' }}>
+            <main style={{ marginLeft: '205px', marginTop: '60px', padding: '8px 24px 24px 24px' }}>
                 <Outlet />
             </main>
         </div>

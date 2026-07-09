@@ -4,6 +4,7 @@ import '../assets/css/vehicles.css';
 import AddVehicleModal from '../components/modals/AddVehicleModal';
 import ViewVehicleModal from '../components/modals/ViewVehicleModal';
 import EditVehicleModal from '../components/modals/EditVehicleModal';
+import Pagination from '../components/Pagination';
 
 function Vehicles(){
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -18,6 +19,10 @@ function Vehicles(){
         return savedData ? JSON.parse(savedData) : [];
     });
 
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+
     useEffect(() =>{
         // Backend se data la rahe hain
         axios.get('http://localhost:5000/api/vehicles')
@@ -31,6 +36,11 @@ function Vehicles(){
                 console.error("Error fetching vehicles:", error);
             });
     }, []);
+
+    const totalPages = Math.ceil(vehicles.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedVehicles = vehicles.slice(indexOfFirstItem, indexOfLastItem);
 
     // Status toggle logic
     const handleStatusToggle = async (id, currentStatus) => {
@@ -118,9 +128,9 @@ function Vehicles(){
                                 </tr>
                             </thead>
                             <tbody>
-                                {vehicles.map((vehicle, index) => (
+                                {paginatedVehicles.map((vehicle, index) => (
                                     <tr key={vehicle.id}>
-                                        <td>{index + 1}</td>
+                                        <td>{indexOfFirstItem + index + 1}</td>
                                         <td>
                                             <div className="font-medium" style={{ color: '#64748b' }}>
                                                 {vehicle.customers?.name || 'Unknown'}
@@ -187,7 +197,7 @@ function Vehicles(){
                                     </tr>
                                 ))}
                                 
-                                {vehicles.length === 0 && (
+                                {paginatedVehicles.length === 0 && (
                                     <tr>
                                         <td colSpan="10" className="empty-state">
                                             No vehicles found. Click 'Add Vehicle' to register one.
@@ -197,6 +207,13 @@ function Vehicles(){
                             </tbody>
                         </table>
                     </div>
+                    <Pagination 
+                        currentPage={currentPage} 
+                        totalPages={totalPages}
+                        onPageChange={setCurrentPage} 
+                        totalItems={vehicles.length} 
+                        itemsPerPage={itemsPerPage} 
+                    />
             </div>
 
             <AddVehicleModal

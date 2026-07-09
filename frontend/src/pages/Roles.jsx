@@ -4,6 +4,7 @@ import '../assets/css/roles.css';
 import AddRoleModal from '../components/modals/AddRoleModal';
 import EditRoleModal from '../components/modals/EditRoleModal';
 import ManagePermissionsModal from '../components/modals/ManagePermissionsModal';
+import Pagination from '../components/Pagination';
 
 function Roles() {
     const [roles, setRoles] = useState(() => {
@@ -20,6 +21,10 @@ function Roles() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
     const [selectedRole, setSelectedRole] = useState(null);
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const fetchRoles = async () => {
         try {
@@ -38,6 +43,11 @@ function Roles() {
     useEffect(() => {
         fetchRoles();
     }, []);
+
+    const totalPages = Math.ceil(roles.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const paginatedRoles = roles.slice(indexOfFirstItem, indexOfLastItem);
 
     const handleAddRole = async (newRoleData) => {
         setIsAddModalOpen(false);
@@ -114,9 +124,9 @@ function Roles() {
                             </tr>
                         </thead>
                         <tbody>
-                            {roles.map((role, index) => (
+                            {paginatedRoles.map((role, index) => (
                                 <tr key={role.id}>
-                                    <td>{index + 1}</td>
+                                    <td>{indexOfFirstItem + index + 1}</td>
                                     <td className="font-medium">{role.name}</td>
                                     <td>{role.description || '-'}</td>
                                     <td>
@@ -179,6 +189,13 @@ function Roles() {
                         </tbody>
                     </table>
                 </div>
+                <Pagination 
+                    currentPage={currentPage} 
+                    totalPages={totalPages}
+                    onPageChange={setCurrentPage} 
+                    totalItems={roles.length} 
+                    itemsPerPage={itemsPerPage} 
+                />
             </div>
 
             <AddRoleModal
