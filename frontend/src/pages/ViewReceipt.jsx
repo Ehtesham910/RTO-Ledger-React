@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 function ViewReceipt() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [receipt, setReceipt] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const location = useLocation();
+    
+    // Check if we already have the receipt data from the previous page's state
+    const initialReceipt = location.state?.receipt || null;
+    const [receipt, setReceipt] = useState(initialReceipt);
+    const [isLoading, setIsLoading] = useState(!initialReceipt);
 
     useEffect(() => {
-        const fetchReceipt = async () => {
-            try {
-                const response = await axios.get(`http://localhost:5000/api/receipts/${id}`);
-                setReceipt(response.data);
-            } catch (error) {
-                console.error("Error fetching receipt:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        if (id) {
+        // If we don't have the receipt data, fetch it
+        if (!initialReceipt && id) {
+            const fetchReceipt = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:5000/api/receipts/${id}`);
+                    setReceipt(response.data);
+                } catch (error) {
+                    console.error("Error fetching receipt:", error);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
             fetchReceipt();
         }
-    }, [id]);
+    }, [id, initialReceipt]);
 
     const formatVehicleNumber = (vNum) => {
         if (!vNum) return '-';
