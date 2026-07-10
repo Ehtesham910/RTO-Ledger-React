@@ -15,6 +15,15 @@ import Roles from './pages/Roles';
 import Users from './pages/Users';
 import Login from './pages/Login';
 
+// Portal Imports
+import CustomerLogin from './pages/portal/CustomerLogin';
+import PortalLayout from './components/layout/PortalLayout';
+import PortalDashboard from './pages/portal/PortalDashboard';
+import MyVehicles from './pages/portal/MyVehicles';
+import MyServiceRequests from './pages/portal/MyServiceRequests';
+import MyLedger from './pages/portal/MyLedger';
+import MyReceipts from './pages/portal/MyReceipts';
+
 // Setup global axios interceptor
 axios.interceptors.request.use((config) => {
     const token = localStorage.getItem('token');
@@ -32,7 +41,11 @@ axios.interceptors.response.use((response) => {
     if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        if (window.location.pathname.startsWith('/portal')) {
+            window.location.href = '/portal/login';
+        } else {
+            window.location.href = '/login';
+        }
     }
     return Promise.reject(error);
 });
@@ -45,10 +58,16 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const role = user.role;
 
     if (!token) {
+        if (location.pathname.startsWith('/portal')) {
+            return <Navigate to="/portal/login" state={{ from: location }} replace />;
+        }
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {
+        if (role === 'Customer') {
+            return <Navigate to="/portal/dashboard" replace />;
+        }
         return <Navigate to="/dashboard" replace />;
     }
 
@@ -81,6 +100,20 @@ function App() {
                     {/* Accessible to Admin Only */}
                     <Route path="roles" element={<ProtectedRoute allowedRoles={['Admin']}><Roles /></ProtectedRoute>} />
                     <Route path="users" element={<ProtectedRoute allowedRoles={['Admin']}><Users /></ProtectedRoute>} />
+                </Route>
+
+                {/* Customer Portal Routes */}
+                <Route path="/portal/login" element={<CustomerLogin />} />
+                
+                <Route path="/portal" element={<ProtectedRoute allowedRoles={['Customer']}><PortalLayout /></ProtectedRoute>}>
+                    <Route index element={<Navigate to="/portal/dashboard" replace />} />
+                    <Route path="dashboard" element={<PortalDashboard />} />
+                    <Route path="vehicles" element={<MyVehicles />} />
+                    <Route path="service-requests" element={<MyServiceRequests />} />
+                    <Route path="ledger" element={<MyLedger />} />
+                    <Route path="receipts" element={<MyReceipts />} />
+                    <Route path="receipts/view" element={<ViewReceipt />} />
+                    {/* ViewReceipt works for both because it just relies on state.receipt or API fetch */}
                 </Route>
             </Routes>
         </BrowserRouter>

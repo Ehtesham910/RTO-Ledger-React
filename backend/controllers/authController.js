@@ -63,6 +63,70 @@ const login = async (req, res) => {
     }
 };
 
+const customerLogin = async (req, res) => {
+    try {
+        const { mobile, password } = req.body;
+
+        if (!mobile || !password) {
+            return res.status(400).json({ error: "Mobile number and password are required" });
+        }
+
+        // Find customer
+        const customer = await prisma.customers.findUnique({
+            where: { mobile }
+        });
+
+        if (!customer) {
+            return res.status(401).json({ error: "Invalid mobile number or password" });
+        }
+
+        if (!customer.is_active) {
+            return res.status(403).json({ error: "Account is inactive" });
+        }
+
+        // Check password - handle both unhashed (plain text) and hashed for transition period
+        let isMatch = false;
+        
+        if (customer.password && customer.password.startsWith('$2')) {
+            // Hashed password
+            isMatch = await bcrypt.compare(password, customer.password);
+        } else {
+            // Plain text comparison (or if it's the default 'customer123')
+            isMatch = (password === customer.password || (!customer.password && password === 'customer123'));
+        }
+
+        if (!isMatch) {
+            return res.status(401).json({ error: "Invalid mobile number or password" });
+        }
+
+        // Generate JWT Token
+        const token = jwt.sign(
+            { 
+                id: customer.id.toString(), 
+                username: customer.name,
+                role: 'Customer' // explicitly set role to Customer
+            }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            message: "Login successful",
+            token,
+            user: {
+                id: customer.id.toString(),
+                username: customer.name,
+                mobile: customer.mobile,
+                role: 'Customer'
+            }
+        });
+    } catch (error) {
+        console.error("Customer Login Error:", error);
+        res.status(500).json({ error: "Internal server error during customer login" });
+    }
+};
+
 module.exports = {
-    login
+    login,
+    customerLogin
 };

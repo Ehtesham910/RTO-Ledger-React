@@ -17,6 +17,7 @@ const roleRoutes = require('./routes/roleRoutes');
 const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const authRoutes = require('./routes/authRoutes');
+const portalRoutes = require('./routes/portalRoutes');
 const { verifyToken, checkRole } = require('./middlewares/authMiddleware');
 const app = express();
 
@@ -42,6 +43,9 @@ app.use('/api/roles', verifyToken, checkRole(['Admin']), roleRoutes);
 app.use('/api/users', verifyToken, checkRole(['Admin']), userRoutes);
 
 app.use('/api/dashboard', verifyToken, dashboardRoutes);
+
+// Customer Portal Routes
+app.use('/api/portal', portalRoutes);
 
 
 // Basic test route
