@@ -73,10 +73,10 @@ body {
 .navbar-search {
     display: flex;
     width: 100%;
-    max-width: 500px;
+    max-width: 600px;
     height: 40px;
     background: var(--bg-light);
-    border: 1px solid #e2e8f0;
+    border: 1px solid #94a3b8;
     border-radius: 99px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -100,7 +100,7 @@ body {
 }
 
 .navbar-search input::placeholder {
-    color: #94a3b8;
+    color: #475569;
 }
 
 .navbar-search button {
