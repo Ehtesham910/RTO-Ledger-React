@@ -38,12 +38,18 @@ axios.interceptors.response.use((response) => {
 });
 
 // Protected Route Wrapper
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ children, allowedRoles }) => {
     const token = localStorage.getItem('token');
     const location = useLocation();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const role = user.role;
 
     if (!token) {
         return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    if (allowedRoles && !allowedRoles.includes(role)) {
+        return <Navigate to="/dashboard" replace />;
     }
 
     return children;
@@ -58,18 +64,23 @@ function App() {
 
                 {/* Protected Routes */}
                 <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                    {/* Accessible to All Protected Roles */}
                     <Route index element={<Navigate to="/dashboard" replace />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="customers" element={<Customers />} />
                     <Route path="vehicles" element={<Vehicles />} />
                     <Route path="services" element={<Services />} />
                     <Route path="services/requests" element={<ServiceRequests />} />
-                    <Route path="ledger" element={<Ledger />} />
-                    <Route path="ledger/customer/:id" element={<CustomerLedger />} />
-                    <Route path="receipts" element={<Receipts />} />
-                    <Route path="receipts/:id" element={<ViewReceipt />} />
-                    <Route path="roles" element={<Roles />} />
-                    <Route path="users" element={<Users />} />
+                    
+                    {/* Accessible to Admin, Accountant, Viewer */}
+                    <Route path="ledger" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Ledger /></ProtectedRoute>} />
+                    <Route path="ledger/customer/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><CustomerLedger /></ProtectedRoute>} />
+                    <Route path="receipts" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Receipts /></ProtectedRoute>} />
+                    <Route path="receipts/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><ViewReceipt /></ProtectedRoute>} />
+                    
+                    {/* Accessible to Admin Only */}
+                    <Route path="roles" element={<ProtectedRoute allowedRoles={['Admin']}><Roles /></ProtectedRoute>} />
+                    <Route path="users" element={<ProtectedRoute allowedRoles={['Admin']}><Users /></ProtectedRoute>} />
                 </Route>
             </Routes>
         </BrowserRouter>

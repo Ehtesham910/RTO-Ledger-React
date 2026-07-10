@@ -9,6 +9,10 @@ import Pagination from '../components/Pagination';
 function Receipts() {
     const navigate = useNavigate();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const canEdit = ['Admin', 'Accountant'].includes(user.role);
+
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
 
@@ -54,10 +58,12 @@ function Receipts() {
                     <h2 className="page-title">Receipts</h2>
                     <p className="page-subtitle">View and print all payment receipts</p>
                 </div>
-                <button className="btn-add" onClick={() => setIsAddModalOpen(true)}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                    New Receipt
-                </button>
+                {canEdit && (
+                    <button className="btn-add" onClick={() => setIsAddModalOpen(true)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Generate Receipt
+                    </button>
+                )}
             </div>
 
             <div className="card">

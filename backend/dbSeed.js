@@ -214,6 +214,25 @@ async function seedDatabase() {
       }
     }
 
+    // Seed default agent user
+    const agentRole = await prisma.roles.findUnique({ where: { name: 'Agent' } });
+    if (agentRole) {
+      const existingAgent = await prisma.users.findUnique({ where: { username: 'agent' } });
+      if (!existingAgent) {
+        const passwordHash = await bcrypt.hash('agent123', 10);
+        await prisma.users.create({
+          data: {
+            username: 'agent',
+            email: 'agent@rtoledger.com',
+            password_hash: passwordHash,
+            role_id: agentRole.id,
+            is_active: true
+          }
+        });
+        console.log('Default agent user created: agent / agent123');
+      }
+    }
+
     console.log('Database seeding completed successfully.');
   } catch (error) {
     console.error('Error during database seeding:', error);

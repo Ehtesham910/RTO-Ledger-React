@@ -3,9 +3,12 @@ import { Link, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
 function Sidebar() {
-    // Services dropdown ko open/close karne ke liye State
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const location = useLocation();
+
+    // Get user from localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const role = user.role || 'user';
 
     // Helper to check active path
     const isActive = (path) => {
@@ -92,20 +95,22 @@ function Sidebar() {
                     </ul>
                 </li>
 
-                {/* Ledger */}
-                <li className={`menu-item ${isActive('/ledger') ? 'active' : ''}`}>
-                    <Link to="/ledger">
-                        <span className="menu-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <polyline points="14 2 14 8 20 8" />
-                                <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
-                                <polyline points="10 9 9 9 8 9" />
-                            </svg>
-                        </span>
-                        <span className="menu-label">Ledger</span>
-                    </Link>
-                </li>
+                {/* Ledger & Receipts: Hidden for Operator and Agent */}
+                {role !== 'Operator' && role !== 'Agent' && (
+                    <>
+                        <li className={`menu-item ${isActive('/ledger') ? 'active' : ''}`}>
+                            <Link to="/ledger">
+                                <span className="menu-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                        <line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" />
+                                        <polyline points="10 9 9 9 8 9" />
+                                    </svg>
+                                </span>
+                                <span className="menu-label">Ledger</span>
+                            </Link>
+                        </li>
 
                 {/* Receipts Menu Item */}
                 <li className={`menu-item ${isActive('/receipts') ? 'active' : ''}`}>
@@ -120,13 +125,18 @@ function Sidebar() {
                             </svg>
                         </span>
                         <span className="menu-label">Receipts</span>
-                    </Link>
-                </li>
+                            </Link>
+                        </li>
+                    </>
+                )}
                 
-                <hr className="sidebar-divider" />
-                
-                {/* Roles & Permissions Menu Item */}
-                <li className={`menu-item ${isActive('/roles') ? 'active' : ''}`}>
+                {/* System Management: Only for Admin */}
+                {role === 'Admin' && (
+                    <>
+                        <hr className="sidebar-divider" />
+                        
+                        {/* Roles & Permissions Menu Item */}
+                        <li className={`menu-item ${isActive('/roles') ? 'active' : ''}`}>
                     <Link to="/roles">
                         <span className="menu-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -146,9 +156,11 @@ function Sidebar() {
                                 <path d="M18 14l2 2 4-4" stroke-width="2" />
                             </svg>
                         </span>
-                        <span className="menu-label">Users & Permissions</span>
-                    </Link>
-                </li>
+                            <span className="menu-label">Users & Permissions</span>
+                            </Link>
+                        </li>
+                    </>
+                )}
             </ul>
         </aside >
     );
