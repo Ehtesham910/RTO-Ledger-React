@@ -7,7 +7,7 @@
     z-index: 20 !important;
     background-color: #f1f5f9 !important; /* Match layout background */
     padding: 10px 0 !important;
-    margin-top: -24px !important;
+    margin-top: -10px !important;
     border-bottom: 1px solid transparent;
     transition: all 0.3s ease;
 }
