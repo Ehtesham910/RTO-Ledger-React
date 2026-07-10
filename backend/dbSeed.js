@@ -1,4 +1,5 @@
 const prisma = require('./prismaClient');
+const bcrypt = require('bcryptjs');
 
 const standardPermissions = [
   { code: 'customer.create', description: 'Create customer' },
@@ -136,6 +137,83 @@ async function seedDatabase() {
         }
       }
     }
+
+    // Seed default admin user
+    const adminRole = await prisma.roles.findUnique({ where: { name: 'Admin' } });
+    if (adminRole) {
+      const existingAdmin = await prisma.users.findUnique({ where: { username: 'admin' } });
+      if (!existingAdmin) {
+        const passwordHash = await bcrypt.hash('admin123', 10);
+        await prisma.users.create({
+          data: {
+            username: 'admin',
+            email: 'admin@rtoledger.com',
+            password_hash: passwordHash,
+            role_id: adminRole.id,
+            is_active: true
+          }
+        });
+        console.log('Default admin user created: admin / admin123');
+      }
+    }
+
+    // Seed default operator user
+    const operatorRole = await prisma.roles.findUnique({ where: { name: 'Operator' } });
+    if (operatorRole) {
+      const existingOperator = await prisma.users.findUnique({ where: { username: 'operator' } });
+      if (!existingOperator) {
+        const passwordHash = await bcrypt.hash('operator123', 10);
+        await prisma.users.create({
+          data: {
+            username: 'operator',
+            email: 'operator@rtoledger.com',
+            password_hash: passwordHash,
+            role_id: operatorRole.id,
+            is_active: true
+          }
+        });
+        console.log('Default operator user created: operator / operator123');
+      }
+    }
+
+    // Seed default accountant user
+    const accountantRole = await prisma.roles.findUnique({ where: { name: 'Accountant' } });
+    if (accountantRole) {
+      const existingAccountant = await prisma.users.findUnique({ where: { username: 'accountant' } });
+      if (!existingAccountant) {
+        const passwordHash = await bcrypt.hash('accountant123', 10);
+        await prisma.users.create({
+          data: {
+            username: 'accountant',
+            email: 'accountant@rtoledger.com',
+            password_hash: passwordHash,
+            role_id: accountantRole.id,
+            is_active: true
+          }
+        });
+        console.log('Default accountant user created: accountant / accountant123');
+      }
+    }
+
+    // Seed default viewer user
+    const viewerRole = await prisma.roles.findUnique({ where: { name: 'Viewer' } });
+    if (viewerRole) {
+      const existingViewer = await prisma.users.findUnique({ where: { username: 'viewer' } });
+      if (!existingViewer) {
+        const passwordHash = await bcrypt.hash('viewer123', 10);
+        await prisma.users.create({
+          data: {
+            username: 'viewer',
+            email: 'viewer@rtoledger.com',
+            password_hash: passwordHash,
+            role_id: viewerRole.id,
+            is_active: true
+          }
+        });
+        console.log('Default viewer user created: viewer / viewer123');
+      }
+    }
+
     console.log('Database seeding completed successfully.');
   } catch (error) {
     console.error('Error during database seeding:', error);

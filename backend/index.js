@@ -16,24 +16,27 @@ const receiptRoutes = require('./routes/receiptRoutes');
 const roleRoutes = require('./routes/roleRoutes');
 const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-
-
+const authRoutes = require('./routes/authRoutes');
+const { verifyToken } = require('./middlewares/authMiddleware');
 const app = express();
 
 // Middlewares
 app.use(cors());
 app.use(express.json());
 
-// Define Routes
-app.use('/api/customers', customerRoutes);
-app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/services', serviceRoutes);
-app.use('/api/servicerequests', serviceRequestRoutes);
-app.use('/api/ledger', ledgerRoutes);
-app.use('/api/receipts', receiptRoutes);
-app.use('/api/roles', roleRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+// Auth Routes (Public)
+app.use('/api/auth', authRoutes);
+
+// Protected Routes
+app.use('/api/customers', verifyToken, customerRoutes);
+app.use('/api/vehicles', verifyToken, vehicleRoutes);
+app.use('/api/services', verifyToken, serviceRoutes);
+app.use('/api/servicerequests', verifyToken, serviceRequestRoutes);
+app.use('/api/ledger', verifyToken, ledgerRoutes);
+app.use('/api/receipts', verifyToken, receiptRoutes);
+app.use('/api/roles', verifyToken, roleRoutes);
+app.use('/api/users', verifyToken, userRoutes);
+app.use('/api/dashboard', verifyToken, dashboardRoutes);
 
 
 // Basic test route
