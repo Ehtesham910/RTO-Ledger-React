@@ -20,7 +20,7 @@ function Services() {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 15;
+    const itemsPerPage = 10;
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/services')

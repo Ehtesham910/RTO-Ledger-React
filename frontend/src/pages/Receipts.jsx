@@ -19,7 +19,7 @@ function Receipts() {
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 15;
+    const itemsPerPage = 10;
 
     const fetchReceipts = () => {
         axios.get('http://localhost:5000/api/receipts')
