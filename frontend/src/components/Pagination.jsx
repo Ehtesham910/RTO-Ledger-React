@@ -8,7 +8,8 @@ const Pagination = ({
     totalItems, 
     itemsPerPage 
 }) => {
-    if (totalPages <= 1) return null;
+    // Always render the pagination info and controls even if there is 1 page to maintain consistency
+    // if (totalPages <= 1) return null;
 
     const startItem = (currentPage - 1) * itemsPerPage + 1;
     const endItem = Math.min(currentPage * itemsPerPage, totalItems);
