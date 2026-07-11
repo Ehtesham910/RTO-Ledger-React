@@ -5,8 +5,14 @@ import '../assets/css/login.css';
 
 function Login() {
     const [loginType, setLoginType] = useState('staff'); // 'staff' or 'customer'
-    const [identifier, setIdentifier] = useState('');
+    const [mode, setMode] = useState('login'); // 'login' or 'register'
+    
+    // Form fields
+    const [identifier, setIdentifier] = useState(''); // used for staff username or customer mobile
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     
@@ -25,10 +31,19 @@ function Login() {
                     password
                 });
             } else {
-                response = await axios.post('http://localhost:5000/api/auth/customer-login', {
-                    mobile: identifier,
-                    password
-                });
+                if (mode === 'login') {
+                    response = await axios.post('http://localhost:5000/api/auth/customer-login', {
+                        mobile: identifier,
+                        password
+                    });
+                } else {
+                    response = await axios.post('http://localhost:5000/api/auth/customer-register', {
+                        name,
+                        mobile: identifier,
+                        email,
+                        password
+                    });
+                }
             }
 
             const { token, user } = response.data;
@@ -48,11 +63,11 @@ function Login() {
             }
             
         } catch (err) {
-            console.error('Login error', err);
+            console.error('Auth Error', err);
             if (err.response && err.response.data && err.response.data.error) {
                 setError(err.response.data.error);
             } else {
-                setError('Failed to login. Please try again.');
+                setError(`Failed to ${mode}. Please try again.`);
             }
         } finally {
             setLoading(false);
@@ -61,7 +76,7 @@ function Login() {
 
     return (
         <div className="login-container">
-            <div className="login-card">
+            <div className="login-card" style={{ marginTop: mode === 'register' ? '20px' : '0' }}>
                 <div className="login-header">
                     <div className="login-logo">RTO Ledger</div>
                     <div className="login-subtitle">Sign in to access your account</div>
@@ -71,7 +86,7 @@ function Login() {
                     <button 
                         type="button"
                         className={loginType === 'staff' ? 'active' : ''} 
-                        onClick={() => { setLoginType('staff'); setIdentifier(''); setError(''); }}
+                        onClick={() => { setLoginType('staff'); setMode('login'); setIdentifier(''); setError(''); }}
                     >
                         Staff
                     </button>
@@ -84,20 +99,71 @@ function Login() {
                     </button>
                 </div>
 
+                {loginType === 'customer' && (
+                    <div className="login-type-toggle" style={{ marginTop: '10px' }}>
+                        <button 
+                            type="button"
+                            className={mode === 'login' ? 'active' : ''} 
+                            onClick={() => { setMode('login'); setError(''); }}
+                        >
+                            Sign In
+                        </button>
+                        <button 
+                            type="button"
+                            className={mode === 'register' ? 'active' : ''} 
+                            onClick={() => { setMode('register'); setError(''); }}
+                        >
+                            Register
+                        </button>
+                    </div>
+                )}
+
                 {error && <div className="error-message">{error}</div>}
 
                 <form className="login-form" onSubmit={handleSubmit}>
+                    
+                    {loginType === 'customer' && mode === 'register' && (
+                        <div className="input-group">
+                            <label htmlFor="name">Full Name</label>
+                            <input 
+                                type="text" 
+                                id="name" 
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                placeholder="Enter your full name"
+                                required
+                            />
+                        </div>
+                    )}
+
                     <div className="input-group">
-                        <label htmlFor="identifier">{loginType === 'staff' ? 'Username' : 'Mobile Number'}</label>
+                        <label htmlFor="identifier">
+                            {loginType === 'staff' ? 'Username' : 'Mobile Number'}
+                        </label>
                         <input 
                             type="text" 
                             id="identifier" 
                             value={identifier}
                             onChange={(e) => setIdentifier(e.target.value)}
-                            placeholder={loginType === 'staff' ? 'Enter your username' : 'Enter your registered mobile'}
+                            placeholder={loginType === 'staff' ? 'Enter your username' : 'Enter your 10-digit mobile number'}
+                            pattern={loginType === 'customer' ? "[0-9]{10}" : undefined}
+                            maxLength={loginType === 'customer' ? "10" : undefined}
                             required
                         />
                     </div>
+
+                    {loginType === 'customer' && mode === 'register' && (
+                        <div className="input-group">
+                            <label htmlFor="email">Email Address (Optional)</label>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                    )}
                     
                     <div className="input-group">
                         <label htmlFor="password">Password</label>
@@ -106,13 +172,14 @@ function Login() {
                             id="password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder={loginType === 'customer' ? 'Enter your password (default: customer123)' : 'Enter your password'}
+                            placeholder={loginType === 'customer' && mode === 'register' ? 'Create a secure password' : 'Enter your password'}
                             required
+                            minLength={mode === 'register' ? "6" : undefined}
                         />
                     </div>
 
                     <button type="submit" className="login-button" disabled={loading}>
-                        {loading ? 'Signing in...' : 'Sign In'}
+                        {loading ? 'Please wait...' : (mode === 'register' ? 'Register Account' : 'Sign In')}
                     </button>
                 </form>
             </div>

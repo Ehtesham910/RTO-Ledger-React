@@ -126,7 +126,69 @@ const customerLogin = async (req, res) => {
     }
 };
 
+const customerRegister = async (req, res) => {
+    try {
+        const { name, mobile, email, password } = req.body;
+
+        if (!name || !mobile || !password) {
+            return res.status(400).json({ error: "Name, mobile, and password are required" });
+        }
+
+        // Check if customer already exists
+        const existingCustomer = await prisma.customers.findUnique({
+            where: { mobile }
+        });
+
+        if (existingCustomer) {
+            return res.status(400).json({ error: "Mobile number is already registered" });
+        }
+
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create the customer
+        const customer = await prisma.customers.create({
+            data: {
+                name,
+                mobile,
+                email: email || null,
+                password: hashedPassword,
+                is_active: true,
+                // Assign a generic code or use a sequence if needed
+                customer_code: `CUST-${Date.now().toString().slice(-6)}`
+            }
+        });
+
+        // Generate JWT Token for auto-login
+        const token = jwt.sign(
+            { 
+                id: customer.id.toString(), 
+                username: customer.name,
+                role: 'Customer'
+            }, 
+            JWT_SECRET, 
+            { expiresIn: '24h' }
+        );
+
+        res.status(201).json({
+            message: "Registration successful",
+            token,
+            user: {
+                id: customer.id.toString(),
+                username: customer.name,
+                mobile: customer.mobile,
+                role: 'Customer'
+            }
+        });
+    } catch (error) {
+        console.error("Customer Registration Error:", error);
+        res.status(500).json({ error: "Internal server error during registration" });
+    }
+};
+
 module.exports = {
     login,
-    customerLogin
+    customerLogin,
+    customerRegister
 };
