@@ -283,7 +283,7 @@ function ViewReceipt() {
                     </div>
                     <div className="receipt-row">
                         <span className="receipt-label">Receipt By</span>
-                        <span className="receipt-value">{receipt.users?.name || '-'}</span>
+                        <span className="receipt-value">{receipt.users?.username || '-'}</span>
                     </div>
 
                     <div className="dashed-divider"></div>

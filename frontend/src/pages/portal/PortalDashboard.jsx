@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import PortalAddVehicleModal from '../../components/modals/PortalAddVehicleModal';
+import PortalAddServiceRequestModal from '../../components/modals/PortalAddServiceRequestModal';
+import '../../assets/css/roles.css';
 import '../../assets/css/dashboard.css';
 
 const StatCard = ({ title, value, color, bgColor, icon }) => (
@@ -22,7 +25,10 @@ function PortalDashboard() {
     
     const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-    useEffect(() => {
+    const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
+    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+
+    const fetchDashboardStats = () => {
         axios.get('http://localhost:5000/api/portal/dashboard')
             .then(response => {
                 setStats(response.data);
@@ -30,6 +36,10 @@ function PortalDashboard() {
             .catch(error => {
                 console.error("Error fetching portal dashboard stats:", error);
             });
+    };
+
+    useEffect(() => {
+        fetchDashboardStats();
     }, []);
 
     // Format currency helper
@@ -43,10 +53,20 @@ function PortalDashboard() {
 
     return (
         <div className="page-container">
-            <div className="page-header">
+            <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                     <h2 className="page-title">Welcome, {user.username}</h2>
                     <p className="page-subtitle">Here is an overview of your account</p>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                    <button onClick={() => setIsVehicleModalOpen(true)} className="btn-add">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add Vehicle
+                    </button>
+                    <button onClick={() => setIsRequestModalOpen(true)} className="btn-add">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Service Request
+                    </button>
                 </div>
             </div>
 
@@ -83,14 +103,24 @@ function PortalDashboard() {
                     icon={<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>}
                 />
             </div>
+
+            <PortalAddVehicleModal 
+                isOpen={isVehicleModalOpen} 
+                onClose={() => setIsVehicleModalOpen(false)} 
+                onSuccess={() => {
+                    setIsVehicleModalOpen(false);
+                    fetchDashboardStats();
+                }} 
+            />
             
-            <div className="dashboard-content" style={{ marginTop: '30px' }}>
-                <div className="card" style={{ padding: '30px', textAlign: 'center' }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '15px' }}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-                    <h3 style={{ color: '#1e293b', marginBottom: '10px' }}>Dashboard Home</h3>
-                    <p style={{ color: '#64748b' }}>Use the sidebar menu to manage your vehicles, request services, and view your ledger.</p>
-                </div>
-            </div>
+            <PortalAddServiceRequestModal 
+                isOpen={isRequestModalOpen} 
+                onClose={() => setIsRequestModalOpen(false)} 
+                onSuccess={() => {
+                    setIsRequestModalOpen(false);
+                    fetchDashboardStats();
+                }} 
+            />
         </div>
     );
 }

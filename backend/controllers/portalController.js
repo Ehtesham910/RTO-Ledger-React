@@ -68,6 +68,65 @@ const addVehicle = async (req, res) => {
     }
 };
 
+const updateVehicle = async (req, res) => {
+    try {
+        const customerId = BigInt(req.user.id);
+        const vehicleId = BigInt(req.params.id);
+        const { vehicle_number, vehicle_type, chassis_number, engine_number, registration_date, driver_name, driver_mobile } = req.body;
+
+        // Ensure vehicle belongs to customer
+        const existingVehicle = await prisma.vehicles.findFirst({
+            where: { id: vehicleId, customer_id: customerId }
+        });
+
+        if (!existingVehicle) {
+            return res.status(404).json({ error: "Vehicle not found or unauthorized" });
+        }
+
+        const updatedVehicle = await prisma.vehicles.update({
+            where: { id: vehicleId },
+            data: {
+                vehicle_number: vehicle_number.toUpperCase(),
+                vehicle_type,
+                chassis_number,
+                engine_number,
+                registration_date: registration_date ? new Date(registration_date) : null,
+                driver_name,
+                driver_mobile
+            }
+        });
+        res.json(updatedVehicle);
+    } catch (error) {
+        console.error("Error updating vehicle from portal:", error);
+        res.status(500).json({ error: "Failed to update vehicle" });
+    }
+};
+
+const deleteVehicle = async (req, res) => {
+    try {
+        const customerId = BigInt(req.user.id);
+        const vehicleId = BigInt(req.params.id);
+
+        // Ensure vehicle belongs to customer
+        const existingVehicle = await prisma.vehicles.findFirst({
+            where: { id: vehicleId, customer_id: customerId }
+        });
+
+        if (!existingVehicle) {
+            return res.status(404).json({ error: "Vehicle not found or unauthorized" });
+        }
+
+        await prisma.vehicles.delete({
+            where: { id: vehicleId }
+        });
+
+        res.json({ message: "Vehicle deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting vehicle from portal:", error);
+        res.status(500).json({ error: "Failed to delete vehicle" });
+    }
+};
+
 // Services
 const getServiceRequests = async (req, res) => {
     try {
@@ -178,7 +237,7 @@ const getReceipts = async (req, res) => {
                         customers: { select: { name: true, customer_code: true, mobile: true } }
                     }
                 },
-                users: { select: { name: true } }
+                users: { select: { username: true } }
             },
             orderBy: { received_at: 'desc' }
         });
@@ -211,5 +270,7 @@ module.exports = {
     addServiceRequest,
     getLedger,
     getReceipts,
-    getActiveServices
+    getActiveServices,
+    updateVehicle,
+    deleteVehicle
 };

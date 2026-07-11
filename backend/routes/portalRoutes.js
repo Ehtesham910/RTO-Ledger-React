@@ -9,6 +9,8 @@ router.get('/dashboard', verifyToken, checkRole(['Customer']), portalController.
 // Vehicles
 router.get('/vehicles', verifyToken, checkRole(['Customer']), portalController.getVehicles);
 router.post('/vehicles', verifyToken, checkRole(['Customer']), portalController.addVehicle);
+router.put('/vehicles/:id', verifyToken, checkRole(['Customer']), portalController.updateVehicle);
+router.delete('/vehicles/:id', verifyToken, checkRole(['Customer']), portalController.deleteVehicle);
 
 // Services
 router.get('/service-requests', verifyToken, checkRole(['Customer']), portalController.getServiceRequests);

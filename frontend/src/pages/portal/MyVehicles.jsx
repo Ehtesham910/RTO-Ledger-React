@@ -1,22 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../../assets/css/vehicles.css';
+import PortalAddVehicleModal from '../../components/modals/PortalAddVehicleModal';
+import PortalEditVehicleModal from '../../components/modals/PortalEditVehicleModal';
 
 function MyVehicles() {
     const [vehicles, setVehicles] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedEditVehicle, setSelectedEditVehicle] = useState(null);
     
-    // Form state
-    const [formData, setFormData] = useState({
-        vehicle_number: '',
-        vehicle_type: '2 Wheeler',
-        chassis_number: '',
-        engine_number: '',
-        registration_date: '',
-        driver_name: '',
-        driver_mobile: ''
-    });
-
     const fetchVehicles = () => {
         axios.get('http://localhost:5000/api/portal/vehicles')
             .then(res => setVehicles(res.data))
@@ -27,24 +20,15 @@ function MyVehicles() {
         fetchVehicles();
     }, []);
 
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleAddVehicle = async (e) => {
-        e.preventDefault();
-        try {
-            await axios.post('http://localhost:5000/api/portal/vehicles', formData);
-            setIsAddModalOpen(false);
-            setFormData({
-                vehicle_number: '', vehicle_type: '2 Wheeler', chassis_number: '',
-                engine_number: '', registration_date: '', driver_name: '', driver_mobile: ''
-            });
-            fetchVehicles();
-        } catch (error) {
-            console.error("Error adding vehicle:", error);
-            alert("Failed to add vehicle.");
+    const handleDelete = async (id) => {
+        if (window.confirm("Are you sure you want to delete this vehicle?")) {
+            try {
+                await axios.delete(`http://localhost:5000/api/portal/vehicles/${id}`);
+                setVehicles(vehicles.filter(v => v.id !== id));
+            } catch (error) {
+                console.error("Error deleting vehicle:", error);
+                alert("Failed to delete vehicle.");
+            }
         }
     };
 
@@ -78,7 +62,7 @@ function MyVehicles() {
                                 <th>Engine Number</th>
                                 <th>Registration Date</th>
                                 <th>Driver Details</th>
-                                <th>Status</th>
+                                <th className="text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -99,9 +83,21 @@ function MyVehicles() {
                                         ) : '-'}
                                     </td>
                                     <td>
-                                        <span className={`status-badge ${v.is_active ? 'status-active' : 'status-inactive'}`}>
-                                            {v.is_active ? 'Active' : 'Inactive'}
-                                        </span>
+                                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
+                                            <button 
+                                                className="btn-action edit" 
+                                                title="Edit"
+                                                onClick={() => {
+                                                    setSelectedEditVehicle(v);
+                                                    setIsEditModalOpen(true);
+                                                }}
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                            </button>
+                                            <button className="btn-action delete" title="Delete Vehicle" onClick={() => handleDelete(v.id)}>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -117,69 +113,24 @@ function MyVehicles() {
                 </div>
             </div>
 
-            {/* Add Vehicle Modal Inline */}
-            {isAddModalOpen && (
-                <div className="modal-overlay">
-                    <div className="modal-container">
-                        <div className="modal-header">
-                            <h2>Add New Vehicle</h2>
-                            <button className="modal-close" onClick={() => setIsAddModalOpen(false)}>×</button>
-                        </div>
-                        
-                        <form onSubmit={handleAddVehicle}>
-                            <div className="modal-body">
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label>Vehicle Number *</label>
-                                        <input type="text" name="vehicle_number" value={formData.vehicle_number} onChange={handleInputChange} required placeholder="e.g. MH 04 AB 1234" />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Vehicle Type *</label>
-                                        <select name="vehicle_type" value={formData.vehicle_type} onChange={handleInputChange} required>
-                                            <option value="2 Wheeler">2 Wheeler</option>
-                                            <option value="3 Wheeler">3 Wheeler</option>
-                                            <option value="4 Wheeler">4 Wheeler</option>
-                                            <option value="Heavy Vehicle">Heavy Vehicle</option>
-                                            <option value="Commercial">Commercial</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label>Chassis Number</label>
-                                        <input type="text" name="chassis_number" value={formData.chassis_number} onChange={handleInputChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Engine Number</label>
-                                        <input type="text" name="engine_number" value={formData.engine_number} onChange={handleInputChange} />
-                                    </div>
-                                </div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label>Registration Date</label>
-                                        <input type="date" name="registration_date" value={formData.registration_date} onChange={handleInputChange} />
-                                    </div>
-                                </div>
-                                <div className="form-divider"><span>Driver Details (Optional)</span></div>
-                                <div className="form-row">
-                                    <div className="form-group">
-                                        <label>Driver Name</label>
-                                        <input type="text" name="driver_name" value={formData.driver_name} onChange={handleInputChange} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Driver Mobile</label>
-                                        <input type="text" name="driver_mobile" value={formData.driver_mobile} onChange={handleInputChange} />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="modal-footer">
-                                <button type="button" className="btn-secondary" onClick={() => setIsAddModalOpen(false)}>Cancel</button>
-                                <button type="submit" className="btn-primary">Add Vehicle</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+            <PortalAddVehicleModal 
+                isOpen={isAddModalOpen} 
+                onClose={() => setIsAddModalOpen(false)} 
+                onSuccess={() => {
+                    setIsAddModalOpen(false);
+                    fetchVehicles();
+                }} 
+            />
+
+            <PortalEditVehicleModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                vehicle={selectedEditVehicle}
+                onSuccess={() => {
+                    setIsEditModalOpen(false);
+                    fetchVehicles();
+                }}
+            />
         </div>
     );
 }
