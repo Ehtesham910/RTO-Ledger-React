@@ -28,6 +28,16 @@ function MyLedger() {
         return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount || 0);
     };
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum;
+    };
+
     return (
         <div className="page-container">
             <div className="page-header">
@@ -61,7 +71,9 @@ function MyLedger() {
                                     <td style={{ fontWeight: '500', color: '#334155' }}>
                                         {l.service_requests?.request_no || '-'}
                                     </td>
-                                    <td>{l.vehicles?.vehicle_number}</td>
+                                    <td>
+                                        <span className="badge" style={{ whiteSpace: 'nowrap' }}>{formatVehicleNumber(l.vehicles?.vehicle_number)}</span>
+                                    </td>
                                     <td>{l.service_requests?.services?.service_name || '-'}</td>
                                     <td>{formatCurrency(l.service_fee)}</td>
                                     <td style={{ color: '#10b981', fontWeight: '500' }}>{formatCurrency(l.amount_paid)}</td>

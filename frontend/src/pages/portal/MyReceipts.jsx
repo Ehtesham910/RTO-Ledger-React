@@ -30,6 +30,16 @@ function MyReceipts() {
         return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount || 0);
     };
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum;
+    };
+
     const handleViewReceipt = (receipt) => {
         // We will pass state to the ViewReceipt component, which we will route
         navigate(`/portal/receipts/${receipt.id}`, { state: { receipt } });
@@ -63,7 +73,9 @@ function MyReceipts() {
                                 <tr key={r.id}>
                                     <td>{idx + 1}</td>
                                     <td style={{ fontWeight: '600', color: '#10b981' }}>{r.receipt_no}</td>
-                                    <td>{r.ledgers?.vehicles?.vehicle_number}</td>
+                                    <td>
+                                        <span className="badge" style={{ whiteSpace: 'nowrap' }}>{formatVehicleNumber(r.ledgers?.vehicles?.vehicle_number)}</span>
+                                    </td>
                                     <td style={{ fontWeight: '500' }}>{formatCurrency(r.amount_received)}</td>
                                     <td>
                                         <span className={`status-badge payment-${(r.payment_mode || '').toLowerCase()}`}>

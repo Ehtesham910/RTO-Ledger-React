@@ -48,6 +48,16 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
         setFormData({ ...formData, [name]: value });
     };
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum;
+    };
+
     const handleAddRequest = async (e) => {
         e.preventDefault();
         try {
@@ -75,7 +85,7 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
                             <select name="vehicle_id" value={formData.vehicle_id} onChange={handleInputChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
                                 <option value="" disabled>-- Select Vehicle --</option>
                                 {vehicles.map(v => (
-                                    <option key={v.id} value={v.id}>{v.vehicle_number}</option>
+                                    <option key={v.id} value={v.id}>{formatVehicleNumber(v.vehicle_number)}</option>
                                 ))}
                             </select>
                         </div>
