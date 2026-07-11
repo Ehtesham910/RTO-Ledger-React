@@ -16,7 +16,6 @@ import Users from './pages/Users';
 import Login from './pages/Login';
 
 // Portal Imports
-import CustomerLogin from './pages/portal/CustomerLogin';
 import PortalLayout from './components/layout/PortalLayout';
 import PortalDashboard from './pages/portal/PortalDashboard';
 import MyVehicles from './pages/portal/MyVehicles';
@@ -41,11 +40,7 @@ axios.interceptors.response.use((response) => {
     if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        if (window.location.pathname.startsWith('/portal')) {
-            window.location.href = '/portal/login';
-        } else {
-            window.location.href = '/login';
-        }
+        window.location.href = '/';
     }
     return Promise.reject(error);
 });
@@ -58,10 +53,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const role = user.role;
 
     if (!token) {
-        if (location.pathname.startsWith('/portal')) {
-            return <Navigate to="/portal/login" state={{ from: location }} replace />;
-        }
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     if (allowedRoles && !allowedRoles.includes(role)) {
@@ -79,32 +71,29 @@ function App() {
         <BrowserRouter>
             <Routes>
                 {/* Public Route */}
-                <Route path="/login" element={<Login />} />
+                <Route path="/" element={<Login />} />
 
                 {/* Protected Routes */}
-                <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+                <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
                     {/* Accessible to All Protected Roles */}
-                    <Route index element={<Navigate to="/dashboard" replace />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="customers" element={<Customers />} />
-                    <Route path="vehicles" element={<Vehicles />} />
-                    <Route path="services" element={<Services />} />
-                    <Route path="services/requests" element={<ServiceRequests />} />
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/customers" element={<Customers />} />
+                    <Route path="/vehicles" element={<Vehicles />} />
+                    <Route path="/services" element={<Services />} />
+                    <Route path="/services/requests" element={<ServiceRequests />} />
                     
                     {/* Accessible to Admin, Accountant, Viewer */}
-                    <Route path="ledger" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Ledger /></ProtectedRoute>} />
-                    <Route path="ledger/customer/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><CustomerLedger /></ProtectedRoute>} />
-                    <Route path="receipts" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Receipts /></ProtectedRoute>} />
-                    <Route path="receipts/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><ViewReceipt /></ProtectedRoute>} />
+                    <Route path="/ledger" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Ledger /></ProtectedRoute>} />
+                    <Route path="/ledger/customer/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><CustomerLedger /></ProtectedRoute>} />
+                    <Route path="/receipts" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Receipts /></ProtectedRoute>} />
+                    <Route path="/receipts/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><ViewReceipt /></ProtectedRoute>} />
                     
                     {/* Accessible to Admin Only */}
-                    <Route path="roles" element={<ProtectedRoute allowedRoles={['Admin']}><Roles /></ProtectedRoute>} />
-                    <Route path="users" element={<ProtectedRoute allowedRoles={['Admin']}><Users /></ProtectedRoute>} />
+                    <Route path="/roles" element={<ProtectedRoute allowedRoles={['Admin']}><Roles /></ProtectedRoute>} />
+                    <Route path="/users" element={<ProtectedRoute allowedRoles={['Admin']}><Users /></ProtectedRoute>} />
                 </Route>
 
                 {/* Customer Portal Routes */}
-                <Route path="/portal/login" element={<CustomerLogin />} />
-                
                 <Route path="/portal" element={<ProtectedRoute allowedRoles={['Customer']}><PortalLayout /></ProtectedRoute>}>
                     <Route index element={<Navigate to="/portal/dashboard" replace />} />
                     <Route path="dashboard" element={<PortalDashboard />} />
