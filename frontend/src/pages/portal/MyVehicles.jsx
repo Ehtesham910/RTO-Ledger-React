@@ -109,7 +109,13 @@ function MyVehicles() {
                                     </td>
                                 </tr>
                             ))}
-                            {loading ? null : vehicles.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                                        Loading vehicles...
+                                    </td>
+                                </tr>
+                            ) : vehicles.length === 0 && (
                                 <tr>
                                     <td colSpan="8" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No vehicles found. Click 'Add Vehicle' to register one.

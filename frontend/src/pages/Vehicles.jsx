@@ -21,6 +21,7 @@ function Vehicles(){
         const savedData = sessionStorage.getItem('vehiclesData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('vehiclesData'));
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -37,6 +38,9 @@ function Vehicles(){
             })
             .catch((error)=>{
                 console.error("Error fetching vehicles:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -208,7 +212,11 @@ function Vehicles(){
                                     </tr>
                                 ))}
                                 
-                                {paginatedVehicles.length === 0 && (
+                                {loading ? (
+                                    <tr>
+                                        <td colSpan="10" style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
+                                    </tr>
+                                ) : paginatedVehicles.length === 0 && (
                                     <tr>
                                         <td colSpan="10" className="empty-state">
                                             No vehicles found. Click 'Add Vehicle' to register one.

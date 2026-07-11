@@ -73,7 +73,13 @@ function MyLedger() {
                                     </td>
                                 </tr>
                             ))}
-                            {loading ? null : ledgers.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                                        Loading ledger entries...
+                                    </td>
+                                </tr>
+                            ) : ledgers.length === 0 && (
                                 <tr>
                                     <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No ledger entries found.

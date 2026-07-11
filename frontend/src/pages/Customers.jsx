@@ -20,6 +20,7 @@ function Customers() {
         const savedData = sessionStorage.getItem('customersData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('customersData'));
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +35,9 @@ function Customers() {
             })
             .catch((error) => {
                 console.error("Error fetching customers:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -200,7 +204,11 @@ function Customers() {
                                 </tr>
                             ))}
 
-                            {paginatedCustomers.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>Loading...</td>
+                                </tr>
+                            ) : paginatedCustomers.length === 0 && (
                                 <tr>
                                     <td colSpan="8" className="empty-state">
                                         No customers found. Click 'Add Customer' to create one.

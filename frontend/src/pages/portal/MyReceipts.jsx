@@ -82,7 +82,13 @@ function MyReceipts() {
                                     </td>
                                 </tr>
                             ))}
-                            {loading ? null : receipts.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                                        Loading receipts...
+                                    </td>
+                                </tr>
+                            ) : receipts.length === 0 && (
                                 <tr>
                                     <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No receipts found.

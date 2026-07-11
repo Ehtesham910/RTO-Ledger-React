@@ -129,7 +129,13 @@ function MyServiceRequests() {
                                     </td>
                                 </tr>
                             ))}
-                            {loading ? null : requests.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
+                                        Loading service requests...
+                                    </td>
+                                </tr>
+                            ) : requests.length === 0 && (
                                 <tr>
                                     <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No service requests found. Click 'New Request' to create one.

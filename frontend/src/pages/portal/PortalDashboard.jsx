@@ -16,11 +16,14 @@ const StatCard = ({ title, value, color, bgColor, icon }) => (
 );
 
 function PortalDashboard() {
-    const [stats, setStats] = useState({
-        vehiclesCount: 0,
-        requestsCount: 0,
-        totalDue: 0,
-        totalPaid: 0
+    const [stats, setStats] = useState(() => {
+        const saved = sessionStorage.getItem('portal_dashboard_stats');
+        return saved ? JSON.parse(saved) : {
+            vehiclesCount: 0,
+            requestsCount: 0,
+            totalDue: 0,
+            totalPaid: 0
+        };
     });
     
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
@@ -32,6 +35,7 @@ function PortalDashboard() {
         axios.get('http://localhost:5000/api/portal/dashboard')
             .then(response => {
                 setStats(response.data);
+                sessionStorage.setItem('portal_dashboard_stats', JSON.stringify(response.data));
             })
             .catch(error => {
                 console.error("Error fetching portal dashboard stats:", error);
