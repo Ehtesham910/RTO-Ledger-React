@@ -4,13 +4,21 @@ import axios from 'axios';
 import '../../assets/css/receipts.css';
 
 function MyReceipts() {
-    const [receipts, setReceipts] = useState([]);
+    const [receipts, setReceipts] = useState(() => {
+        const saved = localStorage.getItem('portal_receipts');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [loading, setLoading] = useState(!localStorage.getItem('portal_receipts'));
     const navigate = useNavigate();
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/portal/receipts')
-            .then(res => setReceipts(res.data))
-            .catch(err => console.error("Error fetching receipts:", err));
+            .then(res => {
+                setReceipts(res.data);
+                localStorage.setItem('portal_receipts', JSON.stringify(res.data));
+            })
+            .catch(err => console.error("Error fetching receipts:", err))
+            .finally(() => setLoading(false));
     }, []);
 
     const formatDate = (dateString) => {
@@ -24,7 +32,7 @@ function MyReceipts() {
 
     const handleViewReceipt = (receipt) => {
         // We will pass state to the ViewReceipt component, which we will route
-        navigate('/portal/receipts/view', { state: { receipt } });
+        navigate(`/portal/receipts/${receipt.id}`, { state: { receipt } });
     };
 
     return (
@@ -74,7 +82,7 @@ function MyReceipts() {
                                     </td>
                                 </tr>
                             ))}
-                            {receipts.length === 0 && (
+                            {loading ? null : receipts.length === 0 && (
                                 <tr>
                                     <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No receipts found.

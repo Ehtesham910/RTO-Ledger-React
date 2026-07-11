@@ -167,7 +167,13 @@ function ViewReceipt() {
                 </h1>
                 <div style={{ display: 'flex', gap: '10px' }}>
                     <button 
-                        onClick={() => navigate('/receipts')} 
+                        onClick={() => {
+                            if (location.pathname.startsWith('/portal')) {
+                                navigate('/portal/receipts');
+                            } else {
+                                navigate('/receipts');
+                            }
+                        }} 
                         style={{ 
                             padding: '8px 16px', 
                             background: 'white', 

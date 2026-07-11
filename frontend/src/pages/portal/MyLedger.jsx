@@ -3,12 +3,20 @@ import axios from 'axios';
 import '../../assets/css/ledger.css';
 
 function MyLedger() {
-    const [ledgers, setLedgers] = useState([]);
+    const [ledgers, setLedgers] = useState(() => {
+        const saved = localStorage.getItem('portal_ledger');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [loading, setLoading] = useState(!localStorage.getItem('portal_ledger'));
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/portal/ledger')
-            .then(res => setLedgers(res.data))
-            .catch(err => console.error("Error fetching ledger:", err));
+            .then(res => {
+                setLedgers(res.data);
+                localStorage.setItem('portal_ledger', JSON.stringify(res.data));
+            })
+            .catch(err => console.error("Error fetching ledger:", err))
+            .finally(() => setLoading(false));
     }, []);
 
     const formatDate = (dateString) => {
@@ -65,7 +73,7 @@ function MyLedger() {
                                     </td>
                                 </tr>
                             ))}
-                            {ledgers.length === 0 && (
+                            {loading ? null : ledgers.length === 0 && (
                                 <tr>
                                     <td colSpan="9" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No ledger entries found.

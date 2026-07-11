@@ -101,7 +101,7 @@ function App() {
                     <Route path="service-requests" element={<MyServiceRequests />} />
                     <Route path="ledger" element={<MyLedger />} />
                     <Route path="receipts" element={<MyReceipts />} />
-                    <Route path="receipts/view" element={<ViewReceipt />} />
+                    <Route path="receipts/:id" element={<ViewReceipt />} />
                     {/* ViewReceipt works for both because it just relies on state.receipt or API fetch */}
                 </Route>
             </Routes>

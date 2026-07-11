@@ -3,7 +3,10 @@ import axios from 'axios';
 import '../../assets/css/servicerequests.css';
 
 function MyServiceRequests() {
-    const [requests, setRequests] = useState([]);
+    const [requests, setRequests] = useState(() => {
+        const saved = localStorage.getItem('portal_requests');
+        return saved ? JSON.parse(saved) : [];
+    });
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     
     // For Add Modal
@@ -15,11 +18,16 @@ function MyServiceRequests() {
         amount: '',
         remarks: ''
     });
+    const [loading, setLoading] = useState(!localStorage.getItem('portal_requests'));
 
     const fetchRequests = () => {
         axios.get('http://localhost:5000/api/portal/service-requests')
-            .then(res => setRequests(res.data))
-            .catch(err => console.error("Error fetching requests:", err));
+            .then(res => {
+                setRequests(res.data);
+                localStorage.setItem('portal_requests', JSON.stringify(res.data));
+            })
+            .catch(err => console.error("Error fetching requests:", err))
+            .finally(() => setLoading(false));
     };
 
     useEffect(() => {
@@ -121,7 +129,7 @@ function MyServiceRequests() {
                                     </td>
                                 </tr>
                             ))}
-                            {requests.length === 0 && (
+                            {loading ? null : requests.length === 0 && (
                                 <tr>
                                     <td colSpan="7" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No service requests found. Click 'New Request' to create one.
