@@ -50,10 +50,24 @@ function Navbar() {
 
       {/* CENTER SEARCH */}
       <div className="navbar-center">
-        <div className="navbar-search">
-          <input type="text" placeholder="Search vehicles, customers..." />
-          <button>Search</button>
-        </div>
+        <form className="navbar-search" onSubmit={(e) => {
+          e.preventDefault();
+          const query = e.target.searchQuery.value;
+          if (!query.trim()) return;
+
+          if (user && user.role === 'Customer') {
+            navigate(`/portal/search?q=${encodeURIComponent(query.trim())}`);
+          } else {
+            navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+          }
+        }}>
+          <input 
+            type="text" 
+            name="searchQuery"
+            placeholder="Search vehicles, customers..." 
+          />
+          <button type="submit">Search</button>
+        </form>
       </div>
 
       {/* RIGHT ACTIONS */}

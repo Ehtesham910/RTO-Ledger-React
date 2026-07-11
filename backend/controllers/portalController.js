@@ -266,6 +266,75 @@ const getActiveServices = async (req, res) => {
     }
 }
 
+// Portal Search
+const getPortalSearch = async (req, res) => {
+    try {
+        const customerId = BigInt(req.user.id);
+        const { q } = req.query;
+
+        if (!q || q.trim() === '') {
+            return res.json({ vehicles: [], serviceRequests: [], receipts: [] });
+        }
+
+        const query = q.trim();
+
+        // Matching vehicles for this customer
+        const vehicles = await prisma.vehicles.findMany({
+            where: {
+                customer_id: customerId,
+                OR: [
+                    { vehicle_number: { contains: query, mode: 'insensitive' } },
+                    { chassis_number: { contains: query, mode: 'insensitive' } },
+                    { engine_number: { contains: query, mode: 'insensitive' } },
+                    { driver_name: { contains: query, mode: 'insensitive' } }
+                ]
+            }
+        });
+
+        // Matching service requests for this customer
+        const serviceRequests = await prisma.service_requests.findMany({
+            where: {
+                customer_id: customerId,
+                OR: [
+                    { request_no: { contains: query, mode: 'insensitive' } }
+                ]
+            },
+            include: { 
+                vehicles: { select: { vehicle_number: true } },
+                services: { select: { service_name: true } }
+            }
+        });
+
+        // Matching receipts for this customer
+        const receipts = await prisma.receipts.findMany({
+            where: {
+                ledgers: { customer_id: customerId },
+                OR: [
+                    { receipt_no: { contains: query, mode: 'insensitive' } },
+                    { transaction_reference: { contains: query, mode: 'insensitive' } }
+                ]
+            },
+            include: {
+                ledgers: {
+                    include: {
+                        vehicles: { select: { vehicle_number: true } },
+                        service_requests: { include: { services: true } }
+                    }
+                }
+            }
+        });
+
+        res.json({
+            vehicles,
+            serviceRequests,
+            receipts
+        });
+    } catch (error) {
+        console.error("Error in portal search:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 module.exports = {
     getDashboardStats,
     getVehicles,
@@ -276,5 +345,6 @@ module.exports = {
     getReceipts,
     getActiveServices,
     updateVehicle,
-    deleteVehicle
+    deleteVehicle,
+    getPortalSearch
 };

@@ -18,6 +18,7 @@ const userRoutes = require('./routes/userRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const authRoutes = require('./routes/authRoutes');
 const portalRoutes = require('./routes/portalRoutes');
+const searchRoutes = require('./routes/searchRoutes');
 const { verifyToken, checkRole } = require('./middlewares/authMiddleware');
 const app = express();
 
@@ -46,6 +47,9 @@ app.use('/api/dashboard', verifyToken, dashboardRoutes);
 
 // Customer Portal Routes
 app.use('/api/portal', portalRoutes);
+
+// Global Search Route
+app.use('/api/search', searchRoutes);
 
 
 // Basic test route

@@ -21,4 +21,7 @@ router.get('/active-services', verifyToken, checkRole(['Customer']), portalContr
 router.get('/ledger', verifyToken, checkRole(['Customer']), portalController.getLedger);
 router.get('/receipts', verifyToken, checkRole(['Customer']), portalController.getReceipts);
 
+// Search
+router.get('/search', verifyToken, checkRole(['Customer']), portalController.getPortalSearch);
+
 module.exports = router;

@@ -20,6 +20,11 @@ function Customers() {
         const savedData = sessionStorage.getItem('customersData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [filteredCustomers, setFilteredCustomers] = useState(() => {
+        const savedData = sessionStorage.getItem('customersData');
+        return savedData ? JSON.parse(savedData) : [];
+    });
+    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(!sessionStorage.getItem('customersData'));
 
     // Pagination state
@@ -31,6 +36,7 @@ function Customers() {
         axios.get('http://localhost:5000/api/customers')
             .then((response) => {
                 setCustomers(response.data);
+                setFilteredCustomers(response.data);
                 sessionStorage.setItem('customersData', JSON.stringify(response.data));
             })
             .catch((error) => {
@@ -39,12 +45,33 @@ function Customers() {
             .finally(() => {
                 setLoading(false);
             });
+
+        const handleGlobalSearch = (e) => {
+            setSearchQuery(e.detail.toLowerCase());
+        };
+        window.addEventListener('globalSearch', handleGlobalSearch);
+        return () => window.removeEventListener('globalSearch', handleGlobalSearch);
     }, []);
 
-    const totalPages = Math.ceil(customers.length / itemsPerPage);
+    useEffect(() => {
+        if (!searchQuery) {
+            setFilteredCustomers(customers);
+        } else {
+            const lowerQ = searchQuery.toLowerCase();
+            setFilteredCustomers(customers.filter(c => 
+                (c.name && c.name.toLowerCase().includes(lowerQ)) ||
+                (c.mobile && c.mobile.toLowerCase().includes(lowerQ)) ||
+                (c.email && c.email.toLowerCase().includes(lowerQ)) ||
+                (c.customer_code && c.customer_code.toLowerCase().includes(lowerQ))
+            ));
+        }
+        setCurrentPage(1);
+    }, [searchQuery, customers]);
+
+    const totalPages = Math.ceil(filteredCustomers.length / itemsPerPage) || 1;
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const paginatedCustomers = customers.slice(indexOfFirstItem, indexOfLastItem);
+    const paginatedCustomers = filteredCustomers.slice(indexOfFirstItem, indexOfLastItem);
 
     // Status toggle logic
     const handleStatusToggle = async (id, currentStatus) => {
@@ -222,7 +249,7 @@ function Customers() {
                     currentPage={currentPage} 
                     totalPages={totalPages}
                     onPageChange={setCurrentPage} 
-                    totalItems={customers.length} 
+                    totalItems={filteredCustomers.length} 
                     itemsPerPage={itemsPerPage} 
                 />
             </div>

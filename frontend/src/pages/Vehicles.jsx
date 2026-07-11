@@ -21,6 +21,11 @@ function Vehicles(){
         const savedData = sessionStorage.getItem('vehiclesData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [filteredVehicles, setFilteredVehicles] = useState(() => {
+        const savedData = sessionStorage.getItem('vehiclesData');
+        return savedData ? JSON.parse(savedData) : [];
+    });
+    const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(!sessionStorage.getItem('vehiclesData'));
 
     // Pagination state
@@ -33,6 +38,7 @@ function Vehicles(){
             .then((response) =>{
                 // Naya data aate hi screen par update karein
                 setVehicles(response.data);
+                setFilteredVehicles(response.data);
                 // Agli baar ke liye naya data browser me save kar lein
                 sessionStorage.setItem('vehiclesData', JSON.stringify(response.data));
             })
@@ -44,10 +50,25 @@ function Vehicles(){
             });
     }, []);
 
-    const totalPages = Math.ceil(vehicles.length / itemsPerPage);
+    useEffect(() => {
+        if (!searchQuery) {
+            setFilteredVehicles(vehicles);
+        } else {
+            const lowerQ = searchQuery.toLowerCase();
+            setFilteredVehicles(vehicles.filter(v => 
+                (v.vehicle_number && v.vehicle_number.toLowerCase().includes(lowerQ)) ||
+                (v.customers?.name && v.customers.name.toLowerCase().includes(lowerQ)) ||
+                (v.chassis_number && v.chassis_number.toLowerCase().includes(lowerQ)) ||
+                (v.engine_number && v.engine_number.toLowerCase().includes(lowerQ))
+            ));
+        }
+        setCurrentPage(1);
+    }, [searchQuery, vehicles]);
+
+    const totalPages = Math.ceil(filteredVehicles.length / itemsPerPage) || 1;
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const paginatedVehicles = vehicles.slice(indexOfFirstItem, indexOfLastItem);
+    const paginatedVehicles = filteredVehicles.slice(indexOfFirstItem, indexOfLastItem);
 
     // Status toggle logic
     const handleStatusToggle = async (id, currentStatus) => {
@@ -230,7 +251,7 @@ function Vehicles(){
                         currentPage={currentPage} 
                         totalPages={totalPages}
                         onPageChange={setCurrentPage} 
-                        totalItems={vehicles.length} 
+                        totalItems={filteredVehicles.length} 
                         itemsPerPage={itemsPerPage} 
                     />
             </div>

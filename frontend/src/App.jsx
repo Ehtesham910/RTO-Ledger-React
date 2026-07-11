@@ -14,6 +14,7 @@ import ViewReceipt from './pages/ViewReceipt';
 import Roles from './pages/Roles';
 import Users from './pages/Users';
 import Login from './pages/Login';
+import Search from './pages/Search';
 
 // Portal Imports
 import PortalLayout from './components/layout/PortalLayout';
@@ -22,6 +23,7 @@ import MyVehicles from './pages/portal/MyVehicles';
 import MyServiceRequests from './pages/portal/MyServiceRequests';
 import MyLedger from './pages/portal/MyLedger';
 import MyReceipts from './pages/portal/MyReceipts';
+import PortalSearch from './pages/portal/PortalSearch';
 
 // Setup global axios interceptor
 axios.interceptors.request.use((config) => {
@@ -91,6 +93,9 @@ function App() {
                     {/* Accessible to Admin Only */}
                     <Route path="/roles" element={<ProtectedRoute allowedRoles={['Admin']}><Roles /></ProtectedRoute>} />
                     <Route path="/users" element={<ProtectedRoute allowedRoles={['Admin']}><Users /></ProtectedRoute>} />
+
+                    {/* Global Search */}
+                    <Route path="/search" element={<Search />} />
                 </Route>
 
                 {/* Customer Portal Routes */}
@@ -102,6 +107,7 @@ function App() {
                     <Route path="ledger" element={<MyLedger />} />
                     <Route path="receipts" element={<MyReceipts />} />
                     <Route path="receipts/:id" element={<ViewReceipt />} />
+                    <Route path="search" element={<PortalSearch />} />
                     {/* ViewReceipt works for both because it just relies on state.receipt or API fetch */}
                 </Route>
             </Routes>

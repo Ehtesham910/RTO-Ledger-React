@@ -9,6 +9,11 @@ function MyVehicles() {
         const saved = sessionStorage.getItem('portal_vehicles');
         return saved ? JSON.parse(saved) : [];
     });
+    const [filteredVehicles, setFilteredVehicles] = useState(() => {
+        const saved = sessionStorage.getItem('portal_vehicles');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [searchQuery, setSearchQuery] = useState('');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEditVehicle, setSelectedEditVehicle] = useState(null);
@@ -18,6 +23,7 @@ function MyVehicles() {
         axios.get('http://localhost:5000/api/portal/vehicles')
             .then(res => {
                 setVehicles(res.data);
+                setFilteredVehicles(res.data);
                 sessionStorage.setItem('portal_vehicles', JSON.stringify(res.data));
             })
             .catch(err => console.error("Error fetching vehicles:", err))
@@ -26,7 +32,27 @@ function MyVehicles() {
 
     useEffect(() => {
         fetchVehicles();
+
+        const handleGlobalSearch = (e) => {
+            setSearchQuery(e.detail.toLowerCase());
+        };
+        window.addEventListener('globalSearch', handleGlobalSearch);
+        return () => window.removeEventListener('globalSearch', handleGlobalSearch);
     }, []);
+
+    useEffect(() => {
+        if (!searchQuery) {
+            setFilteredVehicles(vehicles);
+        } else {
+            const lowerQ = searchQuery.toLowerCase();
+            setFilteredVehicles(vehicles.filter(v => 
+                (v.vehicle_number && v.vehicle_number.toLowerCase().includes(lowerQ)) ||
+                (v.chassis_number && v.chassis_number.toLowerCase().includes(lowerQ)) ||
+                (v.engine_number && v.engine_number.toLowerCase().includes(lowerQ)) ||
+                (v.driver_name && v.driver_name.toLowerCase().includes(lowerQ))
+            ));
+        }
+    }, [searchQuery, vehicles]);
 
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this vehicle?")) {
@@ -86,7 +112,7 @@ function MyVehicles() {
                             </tr>
                         </thead>
                         <tbody>
-                            {vehicles.map((v, idx) => (
+                            {filteredVehicles.map((v, idx) => (
                                 <tr key={v.id}>
                                     <td>{idx + 1}</td>
                                     <td>
@@ -129,7 +155,7 @@ function MyVehicles() {
                                         Loading vehicles...
                                     </td>
                                 </tr>
-                            ) : vehicles.length === 0 && (
+                            ) : filteredVehicles.length === 0 && (
                                 <tr>
                                     <td colSpan="8" style={{ textAlign: 'center', padding: '30px', color: '#64748b' }}>
                                         No vehicles found. Click 'Add Vehicle' to register one.
