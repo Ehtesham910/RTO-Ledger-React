@@ -209,12 +209,14 @@ function Dashboard() {
         }
     };
 
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+
     return (
         <div className="page-container">
             <div className="page-header">
                 <div>
                     <h2 className="page-title">Dashboard</h2>
-                    <p className="page-subtitle">Welcome Admin</p>
+                    <p className="page-subtitle">Welcome, {user.name || user.username || 'User'}</p>
                 </div>
             </div>
 
