@@ -51,9 +51,9 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
     const handleAddRequest = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/portal/service-requests', formData);
+            const response = await axios.post('http://localhost:5000/api/portal/service-requests', formData);
             setFormData({ vehicle_id: '', service_id: '', amount: '', remarks: '' });
-            onSuccess();
+            onSuccess(response.data);
         } catch (error) {
             console.error("Error adding request:", error);
             alert("Failed to add service request.");

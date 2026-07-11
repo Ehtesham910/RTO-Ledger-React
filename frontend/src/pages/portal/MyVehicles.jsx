@@ -32,7 +32,9 @@ function MyVehicles() {
         if (window.confirm("Are you sure you want to delete this vehicle?")) {
             try {
                 await axios.delete(`http://localhost:5000/api/portal/vehicles/${id}`);
-                setVehicles(vehicles.filter(v => v.id !== id));
+                const updated = vehicles.filter(v => v.id !== id);
+                setVehicles(updated);
+                sessionStorage.setItem('portal_vehicles', JSON.stringify(updated));
             } catch (error) {
                 console.error("Error deleting vehicle:", error);
                 alert("Failed to delete vehicle.");
@@ -130,8 +132,13 @@ function MyVehicles() {
             <PortalAddVehicleModal 
                 isOpen={isAddModalOpen} 
                 onClose={() => setIsAddModalOpen(false)} 
-                onSuccess={() => {
+                onSuccess={(newVeh) => {
                     setIsAddModalOpen(false);
+                    if (newVeh) {
+                        const updated = [newVeh, ...vehicles];
+                        setVehicles(updated);
+                        sessionStorage.setItem('portal_vehicles', JSON.stringify(updated));
+                    }
                     fetchVehicles();
                 }} 
             />
@@ -140,8 +147,13 @@ function MyVehicles() {
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 vehicle={selectedEditVehicle}
-                onSuccess={() => {
+                onSuccess={(updatedVeh) => {
                     setIsEditModalOpen(false);
+                    if (updatedVeh) {
+                        const updated = vehicles.map(v => v.id === updatedVeh.id ? updatedVeh : v);
+                        setVehicles(updated);
+                        sessionStorage.setItem('portal_vehicles', JSON.stringify(updated));
+                    }
                     fetchVehicles();
                 }}
             />

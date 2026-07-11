@@ -87,12 +87,12 @@ function PortalAddVehicleModal({ isOpen, onClose, onSuccess }) {
     const handleAddVehicle = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/portal/vehicles', formData);
+            const response = await axios.post('http://localhost:5000/api/portal/vehicles', formData);
             setFormData({
                 vehicle_number: '', vehicle_type: '2 Wheeler', chassis_number: '',
                 engine_number: '', registration_date: '', driver_name: '', driver_mobile: ''
             });
-            onSuccess();
+            onSuccess(response.data);
         } catch (error) {
             console.error("Error adding vehicle:", error);
             alert("Failed to add vehicle.");

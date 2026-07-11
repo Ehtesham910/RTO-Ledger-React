@@ -9,6 +9,9 @@ const getVehicles = async(req,res) => {
                         name: true
                     }
                 }
+            },
+            orderBy: {
+                id: 'desc'
             }
         });
         res.json(vehicles);

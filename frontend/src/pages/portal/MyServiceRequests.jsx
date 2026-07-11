@@ -114,8 +114,15 @@ function MyServiceRequests() {
             <PortalAddServiceRequestModal 
                 isOpen={isAddModalOpen} 
                 onClose={() => setIsAddModalOpen(false)} 
-                onSuccess={() => {
+                onSuccess={(newReq) => {
                     setIsAddModalOpen(false);
+                    // Instant update
+                    if (newReq) {
+                        const updated = [newReq, ...requests];
+                        setRequests(updated);
+                        sessionStorage.setItem('portal_requests', JSON.stringify(updated));
+                    }
+                    // Fetch in background for full associations if needed
                     fetchRequests();
                 }} 
             />
