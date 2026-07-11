@@ -76,7 +76,7 @@ function PortalDashboard() {
                 </div>
             </div>
 
-            <div className="dashboard-cards-grid">
+            <div className="portal-cards-grid">
                 <StatCard 
                     title="MY VEHICLES" 
                     value={stats.vehiclesCount} 

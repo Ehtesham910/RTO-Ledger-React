@@ -164,6 +164,13 @@
 /* Dashboard Grid Layouts */
 .dashboard-cards-grid {
     display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.portal-cards-grid {
+    display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
     margin-bottom: 30px;
@@ -183,7 +190,8 @@
 }
 
 @media (max-width: 900px) {
-    .dashboard-cards-grid {
+    .dashboard-cards-grid,
+    .portal-cards-grid {
         grid-template-columns: 1fr;
     }
     .dashboard-charts-grid {
