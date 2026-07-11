@@ -147,6 +147,31 @@ const customerRegister = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Determine the next customer code
+        const allCustomers = await prisma.customers.findMany({
+            select: { customer_code: true }
+        });
+        
+        let maxNum = 0;
+        allCustomers.forEach(c => {
+            if (c.customer_code) {
+                const numMatch = String(c.customer_code).match(/\d+/);
+                if (numMatch) {
+                    const numPart = parseInt(numMatch[0], 10);
+                    if (numPart > maxNum) {
+                        maxNum = numPart;
+                    }
+                }
+            }
+        });
+        
+        if (maxNum === 0) {
+            maxNum = allCustomers.length;
+        }
+        
+        const nextNum = maxNum + 1;
+        const nextCustomerCode = `CUST-${nextNum.toString().padStart(3, '0')}`;
+
         // Create the customer
         const customer = await prisma.customers.create({
             data: {
@@ -155,8 +180,7 @@ const customerRegister = async (req, res) => {
                 email: email || null,
                 password: hashedPassword,
                 is_active: true,
-                // Assign a generic code or use a sequence if needed
-                customer_code: `CUST-${Date.now().toString().slice(-6)}`
+                customer_code: nextCustomerCode
             }
         });
 
