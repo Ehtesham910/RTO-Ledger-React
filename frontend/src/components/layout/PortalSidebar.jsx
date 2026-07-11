@@ -15,7 +15,7 @@ function PortalSidebar() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setIsLogoutModalOpen(false);
-        navigate('/portal/login');
+        navigate('/');
     };
 
     const cancelLogout = () => {

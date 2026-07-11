@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 import '../assets/css/login.css';
 
 function Login() {
-    const [username, setUsername] = useState('');
+    const [loginType, setLoginType] = useState('staff'); // 'staff' or 'customer'
+    const [identifier, setIdentifier] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -18,10 +18,18 @@ function Login() {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', {
-                username,
-                password
-            });
+            let response;
+            if (loginType === 'staff') {
+                response = await axios.post('http://localhost:5000/api/auth/login', {
+                    username: identifier,
+                    password
+                });
+            } else {
+                response = await axios.post('http://localhost:5000/api/auth/customer-login', {
+                    mobile: identifier,
+                    password
+                });
+            }
 
             const { token, user } = response.data;
             
@@ -32,8 +40,12 @@ function Login() {
             // Set default headers for future requests
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            // Redirect to dashboard
-            navigate('/dashboard');
+            // Redirect to appropriate dashboard
+            if (loginType === 'staff') {
+                navigate('/dashboard');
+            } else {
+                navigate('/portal/dashboard');
+            }
             
         } catch (err) {
             console.error('Login error', err);
@@ -52,20 +64,37 @@ function Login() {
             <div className="login-card">
                 <div className="login-header">
                     <div className="login-logo">RTO Ledger</div>
-                    <div className="login-subtitle">Sign in to manage your system</div>
+                    <div className="login-subtitle">Sign in to access your account</div>
+                </div>
+
+                <div className="login-type-toggle">
+                    <button 
+                        type="button"
+                        className={loginType === 'staff' ? 'active' : ''} 
+                        onClick={() => { setLoginType('staff'); setIdentifier(''); setError(''); }}
+                    >
+                        Staff
+                    </button>
+                    <button 
+                        type="button"
+                        className={loginType === 'customer' ? 'active' : ''} 
+                        onClick={() => { setLoginType('customer'); setIdentifier(''); setError(''); }}
+                    >
+                        Customer
+                    </button>
                 </div>
 
                 {error && <div className="error-message">{error}</div>}
 
                 <form className="login-form" onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="identifier">{loginType === 'staff' ? 'Username' : 'Mobile Number'}</label>
                         <input 
                             type="text" 
-                            id="username" 
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter your username"
+                            id="identifier" 
+                            value={identifier}
+                            onChange={(e) => setIdentifier(e.target.value)}
+                            placeholder={loginType === 'staff' ? 'Enter your username' : 'Enter your registered mobile'}
                             required
                         />
                     </div>
@@ -77,7 +106,7 @@ function Login() {
                             id="password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Enter your password"
+                            placeholder={loginType === 'customer' ? 'Enter your password (default: customer123)' : 'Enter your password'}
                             required
                         />
                     </div>

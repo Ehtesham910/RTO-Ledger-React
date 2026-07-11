@@ -22,7 +22,7 @@ function Navbar() {
     e.preventDefault();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    navigate('/login');
+    navigate('/');
   };
 
   const displayName = user && user.username ? user.username : 'Admin';

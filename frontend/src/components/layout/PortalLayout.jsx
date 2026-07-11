@@ -9,7 +9,7 @@ function PortalLayout() {
 
     // Make sure only Customer role can access the portal layout
     if (!token || user.role !== 'Customer') {
-        return <Navigate to="/portal/login" replace />;
+        return <Navigate to="/" replace />;
     }
 
     return (
