@@ -71,8 +71,24 @@ function MyServiceRequests() {
                                     <td>{formatCurrency(req.amount)}</td>
                                     <td>{formatDate(req.created_at)}</td>
                                     <td>
-                                        <span className={`status-badge status-${(req.status || 'pending').toLowerCase()}`}>
-                                            {req.status}
+                                        <span style={{
+                                            padding: '4px 8px',
+                                            borderRadius: '4px',
+                                            fontSize: '12px',
+                                            fontWeight: '500',
+                                            whiteSpace: 'nowrap',
+                                            backgroundColor: 
+                                                req.status === 'Completed' ? '#dcfce7' : 
+                                                req.status === 'In Progress' ? '#dbeafe' : 
+                                                req.status === 'Cancelled' ? '#fee2e2' : 
+                                                '#fef9c3',
+                                            color: 
+                                                req.status === 'Completed' ? '#166534' : 
+                                                req.status === 'In Progress' ? '#1e40af' : 
+                                                req.status === 'Cancelled' ? '#991b1b' : 
+                                                '#854d0e'
+                                        }}>
+                                            {req.status || 'Pending'}
                                         </span>
                                     </td>
                                 </tr>
