@@ -8,9 +8,11 @@ const getDashboardStats = async (req, res) => {
     try {
         const customerId = BigInt(req.user.id);
         
-        const [vehiclesCount, requestsCount, ledgers] = await Promise.all([
+        const [vehiclesCount, requestsCount, pendingRequestsCount, completedRequestsCount, ledgers] = await Promise.all([
             prisma.vehicles.count({ where: { customer_id: customerId, is_active: true } }),
             prisma.service_requests.count({ where: { customer_id: customerId } }),
+            prisma.service_requests.count({ where: { customer_id: customerId, status: 'Pending' } }),
+            prisma.service_requests.count({ where: { customer_id: customerId, status: 'Completed' } }),
             prisma.ledgers.findMany({ where: { customer_id: customerId } })
         ]);
 
@@ -20,6 +22,8 @@ const getDashboardStats = async (req, res) => {
         res.json({
             vehiclesCount,
             requestsCount,
+            pendingRequestsCount,
+            completedRequestsCount,
             totalDue,
             totalPaid
         });
