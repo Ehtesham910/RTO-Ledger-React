@@ -47,6 +47,16 @@ function MyVehicles() {
         return new Date(dateString).toLocaleDateString('en-IN');
     };
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum; // fallback
+    };
+
     return (
         <div className="page-container">
             <div className="page-header">
@@ -79,7 +89,9 @@ function MyVehicles() {
                             {vehicles.map((v, idx) => (
                                 <tr key={v.id}>
                                     <td>{idx + 1}</td>
-                                    <td style={{ fontWeight: '600', color: '#0f172a' }}>{v.vehicle_number}</td>
+                                    <td>
+                                        <span className="badge" style={{ whiteSpace: 'nowrap' }}>{formatVehicleNumber(v.vehicle_number)}</span>
+                                    </td>
                                     <td>{v.vehicle_type}</td>
                                     <td>{v.chassis_number || '-'}</td>
                                     <td>{v.engine_number || '-'}</td>

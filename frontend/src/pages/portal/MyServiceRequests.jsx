@@ -30,6 +30,16 @@ function MyServiceRequests() {
         return new Date(dateString).toLocaleDateString('en-IN');
     };
 
+    const formatVehicleNumber = (vNum) => {
+        if (!vNum) return '-';
+        const clean = vNum.replace(/\s+/g, '').toUpperCase();
+        const match = clean.match(/^([A-Z]{2})(\d{1,2})([A-Z]{1,3})?(\d{1,4})$/);
+        if (match) {
+            return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
+        }
+        return vNum; // fallback
+    };
+
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount || 0);
     };
@@ -66,7 +76,9 @@ function MyServiceRequests() {
                                 <tr key={req.id}>
                                     <td>{idx + 1}</td>
                                     <td style={{ fontWeight: '600', color: '#4f46e5' }}>{req.request_no}</td>
-                                    <td>{req.vehicles?.vehicle_number}</td>
+                                    <td>
+                                        <span className="badge" style={{ whiteSpace: 'nowrap' }}>{formatVehicleNumber(req.vehicles?.vehicle_number)}</span>
+                                    </td>
                                     <td>{req.services?.service_name}</td>
                                     <td>{formatCurrency(req.amount)}</td>
                                     <td>{formatDate(req.created_at)}</td>

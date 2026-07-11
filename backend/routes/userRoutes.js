@@ -21,6 +21,23 @@ router.get('/', async (req, res) => {
     }
 });
 
+// 1.5 Get user by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await prisma.users.findUnique({
+            where: { id: BigInt(id) },
+            include: {
+                roles: true
+            }
+        });
+        if (!user) return res.status(404).json({ error: "User not found" });
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // 2. Create a new User
 router.post('/', async (req, res) => {
     try {

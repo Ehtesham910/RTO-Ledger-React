@@ -12,6 +12,19 @@ const getCustomers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+const getCustomerById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const customer = await prisma.customers.findUnique({
+            where: { id: BigInt(id) }
+        });
+        if (!customer) return res.status(404).json({ error: "Customer not found" });
+        res.json(customer);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
 const createCustomer = async (req, res) => {
     try {
         const { customer_code, name, mobile, email, address, is_active } = req.body;
@@ -71,4 +84,4 @@ const deleteCustomer = async (req, res) => {
     }
 };
 
-module.exports = { getCustomers, createCustomer, updateCustomerStatus, updateCustomer, deleteCustomer };
+module.exports = { getCustomers, getCustomerById, createCustomer, updateCustomerStatus, updateCustomer, deleteCustomer };

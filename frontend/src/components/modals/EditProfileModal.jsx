@@ -17,14 +17,43 @@ function EditProfileModal({ isOpen, onClose, user, onSuccess }) {
 
     useEffect(() => {
         if (isOpen && user) {
-            setFormData({
-                username: user.username || '',
-                name: user.name || '',
-                email: user.email || '',
-                mobile: user.mobile || '',
-                address: user.address || '',
-                password: ''
-            });
+            const fetchProfile = async () => {
+                try {
+                    if (isCustomer) {
+                        const res = await axios.get(`http://localhost:5000/api/customers/${user.id}`);
+                        setFormData({
+                            username: '',
+                            name: res.data.name || '',
+                            email: res.data.email || '',
+                            mobile: res.data.mobile || '',
+                            address: res.data.address || '',
+                            password: ''
+                        });
+                    } else {
+                        const res = await axios.get(`http://localhost:5000/api/users/${user.id}`);
+                        setFormData({
+                            username: res.data.username || '',
+                            name: '',
+                            email: res.data.email || '',
+                            mobile: '',
+                            address: '',
+                            password: ''
+                        });
+                    }
+                } catch (err) {
+                    console.error("Failed to fetch profile", err);
+                    // Fallback to basic session info
+                    setFormData({
+                        username: user.username || '',
+                        name: user.name || user.username || '',
+                        email: user.email || '',
+                        mobile: user.mobile || '',
+                        address: user.address || '',
+                        password: ''
+                    });
+                }
+            };
+            fetchProfile();
         }
     }, [isOpen, user]);
 
@@ -98,7 +127,7 @@ function EditProfileModal({ isOpen, onClose, user, onSuccess }) {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Mobile <span style={{color: 'red'}}>*</span></label>
-                                <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} required />
+                                <input type="tel" name="mobile" value={formData.mobile} onChange={handleInputChange} pattern="[0-9]{10}" title="Must be a 10-digit number" required />
                             </div>
                             <div className="form-group">
                                 <label>Address</label>
