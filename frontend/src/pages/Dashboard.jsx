@@ -49,7 +49,7 @@ const StatCard = ({ title, value, color, bgColor, icon }) => (
 
 function Dashboard() {
     const [stats, setStats] = useState(() => {
-        const savedStats = localStorage.getItem('dashboardStats');
+        const savedStats = sessionStorage.getItem('dashboardStats');
         return savedStats ? JSON.parse(savedStats) : {
             totalCustomers: 0,
             totalVehicles: 0,
@@ -67,7 +67,7 @@ function Dashboard() {
     });
 
     const [loading, setLoading] = useState(() => {
-        return localStorage.getItem('dashboardStats') ? false : true;
+        return sessionStorage.getItem('dashboardStats') ? false : true;
     });
 
     useEffect(() => {
@@ -75,7 +75,7 @@ function Dashboard() {
             try {
                 const response = await axios.get('http://localhost:5000/api/dashboard/stats');
                 setStats(response.data);
-                localStorage.setItem('dashboardStats', JSON.stringify(response.data));
+                sessionStorage.setItem('dashboardStats', JSON.stringify(response.data));
             } catch (error) {
                 console.error("Error fetching dashboard stats:", error);
             } finally {

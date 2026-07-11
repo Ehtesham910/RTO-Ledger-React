@@ -25,7 +25,7 @@ import MyReceipts from './pages/portal/MyReceipts';
 
 // Setup global axios interceptor
 axios.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -38,8 +38,8 @@ axios.interceptors.response.use((response) => {
     return response;
 }, (error) => {
     if (error.response && error.response.status === 401) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         window.location.href = '/';
     }
     return Promise.reject(error);
@@ -47,9 +47,9 @@ axios.interceptors.response.use((response) => {
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }) => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     const location = useLocation();
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const role = user.role;
 
     if (!token) {

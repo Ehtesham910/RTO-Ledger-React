@@ -33,9 +33,9 @@ function Login() {
 
             const { token, user } = response.data;
             
-            // Store token in localStorage
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
+            // Store token in sessionStorage
+            sessionStorage.setItem('token', token);
+            sessionStorage.setItem('user', JSON.stringify(user));
 
             // Set default headers for future requests
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;

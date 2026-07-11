@@ -4,16 +4,16 @@ import '../../assets/css/ledger.css';
 
 function MyLedger() {
     const [ledgers, setLedgers] = useState(() => {
-        const saved = localStorage.getItem('portal_ledger');
+        const saved = sessionStorage.getItem('portal_ledger');
         return saved ? JSON.parse(saved) : [];
     });
-    const [loading, setLoading] = useState(!localStorage.getItem('portal_ledger'));
+    const [loading, setLoading] = useState(!sessionStorage.getItem('portal_ledger'));
 
     useEffect(() => {
         axios.get('http://localhost:5000/api/portal/ledger')
             .then(res => {
                 setLedgers(res.data);
-                localStorage.setItem('portal_ledger', JSON.stringify(res.data));
+                sessionStorage.setItem('portal_ledger', JSON.stringify(res.data));
             })
             .catch(err => console.error("Error fetching ledger:", err))
             .finally(() => setLoading(false));

@@ -8,12 +8,12 @@ import Pagination from '../components/Pagination';
 
 function Roles() {
     const [roles, setRoles] = useState(() => {
-        const savedData = localStorage.getItem('rolesData');
+        const savedData = sessionStorage.getItem('rolesData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
     const [allPermissions, setAllPermissions] = useState(() => {
-        const savedPerms = localStorage.getItem('allPermissionsData');
+        const savedPerms = sessionStorage.getItem('allPermissionsData');
         return savedPerms ? JSON.parse(savedPerms) : [];
     });
 
@@ -30,11 +30,11 @@ function Roles() {
         try {
             const response = await axios.get('http://localhost:5000/api/roles');
             setRoles(response.data);
-            localStorage.setItem('rolesData', JSON.stringify(response.data));
+            sessionStorage.setItem('rolesData', JSON.stringify(response.data));
 
             const permResponse = await axios.get('http://localhost:5000/api/roles/permissions-list');
             setAllPermissions(permResponse.data);
-            localStorage.setItem('allPermissionsData', JSON.stringify(permResponse.data));
+            sessionStorage.setItem('allPermissionsData', JSON.stringify(permResponse.data));
         } catch (error) {
             console.error("Error fetching roles:", error);
         }

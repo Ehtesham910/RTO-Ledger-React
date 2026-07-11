@@ -13,11 +13,11 @@ function ServiceRequests() {
     const [selectedRequest, setSelectedRequest] = useState(null);
     const [selectedEditRequest, setSelectedEditRequest] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const canEdit = ['Admin', 'Operator'].includes(user.role);
 
     const [requests, setRequests] = useState(() => {
-        const savedData = localStorage.getItem('serviceRequestsData');
+        const savedData = sessionStorage.getItem('serviceRequestsData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
@@ -30,7 +30,7 @@ function ServiceRequests() {
         axios.get('http://localhost:5000/api/servicerequests')
             .then((response) => {
                 setRequests(response.data);
-                localStorage.setItem('serviceRequestsData', JSON.stringify(response.data));
+                sessionStorage.setItem('serviceRequestsData', JSON.stringify(response.data));
             })
             .catch((error) => {
                 console.error("Error fetching service requests:", error);
@@ -82,7 +82,7 @@ function ServiceRequests() {
             await axios.put(`http://localhost:5000/api/servicerequests/${id}`, { status: newStatus });
             const updatedRequests = requests.map(req => req.id === id ? {...req, status: newStatus} : req);
             setRequests(updatedRequests);
-            localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+            sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
         } catch (error) {
             console.error("Error updating status:", error);
             alert("Failed to update status.");
@@ -95,7 +95,7 @@ function ServiceRequests() {
                 await axios.delete(`http://localhost:5000/api/servicerequests/${id}`);
                 const updatedRequests = requests.filter(req => req.id !== id);
                 setRequests(updatedRequests);
-                localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+                sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
             } catch (error) {
                 if (error.response && error.response.data && error.response.data.error) {
                     alert(error.response.data.error);
@@ -255,7 +255,7 @@ function ServiceRequests() {
                         // Update UI
                         const updatedRequests = [response.data, ...requests];
                         setRequests(updatedRequests);
-                        localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+                        sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
                     } catch (error) {
                         console.error("Error saving service request:", error);
                         alert("Failed to create service request.");
@@ -283,7 +283,7 @@ function ServiceRequests() {
                             req.id === updatedData.id ? response.data : req
                         );
                         setRequests(updatedRequests);
-                        localStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
+                        sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
                     } catch (error) {
                         console.error("Error updating service request:", error);
                         alert("Failed to update service request.");

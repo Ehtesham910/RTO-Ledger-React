@@ -16,7 +16,7 @@ const EditUserModal = ({ isOpen, onClose, onSave, user }) => {
             setPassword(''); // Don't show existing password
             setRoleId(user.role_id ? String(user.role_id) : '');
 
-            const savedRoles = localStorage.getItem('rolesData');
+            const savedRoles = sessionStorage.getItem('rolesData');
             if (savedRoles) {
                 setRolesList(JSON.parse(savedRoles));
             } else {

@@ -10,14 +10,14 @@ function Receipts() {
     const navigate = useNavigate();
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const canEdit = ['Admin', 'Accountant'].includes(user.role);
 
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);
 
     const [receipts, setReceipts] = useState(() => {
-        const savedData = localStorage.getItem('receiptsData');
+        const savedData = sessionStorage.getItem('receiptsData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
@@ -29,7 +29,7 @@ function Receipts() {
         axios.get('http://localhost:5000/api/receipts')
             .then((response) => {
                 setReceipts(response.data);
-                localStorage.setItem('receiptsData', JSON.stringify(response.data));
+                sessionStorage.setItem('receiptsData', JSON.stringify(response.data));
             })
             .catch((error) => {
                 console.error("Error fetching receipts:", error);

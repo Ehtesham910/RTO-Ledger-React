@@ -19,8 +19,8 @@ function CustomerLogin() {
             const response = await axios.post('http://localhost:5000/api/auth/customer-login', { mobile, password });
             
             // Save token and user info
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            sessionStorage.setItem('token', response.data.token);
+            sessionStorage.setItem('user', JSON.stringify(response.data.user));
             
             // Set default headers for future requests
             axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;

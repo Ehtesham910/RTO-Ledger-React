@@ -4,8 +4,8 @@ import Navbar from './Navbar';
 import PortalSidebar from './PortalSidebar';
 
 function PortalLayout() {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    const token = localStorage.getItem('token');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    const token = sessionStorage.getItem('token');
 
     // Make sure only Customer role can access the portal layout
     if (!token || user.role !== 'Customer') {

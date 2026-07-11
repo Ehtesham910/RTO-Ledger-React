@@ -8,11 +8,11 @@ import Pagination from '../components/Pagination';
 
 function Users() {
     const [users, setUsers] = useState(() => {
-        const savedData = localStorage.getItem('usersData');
+        const savedData = sessionStorage.getItem('usersData');
         return savedData ? JSON.parse(savedData) : [];
     });
     const [allPermissions, setAllPermissions] = useState(() => {
-        const savedPerms = localStorage.getItem('allPermissionsData');
+        const savedPerms = sessionStorage.getItem('allPermissionsData');
         return savedPerms ? JSON.parse(savedPerms) : [];
     });
 
@@ -21,7 +21,7 @@ function Users() {
     const [isPermissionsModalOpen, setIsPermissionsModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
 
-    const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUser = JSON.parse(sessionStorage.getItem('user') || '{}');
     const isAdmin = currentUser.role === 'Admin';
 
     // Pagination state
@@ -36,8 +36,8 @@ function Users() {
             ]);
             setUsers(usersRes.data);
             setAllPermissions(permsRes.data);
-            localStorage.setItem('usersData', JSON.stringify(usersRes.data));
-            localStorage.setItem('allPermissionsData', JSON.stringify(permsRes.data));
+            sessionStorage.setItem('usersData', JSON.stringify(usersRes.data));
+            sessionStorage.setItem('allPermissionsData', JSON.stringify(permsRes.data));
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -94,7 +94,7 @@ function Users() {
                 u.id === id ? { ...u, is_active: newStatus } : u
             );
             setUsers(updatedUsers);
-            localStorage.setItem('usersData', JSON.stringify(updatedUsers));
+            sessionStorage.setItem('usersData', JSON.stringify(updatedUsers));
             await axios.put(`http://localhost:5000/api/users/${id}/status`, { is_active: newStatus });
         } catch (error) {
             console.error("Error updating user status:", error);

@@ -6,19 +6,19 @@ import PortalEditVehicleModal from '../../components/modals/PortalEditVehicleMod
 
 function MyVehicles() {
     const [vehicles, setVehicles] = useState(() => {
-        const saved = localStorage.getItem('portal_vehicles');
+        const saved = sessionStorage.getItem('portal_vehicles');
         return saved ? JSON.parse(saved) : [];
     });
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEditVehicle, setSelectedEditVehicle] = useState(null);
-    const [loading, setLoading] = useState(!localStorage.getItem('portal_vehicles'));
+    const [loading, setLoading] = useState(!sessionStorage.getItem('portal_vehicles'));
     
     const fetchVehicles = () => {
         axios.get('http://localhost:5000/api/portal/vehicles')
             .then(res => {
                 setVehicles(res.data);
-                localStorage.setItem('portal_vehicles', JSON.stringify(res.data));
+                sessionStorage.setItem('portal_vehicles', JSON.stringify(res.data));
             })
             .catch(err => console.error("Error fetching vehicles:", err))
             .finally(() => setLoading(false));

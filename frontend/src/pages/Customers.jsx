@@ -13,11 +13,11 @@ function Customers() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEditCustomer, setSelectedEditCustomer] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const canEdit = ['Admin', 'Operator', 'Agent'].includes(user.role);
 
     const [customers, setCustomers] = useState(() => {
-        const savedData = localStorage.getItem('customersData');
+        const savedData = sessionStorage.getItem('customersData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
@@ -30,7 +30,7 @@ function Customers() {
         axios.get('http://localhost:5000/api/customers')
             .then((response) => {
                 setCustomers(response.data);
-                localStorage.setItem('customersData', JSON.stringify(response.data));
+                sessionStorage.setItem('customersData', JSON.stringify(response.data));
             })
             .catch((error) => {
                 console.error("Error fetching customers:", error);
@@ -52,7 +52,7 @@ function Customers() {
                 c.id === id ? { ...c, is_active: newStatus } : c
             );
             setCustomers(updatedCustomers);
-            localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
+            sessionStorage.setItem('customersData', JSON.stringify(updatedCustomers));
 
             // Backend update
             await axios.put(`http://localhost:5000/api/customers/${id}/status`, { is_active: newStatus });
@@ -73,7 +73,7 @@ function Customers() {
                 // Update UI
                 const updatedCustomers = customers.filter(c => c.id !== id);
                 setCustomers(updatedCustomers);
-                localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
+                sessionStorage.setItem('customersData', JSON.stringify(updatedCustomers));
 
             } catch (error) {
                 console.error("Error deleting customer:", error);
@@ -231,7 +231,7 @@ function Customers() {
                         // Update UI
                         const updatedCustomers = [response.data, ...customers];
                         setCustomers(updatedCustomers);
-                        localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
+                        sessionStorage.setItem('customersData', JSON.stringify(updatedCustomers));
 
                         console.log("Customer saved successfully!", response.data);
                     } catch (error) {
@@ -261,7 +261,7 @@ function Customers() {
                             c.id === updatedCustomerData.id ? response.data : c
                         );
                         setCustomers(updatedCustomers);
-                        localStorage.setItem('customersData', JSON.stringify(updatedCustomers));
+                        sessionStorage.setItem('customersData', JSON.stringify(updatedCustomers));
                         
                         console.log("Customer updated successfully!", response.data);
                     } catch (error) {

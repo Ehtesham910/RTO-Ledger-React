@@ -4,7 +4,7 @@ import '../../assets/css/servicerequests.css';
 
 function MyServiceRequests() {
     const [requests, setRequests] = useState(() => {
-        const saved = localStorage.getItem('portal_requests');
+        const saved = sessionStorage.getItem('portal_requests');
         return saved ? JSON.parse(saved) : [];
     });
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -18,13 +18,13 @@ function MyServiceRequests() {
         amount: '',
         remarks: ''
     });
-    const [loading, setLoading] = useState(!localStorage.getItem('portal_requests'));
+    const [loading, setLoading] = useState(!sessionStorage.getItem('portal_requests'));
 
     const fetchRequests = () => {
         axios.get('http://localhost:5000/api/portal/service-requests')
             .then(res => {
                 setRequests(res.data);
-                localStorage.setItem('portal_requests', JSON.stringify(res.data));
+                sessionStorage.setItem('portal_requests', JSON.stringify(res.data));
             })
             .catch(err => console.error("Error fetching requests:", err))
             .finally(() => setLoading(false));

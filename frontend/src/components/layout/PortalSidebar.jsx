@@ -12,8 +12,8 @@ function PortalSidebar() {
     };
 
     const confirmLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         setIsLogoutModalOpen(false);
         navigate('/');
     };

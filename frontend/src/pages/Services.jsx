@@ -13,11 +13,11 @@ function Services() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEditService, setSelectedEditService] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const canEdit = ['Admin', 'Operator', 'Agent'].includes(user.role);
 
     const [services, setServices] = useState(() => {
-        const savedData = localStorage.getItem('servicesData');
+        const savedData = sessionStorage.getItem('servicesData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
@@ -29,7 +29,7 @@ function Services() {
         axios.get('http://localhost:5000/api/services')
             .then((response) => {
                 setServices(response.data);
-                localStorage.setItem('servicesData', JSON.stringify(response.data));
+                sessionStorage.setItem('servicesData', JSON.stringify(response.data));
             })
             .catch((error) => {
                 console.error("Error fetching services:", error);
@@ -49,7 +49,7 @@ function Services() {
                 s.id === id ? { ...s, is_active: newStatus } : s
             );
             setServices(updatedServices);
-            localStorage.setItem('servicesData', JSON.stringify(updatedServices));
+            sessionStorage.setItem('servicesData', JSON.stringify(updatedServices));
             
             await axios.put(`http://localhost:5000/api/services/${id}/status`, { is_active: newStatus });
         } catch (error) {
@@ -66,7 +66,7 @@ function Services() {
                 // Update UI
                 const updatedServices = services.filter(s => s.id !== id);
                 setServices(updatedServices);
-                localStorage.setItem('servicesData', JSON.stringify(updatedServices));
+                sessionStorage.setItem('servicesData', JSON.stringify(updatedServices));
 
             } catch (error) {
                 console.error("Error deleting service:", error);
@@ -187,7 +187,7 @@ function Services() {
                         // Update UI
                         const updatedServices = [response.data, ...services];
                         setServices(updatedServices);
-                        localStorage.setItem('servicesData', JSON.stringify(updatedServices));
+                        sessionStorage.setItem('servicesData', JSON.stringify(updatedServices));
                     } catch (error) {
                         console.error("Error saving service:", error);
                         alert("Failed to save service.");
@@ -215,7 +215,7 @@ function Services() {
                             s.id === updatedServiceData.id ? response.data : s
                         );
                         setServices(updatedServices);
-                        localStorage.setItem('servicesData', JSON.stringify(updatedServices));
+                        sessionStorage.setItem('servicesData', JSON.stringify(updatedServices));
                     } catch (error) {
                         console.error("Error updating service:", error);
                         alert("Failed to update service.");

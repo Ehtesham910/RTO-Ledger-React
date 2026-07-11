@@ -13,11 +13,11 @@ function Ledger() {
     const [selectedLedger, setSelectedLedger] = useState(null);
     const [selectedEditEntry, setSelectedEditEntry] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const canEdit = ['Admin', 'Accountant'].includes(user.role);
 
     const [ledgers, setLedgers] = useState(() => {
-        const savedData = localStorage.getItem('ledgerData');
+        const savedData = sessionStorage.getItem('ledgerData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
@@ -30,7 +30,7 @@ function Ledger() {
         axios.get('http://localhost:5000/api/ledger')
             .then((response) => {
                 setLedgers(response.data);
-                localStorage.setItem('ledgerData', JSON.stringify(response.data));
+                sessionStorage.setItem('ledgerData', JSON.stringify(response.data));
             })
             .catch((error) => {
                 console.error("Error fetching ledger:", error);
@@ -205,7 +205,7 @@ function Ledger() {
                             l.id === updatedData.id ? response.data : l
                         );
                         setLedgers(updatedLedger);
-                        localStorage.setItem('ledgerData', JSON.stringify(updatedLedger));
+                        sessionStorage.setItem('ledgerData', JSON.stringify(updatedLedger));
                     } catch (error) {
                         console.error("Error updating ledger record:", error);
                         alert("Failed to update ledger record.");

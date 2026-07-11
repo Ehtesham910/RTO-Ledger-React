@@ -13,12 +13,12 @@ function Vehicles(){
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedEditVehicle, setSelectedEditVehicle] = useState(null);
 
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const canEdit = ['Admin', 'Operator', 'Agent'].includes(user.role);
 
     // State initialize karte waqt hi LocalStorage se purana data nikal lenge
     const [vehicles, setVehicles] = useState(() => {
-        const savedData = localStorage.getItem('vehiclesData');
+        const savedData = sessionStorage.getItem('vehiclesData');
         return savedData ? JSON.parse(savedData) : [];
     });
 
@@ -33,7 +33,7 @@ function Vehicles(){
                 // Naya data aate hi screen par update karein
                 setVehicles(response.data);
                 // Agli baar ke liye naya data browser me save kar lein
-                localStorage.setItem('vehiclesData', JSON.stringify(response.data));
+                sessionStorage.setItem('vehiclesData', JSON.stringify(response.data));
             })
             .catch((error)=>{
                 console.error("Error fetching vehicles:", error);
@@ -54,7 +54,7 @@ function Vehicles(){
                 v.id === id ? { ...v, is_active: newStatus } : v
             );
             setVehicles(updatedVehicles);
-            localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
+            sessionStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
             
             // Backend update
             await axios.put(`http://localhost:5000/api/vehicles/${id}/status`, { is_active: newStatus });
@@ -74,7 +74,7 @@ function Vehicles(){
                 // Update UI
                 const updatedVehicles = vehicles.filter(v => v.id !== id);
                 setVehicles(updatedVehicles);
-                localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
+                sessionStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
 
             } catch (error) {
                 console.error("Error deleting vehicle:", error);
@@ -238,7 +238,7 @@ function Vehicles(){
                         // Update UI
                         const updatedVehicles = [response.data, ...vehicles];
                         setVehicles(updatedVehicles);
-                        localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
+                        sessionStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
                         
                         console.log("Vehicle saved successfully!", response.data);
                     } catch (error) {
@@ -268,7 +268,7 @@ function Vehicles(){
                             v.id === updatedVehicleData.id ? response.data : v
                         );
                         setVehicles(updatedVehicles);
-                        localStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
+                        sessionStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
                         
                         console.log("Vehicle updated successfully!", response.data);
                     } catch (error) {

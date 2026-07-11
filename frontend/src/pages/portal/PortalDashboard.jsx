@@ -23,7 +23,7 @@ function PortalDashboard() {
         totalPaid: 0
     });
     
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
 
     const [isVehicleModalOpen, setIsVehicleModalOpen] = useState(false);
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);

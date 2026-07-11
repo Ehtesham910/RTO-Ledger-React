@@ -18,7 +18,7 @@ const AddUserModal = ({ isOpen, onClose, onSave }) => {
             setRoleId('');
 
             // Roles ko local caching/storage se ya api se check karenge
-            const savedRoles = localStorage.getItem('rolesData');
+            const savedRoles = sessionStorage.getItem('rolesData');
             if (savedRoles) {
                 setRolesList(JSON.parse(savedRoles));
             } else {
