@@ -5,23 +5,6 @@ import '../../assets/css/sidebar.css';
 function PortalSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
-    const handleLogout = () => {
-        setIsLogoutModalOpen(true);
-    };
-
-    const confirmLogout = () => {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
-        setIsLogoutModalOpen(false);
-        navigate('/');
-    };
-
-    const cancelLogout = () => {
-        setIsLogoutModalOpen(false);
-    };
-
     const isActive = (path) => {
         return location.pathname === path || location.pathname.startsWith(path + '/');
     };
@@ -75,56 +58,8 @@ function PortalSidebar() {
                         </NavLink>
                     </li>
 
-                    <hr className="sidebar-divider" />
-
-                    <li className="menu-item" style={{ marginTop: 'auto' }}>
-                        <a onClick={handleLogout} style={{ cursor: 'pointer', color: '#ef4444' }}>
-                            <span className="menu-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                            </span>
-                            <span className="menu-label">Logout</span>
-                        </a>
-                    </li>
                 </ul>
             </aside>
-
-            {/* Custom Logout Confirmation Modal */}
-            {isLogoutModalOpen && (
-                <div className="modal-overlay" style={{ zIndex: 1000 }} onClick={cancelLogout}>
-                    <div className="modal-container" style={{ maxWidth: '400px', textAlign: 'center', padding: '30px' }} onClick={(e) => e.stopPropagation()}>
-                        <div style={{ 
-                            width: '60px', height: '60px', borderRadius: '50%', background: '#fee2e2', 
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
-                            margin: '0 auto 20px auto' 
-                        }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                        </div>
-                        <h2 style={{ marginBottom: '10px', fontSize: '20px', color: '#1e293b' }}>Confirm Logout</h2>
-                        <p style={{ color: '#64748b', marginBottom: '25px' }}>Are you sure you want to log out of your customer portal?</p>
-                        
-                        <div style={{ display: 'flex', gap: '15px', justifyContent: 'center' }}>
-                            <button 
-                                onClick={cancelLogout}
-                                style={{
-                                    padding: '10px 20px', background: 'white', border: '1px solid #cbd5e1', 
-                                    borderRadius: '6px', color: '#475569', fontWeight: '500', cursor: 'pointer'
-                                }}
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={confirmLogout}
-                                style={{
-                                    padding: '10px 20px', background: '#ef4444', border: 'none', 
-                                    borderRadius: '6px', color: 'white', fontWeight: '500', cursor: 'pointer'
-                                }}
-                            >
-                                Logout
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </>
     );
 }
