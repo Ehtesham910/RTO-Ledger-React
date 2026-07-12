@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../../assets/css/servicerequests.css';
+import '../../assets/css/serviceRequests.css';
 import PortalAddServiceRequestModal from '../../components/modals/PortalAddServiceRequestModal';
 
 function MyServiceRequests() {
