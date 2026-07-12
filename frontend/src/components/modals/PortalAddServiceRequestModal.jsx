@@ -131,6 +131,7 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
                 headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
             });
             onSuccess(response.data);
+            onClose();
         } catch (error) {
             if (error.response && error.response.status === 400 && error.response.data.error === "Duplicate pending request") {
                 alert(error.response.data.message);
