@@ -24,4 +24,7 @@ router.get('/receipts', verifyToken, checkRole(['Customer']), portalController.g
 // Search
 router.get('/search', verifyToken, checkRole(['Customer']), portalController.getPortalSearch);
 
+// Payment
+router.post('/create-order', verifyToken, checkRole(['Customer']), portalController.createRazorpayOrder);
+
 module.exports = router;

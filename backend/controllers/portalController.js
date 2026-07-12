@@ -1,4 +1,12 @@
 const prisma = require('../prismaClient');
+const Razorpay = require('razorpay');
+const crypto = require('crypto');
+const { generateReceiptNo } = require('./receiptController');
+
+const razorpayInstance = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+});
 
 // Helper for BigInt serialization
 BigInt.prototype.toJSON = function () { return this.toString(); };
@@ -154,13 +162,45 @@ const getServiceRequests = async (req, res) => {
 const addServiceRequest = async (req, res) => {
     try {
         const customerId = BigInt(req.user.id);
-        const { vehicle_id, service_id, amount, remarks } = req.body;
+        const { vehicle_id, service_id, amount, remarks, razorpay_payment_id, razorpay_order_id, razorpay_signature, amount_paid } = req.body;
+
+        // Verify Razorpay signature if payment was made
+        let isPaid = false;
+        if (razorpay_payment_id && razorpay_order_id && razorpay_signature) {
+            const shasum = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
+            shasum.update(`${razorpay_order_id}|${razorpay_payment_id}`);
+            const digest = shasum.digest('hex');
+
+            if (digest !== razorpay_signature) {
+                return res.status(400).json({ error: "Invalid payment signature" });
+            }
+            isPaid = true;
+        }
 
         // Verify vehicle belongs to this customer
         const vehicle = await prisma.vehicles.findFirst({
             where: { id: BigInt(vehicle_id), customer_id: customerId }
         });
         if (!vehicle) return res.status(403).json({ error: "Invalid vehicle selection" });
+
+        // Check for existing pending request
+        const existingPendingRequest = await prisma.service_requests.findFirst({
+            where: {
+                customer_id: customerId,
+                vehicle_id: BigInt(vehicle_id),
+                service_id: BigInt(service_id),
+                status: {
+                    notIn: ['Completed', 'Cancelled', 'Rejected']
+                }
+            }
+        });
+        
+        if (existingPendingRequest) {
+            return res.status(400).json({ 
+                error: "Duplicate pending request", 
+                message: "This service request has already been submitted and is currently pending. You cannot submit a new request." 
+            });
+        }
 
         // Generate request number
         const maxReq = await prisma.service_requests.findFirst({ orderBy: { id: 'desc' } });
@@ -184,17 +224,43 @@ const addServiceRequest = async (req, res) => {
         });
 
         // Auto-create ledger entry
-        await prisma.ledgers.create({
+        const actualFee = parseFloat(amount) || 0;
+        const actualPaid = isPaid ? parseFloat(amount_paid || 0) : 0;
+        const due = actualFee - actualPaid;
+
+        let ledgerStatus = 'Pending';
+        if (actualPaid >= actualFee && actualFee > 0) {
+            ledgerStatus = 'Paid';
+        } else if (actualPaid > 0 && actualPaid < actualFee) {
+            ledgerStatus = 'Partial';
+        }
+
+        const newLedger = await prisma.ledgers.create({
             data: {
                 customer_id: customerId,
                 vehicle_id: BigInt(vehicle_id),
                 service_request_id: newRequest.id,
-                service_fee: amount || 0,
-                amount_paid: 0,
-                due_amount: amount || 0,
-                status: 'Pending'
+                service_fee: actualFee,
+                amount_paid: actualPaid,
+                due_amount: due > 0 ? due : 0,
+                status: ledgerStatus
             }
         });
+
+        // If payment was made, generate a receipt
+        if (isPaid && actualPaid > 0) {
+            const receiptNo = await generateReceiptNo();
+            await prisma.receipts.create({
+                data: {
+                    receipt_no: receiptNo,
+                    ledger_id: newLedger.id,
+                    amount_received: actualPaid,
+                    payment_mode: 'Online',
+                    transaction_reference: razorpay_payment_id,
+                    remarks: 'Paid via Razorpay Customer Portal'
+                }
+            });
+        }
 
         res.status(201).json(newRequest);
     } catch (error) {
@@ -335,6 +401,51 @@ const getPortalSearch = async (req, res) => {
     }
 };
 
+// Create Razorpay Order
+const createRazorpayOrder = async (req, res) => {
+    try {
+        const customerId = BigInt(req.user.id);
+        const { amount, vehicle_id, service_id } = req.body;
+        
+        if (!amount || amount <= 0) {
+            return res.status(400).json({ error: "Invalid amount" });
+        }
+
+        // If vehicle_id and service_id are provided, validate for duplicates
+        if (vehicle_id && service_id) {
+            const existingPendingRequest = await prisma.service_requests.findFirst({
+                where: {
+                    customer_id: customerId,
+                    vehicle_id: BigInt(vehicle_id),
+                    service_id: BigInt(service_id),
+                    status: {
+                        notIn: ['Completed', 'Cancelled', 'Rejected']
+                    }
+                }
+            });
+            
+            if (existingPendingRequest) {
+                return res.status(400).json({ 
+                    error: "Duplicate pending request", 
+                    message: "This service request has already been submitted and is currently pending. You cannot submit a new request." 
+                });
+            }
+        }
+
+        const options = {
+            amount: Math.round(parseFloat(amount) * 100), // amount in the smallest currency unit
+            currency: "INR",
+            receipt: `order_rcptid_${Date.now()}`
+        };
+
+        const order = await razorpayInstance.orders.create(options);
+        res.json(order);
+    } catch (error) {
+        console.error("Error creating Razorpay order:", error);
+        res.status(500).json({ error: "Failed to create Razorpay order" });
+    }
+};
+
 module.exports = {
     getDashboardStats,
     getVehicles,
@@ -346,5 +457,6 @@ module.exports = {
     getActiveServices,
     updateVehicle,
     deleteVehicle,
-    getPortalSearch
+    getPortalSearch,
+    createRazorpayOrder
 };
