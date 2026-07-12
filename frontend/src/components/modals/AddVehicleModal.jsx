@@ -18,7 +18,7 @@ const AddVehicleModal = ({ isOpen, onClose, onSave }) => {
     useEffect(() => {
         if (isOpen) {
             // Fetch customers for the dropdown
-            axios.get('http://localhost:5000/api/customers')
+            axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers`)
                 .then(res => setCustomers(res.data.filter(c => c.is_active)))
                 .catch(err => console.error(err));
             

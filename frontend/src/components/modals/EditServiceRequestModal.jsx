@@ -23,9 +23,9 @@ const EditServiceRequestModal = ({ isOpen, onClose, onSave, request }) => {
         if (isOpen) {
             // Fetch necessary data
             Promise.all([
-                axios.get('http://localhost:5000/api/customers'),
-                axios.get('http://localhost:5000/api/vehicles'),
-                axios.get('http://localhost:5000/api/services')
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers`),
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vehicles`),
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/services`)
             ]).then(([custRes, vehRes, servRes]) => {
                 setCustomers(custRes.data);
                 const fetchedVehicles = vehRes.data;

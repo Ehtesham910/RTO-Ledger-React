@@ -20,7 +20,7 @@ function MyVehicles() {
     const [loading, setLoading] = useState(!sessionStorage.getItem('portal_vehicles'));
     
     const fetchVehicles = () => {
-        axios.get('http://localhost:5000/api/portal/vehicles')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/vehicles`)
             .then(res => {
                 setVehicles(res.data);
                 setFilteredVehicles(res.data);
@@ -57,7 +57,7 @@ function MyVehicles() {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this vehicle?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/portal/vehicles/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/vehicles/${id}`);
                 const updated = vehicles.filter(v => v.id !== id);
                 setVehicles(updated);
                 sessionStorage.setItem('portal_vehicles', JSON.stringify(updated));

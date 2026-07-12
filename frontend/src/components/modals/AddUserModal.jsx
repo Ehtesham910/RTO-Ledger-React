@@ -22,7 +22,7 @@ const AddUserModal = ({ isOpen, onClose, onSave }) => {
             if (savedRoles) {
                 setRolesList(JSON.parse(savedRoles));
             } else {
-                axios.get('http://localhost:5000/api/roles')
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles`)
                     .then(res => setRolesList(res.data))
                     .catch(err => console.error("Error fetching roles for dropdown:", err));
             }

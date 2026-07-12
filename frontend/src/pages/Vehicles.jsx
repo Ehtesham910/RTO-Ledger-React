@@ -34,7 +34,7 @@ function Vehicles(){
 
     useEffect(() =>{
         // Backend se data la rahe hain
-        axios.get('http://localhost:5000/api/vehicles')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vehicles`)
             .then((response) =>{
                 // Naya data aate hi screen par update karein
                 setVehicles(response.data);
@@ -82,7 +82,7 @@ function Vehicles(){
             sessionStorage.setItem('vehiclesData', JSON.stringify(updatedVehicles));
             
             // Backend update
-            await axios.put(`http://localhost:5000/api/vehicles/${id}/status`, { is_active: newStatus });
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vehicles/${id}/status`, { is_active: newStatus });
             
         } catch (error) {
             console.error("Error updating status:", error);
@@ -94,7 +94,7 @@ function Vehicles(){
         if (window.confirm("Are you sure you want to delete this vehicle?")) {
             try {
                 // Backend delete
-                await axios.delete(`http://localhost:5000/api/vehicles/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vehicles/${id}`);
 
                 // Update UI
                 const updatedVehicles = vehicles.filter(v => v.id !== id);
@@ -262,7 +262,7 @@ function Vehicles(){
                 onSave={async (newVehicleData) => {
                     setIsModalOpen(false); // Close modal instantly
                     try {
-                        const response = await axios.post('http://localhost:5000/api/vehicles', newVehicleData);
+                        const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vehicles`, newVehicleData);
                         
                         // Update UI
                         const updatedVehicles = [response.data, ...vehicles];
@@ -290,7 +290,7 @@ function Vehicles(){
                 onSave={async (updatedVehicleData) => {
                     setIsEditModalOpen(false); // Close modal instantly
                     try {
-                        const response = await axios.put(`http://localhost:5000/api/vehicles/${updatedVehicleData.id}`, updatedVehicleData);
+                        const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/vehicles/${updatedVehicleData.id}`, updatedVehicleData);
                         
                         // Update UI
                         const updatedVehicles = vehicles.map(v => 

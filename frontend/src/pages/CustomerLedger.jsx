@@ -21,7 +21,7 @@ function CustomerLedger() {
     useEffect(() => {
         const fetchCustomerLedger = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/ledger/customer/${id}`);
+                const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ledger/customer/${id}`);
                 setLedgers(response.data);
                 if (response.data.length > 0) {
                     setCustomerName(response.data[0].customers?.name || "Unknown");

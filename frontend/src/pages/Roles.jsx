@@ -29,11 +29,11 @@ function Roles() {
 
     const fetchRoles = async () => {
         try {
-            const response = await axios.get('http://localhost:5000/api/roles');
+            const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles`);
             setRoles(response.data);
             sessionStorage.setItem('rolesData', JSON.stringify(response.data));
 
-            const permResponse = await axios.get('http://localhost:5000/api/roles/permissions-list');
+            const permResponse = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles/permissions-list`);
             setAllPermissions(permResponse.data);
             sessionStorage.setItem('allPermissionsData', JSON.stringify(permResponse.data));
         } catch (error) {
@@ -55,7 +55,7 @@ function Roles() {
     const handleAddRole = async (newRoleData) => {
         setIsAddModalOpen(false);
         try {
-            await axios.post('http://localhost:5000/api/roles', newRoleData);
+            await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles`, newRoleData);
             fetchRoles();
         } catch (error) {
             console.error("Error creating role:", error);
@@ -66,7 +66,7 @@ function Roles() {
     const handleEditRole = async (id, updatedData) => {
         setIsEditModalOpen(false);
         try {
-            await axios.put(`http://localhost:5000/api/roles/${id}`, updatedData);
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles/${id}`, updatedData);
             fetchRoles();
         } catch (error) {
             console.error("Error updating role:", error);
@@ -77,7 +77,7 @@ function Roles() {
     const handleSavePermissions = async (roleId, permissionIds) => {
         setIsPermissionsModalOpen(false);
         try {
-            await axios.post(`http://localhost:5000/api/roles/${roleId}/permissions`, {
+            await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles/${roleId}/permissions`, {
                 permissionIds
             });
             fetchRoles();
@@ -90,7 +90,7 @@ function Roles() {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this role?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/roles/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles/${id}`);
                 fetchRoles();
             } catch (error) {
                 console.error("Error deleting role:", error);

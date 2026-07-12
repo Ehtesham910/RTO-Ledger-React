@@ -12,7 +12,7 @@ function MyServiceRequests() {
     const [loading, setLoading] = useState(!sessionStorage.getItem('portal_requests'));
 
     const fetchRequests = () => {
-        axios.get('http://localhost:5000/api/portal/service-requests')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/service-requests`)
             .then(res => {
                 setRequests(res.data);
                 sessionStorage.setItem('portal_requests', JSON.stringify(res.data));

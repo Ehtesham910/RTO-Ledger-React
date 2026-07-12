@@ -15,7 +15,7 @@ const AddReceiptModal = ({ isOpen, onClose, onSave }) => {
     useEffect(() => {
         if (isOpen) {
             // Fetch ledgers
-            axios.get('http://localhost:5000/api/ledger')
+            axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ledger`)
                 .then(res => {
                     // Filter ledgers where due_amount > 0
                     const pendingLedgers = res.data.filter(ledger => parseFloat(ledger.due_amount) > 0);
@@ -79,7 +79,7 @@ const AddReceiptModal = ({ isOpen, onClose, onSave }) => {
         };
 
         try {
-            const response = await axios.post('http://localhost:5000/api/receipts', payload);
+            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/receipts`, payload);
             onSave(response.data);
         } catch (err) {
             console.error("Error creating receipt:", err);

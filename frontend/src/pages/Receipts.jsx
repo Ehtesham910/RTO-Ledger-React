@@ -27,7 +27,7 @@ function Receipts() {
     const itemsPerPage = 10;
 
     const fetchReceipts = () => {
-        axios.get('http://localhost:5000/api/receipts')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/receipts`)
             .then((response) => {
                 setReceipts(response.data);
                 sessionStorage.setItem('receiptsData', JSON.stringify(response.data));

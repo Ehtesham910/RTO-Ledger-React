@@ -12,7 +12,7 @@ function MyReceipts() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/portal/receipts')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/receipts`)
             .then(res => {
                 setReceipts(res.data);
                 sessionStorage.setItem('portal_receipts', JSON.stringify(res.data));

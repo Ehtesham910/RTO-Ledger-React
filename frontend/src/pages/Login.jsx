@@ -27,18 +27,18 @@ function Login() {
         try {
             let response;
             if (loginType === 'staff') {
-                response = await axios.post('http://localhost:5000/api/auth/login', {
+                response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/login`, {
                     username: identifier,
                     password
                 });
             } else {
                 if (mode === 'login') {
-                    response = await axios.post('http://localhost:5000/api/auth/customer-login', {
+                    response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/customer-login`, {
                         mobile: identifier,
                         password
                     });
                 } else {
-                    response = await axios.post('http://localhost:5000/api/auth/customer-register', {
+                    response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/customer-register`, {
                         name,
                         mobile: identifier,
                         email,

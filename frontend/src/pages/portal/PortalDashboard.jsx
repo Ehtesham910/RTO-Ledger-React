@@ -34,7 +34,7 @@ function PortalDashboard() {
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
     const fetchDashboardStats = () => {
-        axios.get('http://localhost:5000/api/portal/dashboard')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/dashboard`)
             .then(response => {
                 setStats(response.data);
                 sessionStorage.setItem('portal_dashboard_stats', JSON.stringify(response.data));

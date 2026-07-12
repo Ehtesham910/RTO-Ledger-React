@@ -37,7 +37,7 @@ function PortalEditVehicleModal({ isOpen, onClose, onSuccess, vehicle }) {
     const handleEditVehicle = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`http://localhost:5000/api/portal/vehicles/${vehicle.id}`, formData);
+            const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/vehicles/${vehicle.id}`, formData);
             onSuccess(response.data);
         } catch (error) {
             console.error("Error updating vehicle:", error);

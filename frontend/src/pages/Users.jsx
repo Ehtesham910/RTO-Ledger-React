@@ -32,8 +32,8 @@ function Users() {
     const fetchData = async () => {
         try {
             const [usersRes, permsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/users'),
-                axios.get('http://localhost:5000/api/roles/permissions-list')
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users`),
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/roles/permissions-list`)
             ]);
             setUsers(usersRes.data);
             setAllPermissions(permsRes.data);
@@ -58,7 +58,7 @@ function Users() {
     const handleAddUser = async (newUserData) => {
         setIsAddModalOpen(false);
         try {
-            await axios.post('http://localhost:5000/api/users', newUserData);
+            await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users`, newUserData);
             fetchData();
         } catch (error) {
             console.error("Error creating user:", error);
@@ -69,7 +69,7 @@ function Users() {
     const handleEditUser = async (id, updatedData) => {
         setIsEditModalOpen(false);
         try {
-            await axios.put(`http://localhost:5000/api/users/${id}`, updatedData);
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/${id}`, updatedData);
             fetchData();
         } catch (error) {
             console.error("Error updating user:", error);
@@ -80,7 +80,7 @@ function Users() {
     const handleSavePermissions = async (userId, permissionIds) => {
         setIsPermissionsModalOpen(false);
         try {
-            await axios.post(`http://localhost:5000/api/users/${userId}/permissions`, {
+            await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/${userId}/permissions`, {
                 permissionIds
             });
             fetchData();
@@ -98,7 +98,7 @@ function Users() {
             );
             setUsers(updatedUsers);
             sessionStorage.setItem('usersData', JSON.stringify(updatedUsers));
-            await axios.put(`http://localhost:5000/api/users/${id}/status`, { is_active: newStatus });
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/${id}/status`, { is_active: newStatus });
         } catch (error) {
             console.error("Error updating user status:", error);
         }
@@ -107,7 +107,7 @@ function Users() {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this user?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/users/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/${id}`);
                 fetchData();
             } catch (error) {
                 console.error("Error deleting user:", error);

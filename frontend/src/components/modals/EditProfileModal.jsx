@@ -20,7 +20,7 @@ function EditProfileModal({ isOpen, onClose, user, onSuccess }) {
             const fetchProfile = async () => {
                 try {
                     if (isCustomer) {
-                        const res = await axios.get(`http://localhost:5000/api/customers/${user.id}`);
+                        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/${user.id}`);
                         setFormData({
                             username: '',
                             name: res.data.name || '',
@@ -30,7 +30,7 @@ function EditProfileModal({ isOpen, onClose, user, onSuccess }) {
                             password: ''
                         });
                     } else {
-                        const res = await axios.get(`http://localhost:5000/api/users/${user.id}`);
+                        const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/${user.id}`);
                         setFormData({
                             username: res.data.username || '',
                             name: '',
@@ -70,7 +70,7 @@ function EditProfileModal({ isOpen, onClose, user, onSuccess }) {
             let updatedData;
             if (isCustomer) {
                 // Customer endpoint
-                const res = await axios.put(`http://localhost:5000/api/customers/${user.id}`, {
+                const res = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/${user.id}`, {
                     name: formData.name,
                     email: formData.email,
                     mobile: formData.mobile,
@@ -86,7 +86,7 @@ function EditProfileModal({ isOpen, onClose, user, onSuccess }) {
                 if (formData.password) {
                     payload.password = formData.password;
                 }
-                const res = await axios.put(`http://localhost:5000/api/users/${user.id}`, payload);
+                const res = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/${user.id}`, payload);
                 updatedData = res.data;
             }
             onSuccess(updatedData);

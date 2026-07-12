@@ -28,7 +28,7 @@ function ServiceRequests() {
 
     useEffect(() => {
         // Fetch Service Requests from backend
-        axios.get('http://localhost:5000/api/servicerequests')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests`)
             .then((response) => {
                 setRequests(response.data);
                 sessionStorage.setItem('serviceRequestsData', JSON.stringify(response.data));
@@ -83,7 +83,7 @@ function ServiceRequests() {
 
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            await axios.put(`http://localhost:5000/api/servicerequests/${id}`, { status: newStatus });
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${id}`, { status: newStatus });
             const updatedRequests = requests.map(req => req.id === id ? {...req, status: newStatus} : req);
             setRequests(updatedRequests);
             sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
@@ -96,7 +96,7 @@ function ServiceRequests() {
     const handleDelete = async (id) => {
         if (window.confirm("Are you sure you want to delete this service request?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/servicerequests/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${id}`);
                 const updatedRequests = requests.filter(req => req.id !== id);
                 setRequests(updatedRequests);
                 sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
@@ -258,7 +258,7 @@ function ServiceRequests() {
                 onSave={async (newRequestData) => {
                     setIsModalOpen(false); // Close instantly
                     try {
-                        const response = await axios.post('http://localhost:5000/api/servicerequests', newRequestData);
+                        const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests`, newRequestData);
                         
                         // Update UI
                         const updatedRequests = [response.data, ...requests];
@@ -284,7 +284,7 @@ function ServiceRequests() {
                 onSave={async (updatedData) => {
                     setIsEditModalOpen(false); // Close instantly
                     try {
-                        const response = await axios.put(`http://localhost:5000/api/servicerequests/${updatedData.id}`, updatedData);
+                        const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${updatedData.id}`, updatedData);
                         
                         // Update UI
                         const updatedRequests = requests.map(req => 

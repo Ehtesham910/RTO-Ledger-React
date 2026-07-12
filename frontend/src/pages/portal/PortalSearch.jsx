@@ -21,7 +21,7 @@ function PortalSearch() {
         }
 
         setLoading(true);
-        axios.get(`http://localhost:5000/api/portal/search?q=${encodeURIComponent(query)}`)
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/search?q=${encodeURIComponent(query)}`)
             .then(res => {
                 setResults(res.data);
             })

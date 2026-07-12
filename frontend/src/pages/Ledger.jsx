@@ -28,7 +28,7 @@ function Ledger() {
 
     useEffect(() => {
         // Fetch Ledger data from backend
-        axios.get('http://localhost:5000/api/ledger')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ledger`)
             .then((response) => {
                 setLedgers(response.data);
                 sessionStorage.setItem('ledgerData', JSON.stringify(response.data));
@@ -205,7 +205,7 @@ function Ledger() {
                 onSave={async (updatedData) => {
                     setIsEditModalOpen(false);
                     try {
-                        const response = await axios.put(`http://localhost:5000/api/ledger/${updatedData.id}`, updatedData);
+                        const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ledger/${updatedData.id}`, updatedData);
                         
                         // Update UI
                         const updatedLedger = ledgers.map(l => 

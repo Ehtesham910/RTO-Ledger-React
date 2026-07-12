@@ -17,7 +17,7 @@ function ViewReceipt() {
         if (!initialReceipt && id) {
             const fetchReceipt = async () => {
                 try {
-                    const response = await axios.get(`http://localhost:5000/api/receipts/${id}`);
+                    const response = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/receipts/${id}`);
                     setReceipt(response.data);
                 } catch (error) {
                     console.error("Error fetching receipt:", error);

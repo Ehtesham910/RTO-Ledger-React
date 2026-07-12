@@ -42,13 +42,13 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
     const fetchDropdownData = async () => {
         try {
             const [vehRes, srvRes, reqRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/portal/vehicles', {
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/vehicles`, {
                     headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
                 }),
-                axios.get('http://localhost:5000/api/portal/active-services', {
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/active-services`, {
                     headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
                 }),
-                axios.get('http://localhost:5000/api/portal/service-requests', {
+                axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/service-requests`, {
                     headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
                 })
             ]);
@@ -127,7 +127,7 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
     const submitRequest = async (paymentData = {}) => {
         try {
             const finalData = { ...formData, ...paymentData };
-            const response = await axios.post('http://localhost:5000/api/portal/service-requests', finalData, {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/service-requests`, finalData, {
                 headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
             });
             onSuccess(response.data);
@@ -163,7 +163,7 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
 
         try {
             // Create Razorpay Order
-            const orderRes = await axios.post('http://localhost:5000/api/portal/create-order', {
+            const orderRes = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/portal/create-order`, {
                 amount: amountToPay,
                 vehicle_id: formData.vehicle_id,
                 service_id: formData.service_id

@@ -33,7 +33,7 @@ function Customers() {
 
     useEffect(() => {
         // Backend se data la rahe hain
-        axios.get('http://localhost:5000/api/customers')
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers`)
             .then((response) => {
                 setCustomers(response.data);
                 setFilteredCustomers(response.data);
@@ -86,7 +86,7 @@ function Customers() {
             sessionStorage.setItem('customersData', JSON.stringify(updatedCustomers));
 
             // Backend update
-            await axios.put(`http://localhost:5000/api/customers/${id}/status`, { is_active: newStatus });
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/${id}/status`, { is_active: newStatus });
 
         } catch (error) {
             console.error("Error updating status:", error);
@@ -99,7 +99,7 @@ function Customers() {
         if (window.confirm("Are you sure you want to delete this customer?")) {
             try {
                 // Backend delete
-                await axios.delete(`http://localhost:5000/api/customers/${id}`);
+                await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/${id}`);
 
                 // Update UI
                 const updatedCustomers = customers.filter(c => c.id !== id);
@@ -261,7 +261,7 @@ function Customers() {
                 onSave={async (newCustomerData) => {
                     setIsModalOpen(false); // Close modal instantly
                     try {
-                        const response = await axios.post('http://localhost:5000/api/customers', newCustomerData);
+                        const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers`, newCustomerData);
 
                         // Update UI
                         const updatedCustomers = [response.data, ...customers];
@@ -289,7 +289,7 @@ function Customers() {
                 onSave={async (updatedCustomerData) => {
                     setIsEditModalOpen(false); // Close modal instantly
                     try {
-                        const response = await axios.put(`http://localhost:5000/api/customers/${updatedCustomerData.id}`, updatedCustomerData);
+                        const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/${updatedCustomerData.id}`, updatedCustomerData);
                         
                         // Update UI
                         const updatedCustomers = customers.map(c => 
