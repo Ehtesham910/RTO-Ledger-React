@@ -107,7 +107,6 @@ function Ledger() {
                                             {formatVehicleNumber(record.vehicles?.vehicle_number)}
                                         </span>
                                     </td>
-                                    
                                     <td>{record.service_requests?.request_no || '-'}</td>
                                     
                                     <td>{record.service_requests?.services?.service_name || '-'}</td>

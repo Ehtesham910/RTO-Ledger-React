@@ -75,7 +75,7 @@ function MyServiceRequests() {
                             {requests.map((req, idx) => (
                                 <tr key={req.id}>
                                     <td>{idx + 1}</td>
-                                    <td style={{ fontWeight: '600', color: '#4f46e5' }}>{req.request_no}</td>
+                                    <td style={{ fontWeight: '600', color: '#4f46e5' }}>{req.request_no || '-'}</td>
                                     <td>
                                         <span className="badge" style={{ whiteSpace: 'nowrap' }}>{formatVehicleNumber(req.vehicles?.vehicle_number)}</span>
                                     </td>

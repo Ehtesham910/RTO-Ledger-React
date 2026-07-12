@@ -115,7 +115,7 @@ function Customers() {
 
     // Calculate Next Customer Code
     const getNextCustomerCode = () => {
-        if (!customers || customers.length === 0) return 'CUST-001';
+        if (!customers || customers.length === 0) return 'CUST-0001';
 
         let maxNum = 0;
         customers.forEach(c => {
@@ -138,7 +138,7 @@ function Customers() {
         }
 
         const nextNum = maxNum + 1;
-        return `CUST-${nextNum.toString().padStart(3, '0')}`;
+        return `CUST-${nextNum.toString().padStart(4, '0')}`;
     };
 
     const nextCode = getNextCustomerCode();

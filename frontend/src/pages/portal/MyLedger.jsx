@@ -54,7 +54,7 @@ function MyLedger() {
                             <tr>
                                 <th>#</th>
                                 <th>Date</th>
-                                <th>Ref No.</th>
+                                <th>Request No.</th>
                                 <th>Vehicle</th>
                                 <th>Service</th>
                                 <th>Total Fee</th>
@@ -68,7 +68,7 @@ function MyLedger() {
                                 <tr key={l.id}>
                                     <td>{idx + 1}</td>
                                     <td>{formatDate(l.created_at)}</td>
-                                    <td style={{ fontWeight: '500', color: '#334155' }}>
+                                    <td style={{ fontWeight: '500', color: '#00b77aff', whiteSpace: 'nowrap' }}>
                                         {l.service_requests?.request_no || '-'}
                                     </td>
                                     <td>

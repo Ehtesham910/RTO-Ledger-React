@@ -146,7 +146,7 @@ function ServiceRequests() {
                             {paginatedRequests.map((req, index) => (
                                 <tr key={req.id}>
                                     <td>{indexOfFirstItem + index + 1}</td>
-                                    <td><span className="badge">{req.request_no}</span></td>
+                                    <td><span className="badge">{req.request_no || '-'}</span></td>
                                     
                                     <td className="font-medium" style={{ color: '#0f172a' }}>
                                         {req.customers?.name || 'Unknown'}

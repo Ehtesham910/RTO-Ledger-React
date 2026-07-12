@@ -265,7 +265,22 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
                         <div className="form-row">
                             <div className="form-group">
                                 <label>Amount to Pay Now (₹) <span style={{color: 'red'}}>*</span></label>
-                                <input type="number" placeholder="Enter partial amount" value={amountToPay} onChange={(e) => setAmountToPay(e.target.value)} required min="1" max={formData.amount || 0} />
+                                <input 
+                                    type="number" 
+                                    placeholder="Enter partial amount" 
+                                    value={amountToPay} 
+                                    onChange={(e) => {
+                                        let val = e.target.value;
+                                        const maxFee = parseFloat(formData.amount || 0);
+                                        if (val !== '' && parseFloat(val) > maxFee) {
+                                            val = maxFee.toString();
+                                        }
+                                        setAmountToPay(val);
+                                    }} 
+                                    required 
+                                    min="1" 
+                                    max={formData.amount || 0} 
+                                />
                             </div>
                         </div>
                     )}

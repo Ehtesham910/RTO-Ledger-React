@@ -170,7 +170,7 @@ const customerRegister = async (req, res) => {
         }
         
         const nextNum = maxNum + 1;
-        const nextCustomerCode = `CUST-${nextNum.toString().padStart(3, '0')}`;
+        const nextCustomerCode = `CUST-${nextNum.toString().padStart(4, '0')}`;
 
         // Create the customer
         const customer = await prisma.customers.create({
