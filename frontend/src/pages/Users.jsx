@@ -11,6 +11,7 @@ function Users() {
         const savedData = sessionStorage.getItem('usersData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('usersData'));
     const [allPermissions, setAllPermissions] = useState(() => {
         const savedPerms = sessionStorage.getItem('allPermissionsData');
         return savedPerms ? JSON.parse(savedPerms) : [];
@@ -40,6 +41,8 @@ function Users() {
             sessionStorage.setItem('allPermissionsData', JSON.stringify(permsRes.data));
         } catch (error) {
             console.error("Error fetching data:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -221,7 +224,11 @@ function Users() {
                                 </tr>
                             ))}
 
-                            {users.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Loading users...</td>
+                                </tr>
+                            ) : users.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="empty-state" style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
                                         No users found.

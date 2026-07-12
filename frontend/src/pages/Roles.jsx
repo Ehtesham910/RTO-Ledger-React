@@ -11,6 +11,7 @@ function Roles() {
         const savedData = sessionStorage.getItem('rolesData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('rolesData'));
 
     const [allPermissions, setAllPermissions] = useState(() => {
         const savedPerms = sessionStorage.getItem('allPermissionsData');
@@ -37,6 +38,8 @@ function Roles() {
             sessionStorage.setItem('allPermissionsData', JSON.stringify(permResponse.data));
         } catch (error) {
             console.error("Error fetching roles:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -179,7 +182,11 @@ function Roles() {
                                 </tr>
                             ))}
 
-                            {roles.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="4" style={{ textAlign: 'center', padding: '20px' }}>Loading roles...</td>
+                                </tr>
+                            ) : roles.length === 0 && (
                                 <tr>
                                     <td colSpan="4" className="empty-state" style={{ padding: '30px', textAlign: 'center', color: '#64748b' }}>
                                         No roles found.

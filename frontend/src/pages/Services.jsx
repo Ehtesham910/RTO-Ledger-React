@@ -20,6 +20,7 @@ function Services() {
         const savedData = sessionStorage.getItem('servicesData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('servicesData'));
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +34,9 @@ function Services() {
             })
             .catch((error) => {
                 console.error("Error fetching services:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -157,7 +161,11 @@ function Services() {
                                 </tr>
                             ))}
 
-                            {paginatedServices.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="6" style={{ textAlign: 'center', padding: '20px' }}>Loading services...</td>
+                                </tr>
+                            ) : paginatedServices.length === 0 && (
                                 <tr>
                                     <td colSpan="6" className="empty-state">
                                         No services found. Click 'Add Service' to create one.

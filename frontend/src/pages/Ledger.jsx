@@ -20,6 +20,7 @@ function Ledger() {
         const savedData = sessionStorage.getItem('ledgerData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('ledgerData'));
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +35,9 @@ function Ledger() {
             })
             .catch((error) => {
                 console.error("Error fetching ledger:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -166,7 +170,11 @@ function Ledger() {
                                 </tr>
                             ))}
 
-                            {paginatedLedgers.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="11" style={{ textAlign: 'center', padding: '20px' }}>Loading ledger records...</td>
+                                </tr>
+                            ) : paginatedLedgers.length === 0 && (
                                 <tr>
                                     <td colSpan="11" className="empty-state">
                                         No ledger records found. 

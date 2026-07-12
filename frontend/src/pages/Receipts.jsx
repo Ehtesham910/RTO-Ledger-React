@@ -20,6 +20,7 @@ function Receipts() {
         const savedData = sessionStorage.getItem('receiptsData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('receiptsData'));
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -33,6 +34,9 @@ function Receipts() {
             })
             .catch((error) => {
                 console.error("Error fetching receipts:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     };
 
@@ -136,7 +140,11 @@ function Receipts() {
                                 </tr>
                             ))}
 
-                            {paginatedReceipts.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>Loading receipts...</td>
+                                </tr>
+                            ) : paginatedReceipts.length === 0 && (
                                 <tr>
                                     <td colSpan="8" className="empty-state">
                                         No receipts generated yet. 

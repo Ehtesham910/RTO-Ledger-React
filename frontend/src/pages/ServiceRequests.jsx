@@ -20,6 +20,7 @@ function ServiceRequests() {
         const savedData = sessionStorage.getItem('serviceRequestsData');
         return savedData ? JSON.parse(savedData) : [];
     });
+    const [loading, setLoading] = useState(!sessionStorage.getItem('serviceRequestsData'));
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +35,9 @@ function ServiceRequests() {
             })
             .catch((error) => {
                 console.error("Error fetching service requests:", error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
     }, []);
 
@@ -224,10 +228,14 @@ function ServiceRequests() {
                                 </tr>
                             ))}
 
-                            {paginatedRequests.length === 0 && (
+                            {loading ? (
+                                <tr>
+                                    <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>Loading service requests...</td>
+                                </tr>
+                            ) : paginatedRequests.length === 0 && (
                                 <tr>
                                     <td colSpan="9" className="empty-state">
-                                        No service requests found. Click 'New Request' to generate one.
+                                        No service requests found. Click 'Create Request' to generate one.
                                     </td>
                                 </tr>
                             )}
