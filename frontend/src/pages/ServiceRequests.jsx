@@ -83,7 +83,7 @@ function ServiceRequests() {
 
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${id}`, { status: newStatus });
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${id}/status`, { status: newStatus });
             const updatedRequests = requests.map(req => req.id === id ? {...req, status: newStatus} : req);
             setRequests(updatedRequests);
             sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
@@ -167,25 +167,36 @@ function ServiceRequests() {
                                     </td>
                                     
                                     <td>
-                                        <span style={{
-                                            padding: '4px 8px',
-                                            borderRadius: '4px',
-                                            fontSize: '12px',
-                                            fontWeight: '500',
-                                            whiteSpace: 'nowrap',
-                                            backgroundColor: 
-                                                req.status === 'Completed' ? '#dcfce7' : 
-                                                req.status === 'In Progress' ? '#dbeafe' : 
-                                                req.status === 'Cancelled' ? '#fee2e2' : 
-                                                '#fef9c3',
-                                            color: 
-                                                req.status === 'Completed' ? '#166534' : 
-                                                req.status === 'In Progress' ? '#1e40af' : 
-                                                req.status === 'Cancelled' ? '#991b1b' : 
-                                                '#854d0e'
-                                        }}>
-                                            {req.status || 'Pending'}
-                                        </span>
+                                        <select 
+                                            value={req.status || 'Pending'}
+                                            onChange={(e) => handleStatusUpdate(req.id, e.target.value)}
+                                            disabled={!canEdit}
+                                            style={{
+                                                padding: '4px 8px',
+                                                borderRadius: '4px',
+                                                fontSize: '14px',
+                                                fontWeight: '600',
+                                                border: 'none',
+                                                backgroundColor: 
+                                                    req.status === 'Completed' ? '#bbf7d0' : 
+                                                    req.status === 'In Progress' ? '#bfdbfe' : 
+                                                    req.status === 'Cancelled' ? '#fecaca' : 
+                                                    '#fef08a',
+                                                color: 
+                                                    req.status === 'Completed' ? '#166534' : 
+                                                    req.status === 'In Progress' ? '#1e40af' : 
+                                                    req.status === 'Cancelled' ? '#991b1b' : 
+                                                    '#854d0e',
+                                                cursor: canEdit ? 'pointer' : 'not-allowed',
+                                                outline: 'none',
+                                                appearance: 'auto'
+                                            }}
+                                        >
+                                            <option value="Pending" style={{backgroundColor: '#fff', color: '#000'}}>Pending</option>
+                                            <option value="In Progress" style={{backgroundColor: '#fff', color: '#000'}}>In Progress</option>
+                                            <option value="Completed" style={{backgroundColor: '#fff', color: '#000'}}>Completed</option>
+                                            <option value="Cancelled" style={{backgroundColor: '#fff', color: '#000'}}>Cancelled</option>
+                                        </select>
                                     </td>
 
                                     <td>{formatDate(req.created_at)}</td>

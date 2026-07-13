@@ -137,4 +137,23 @@ const deleteServiceRequest = async (req, res) => {
     }
 };
 
-module.exports = { getServiceRequests, createServiceRequest, updateServiceRequest, deleteServiceRequest };
+const updateServiceRequestStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const updatedRequest = await prisma.service_requests.update({
+            where: { id: BigInt(id) },
+            data: { status },
+            include: {
+                customers: { select: { name: true } },
+                vehicles: { select: { vehicle_number: true } },
+                services: { select: { service_name: true } }
+            }
+        });
+        res.json(updatedRequest);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getServiceRequests, createServiceRequest, updateServiceRequest, updateServiceRequestStatus, deleteServiceRequest };
