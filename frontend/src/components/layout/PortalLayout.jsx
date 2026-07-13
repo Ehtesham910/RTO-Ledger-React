@@ -22,7 +22,7 @@ function PortalLayout() {
             <PortalSidebar isCollapsed={isSidebarCollapsed} />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                 <Navbar toggleSidebar={toggleSidebar} isCollapsed={isSidebarCollapsed} />
-                <main style={{ padding: '24px' }}>
+                <main>
                     <Outlet />
                 </main>
             </div>

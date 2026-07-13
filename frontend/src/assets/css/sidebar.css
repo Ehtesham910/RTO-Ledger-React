@@ -24,7 +24,7 @@
     justify-content: center;
     height: 60px;
     padding: 0 16px;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    border-bottom: none;
 }
 
 .sidebar-logo {
