@@ -122,8 +122,8 @@ function Services() {
                                                 {service.is_active ? 'Active' : 'Inactive'}
                                             </span>
                                             <label className="switch">
-                                                <input type="checkbox" checked={service.is_active} onChange={() => handleStatusToggle(service.id, service.is_active)} />
-                                                <span className="slider"></span>
+                                                <input type="checkbox" checked={service.is_active} onChange={() => handleStatusToggle(service.id, service.is_active)} disabled={!canEdit} />
+                                                <span className="slider" style={{ cursor: canEdit ? 'pointer' : 'not-allowed' }}></span>
                                             </label>
                                         </div>
                                     </td>

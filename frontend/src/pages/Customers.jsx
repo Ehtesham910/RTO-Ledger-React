@@ -189,12 +189,10 @@ function Customers() {
                                             <span style={{ fontSize: '12px', fontWeight: '500', color: customer.is_active ? '#22c55e' : '#ef4444' }}>
                                                 {customer.is_active ? 'Active' : 'Inactive'}
                                             </span>
-                                            {canEdit && (
-                                                <label className="switch">
-                                                    <input type="checkbox" checked={customer.is_active} onChange={() => handleStatusToggle(customer.id, customer.is_active)} />
-                                                    <span className="slider"></span>
-                                                </label>
-                                            )}
+                                            <label className="switch">
+                                                <input type="checkbox" checked={customer.is_active} onChange={() => handleStatusToggle(customer.id, customer.is_active)} />
+                                                <span className="slider"></span>
+                                            </label>
                                         </div>
                                     </td>
                                     <td>

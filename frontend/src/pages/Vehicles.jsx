@@ -190,12 +190,10 @@ function Vehicles(){
                                                 <span style={{ fontSize: '12px', fontWeight: '500', color: vehicle.is_active ? '#22c55e' : '#ef4444' }}>
                                                     {vehicle.is_active ? 'Active' : 'Inactive'}
                                                 </span>
-                                                {canEdit && (
-                                                    <label className="switch">
-                                                        <input type="checkbox" checked={vehicle.is_active} onChange={() => handleStatusToggle(vehicle.id, vehicle.is_active)} />
-                                                        <span className="slider"></span>
-                                                    </label>
-                                                )}
+                                                <label className="switch">
+                                                    <input type="checkbox" checked={vehicle.is_active} onChange={() => handleStatusToggle(vehicle.id, vehicle.is_active)} />
+                                                    <span className="slider"></span>
+                                                </label>
                                             </div>
                                         </td>
                                         

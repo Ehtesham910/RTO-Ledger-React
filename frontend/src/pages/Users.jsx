@@ -163,16 +163,15 @@ function Users() {
                                             <span style={{ fontSize: '12px', fontWeight: '500', color: user.is_active ? '#22c55e' : '#ef4444' }}>
                                                 {user.is_active ? 'Active' : 'Inactive'}
                                             </span>
-                                            {isAdmin && (
-                                                <label className="switch">
-                                                    <input 
-                                                        type="checkbox" 
-                                                        checked={user.is_active} 
-                                                        onChange={() => handleStatusToggle(user.id, user.is_active)} 
-                                                    />
-                                                    <span className="slider"></span>
-                                                </label>
-                                            )}
+                                            <label className="switch">
+                                                <input 
+                                                    type="checkbox" 
+                                                    checked={user.is_active} 
+                                                    onChange={() => handleStatusToggle(user.id, user.is_active)} 
+                                                    disabled={!isAdmin}
+                                                />
+                                                <span className="slider" style={{ cursor: isAdmin ? 'pointer' : 'not-allowed' }}></span>
+                                            </label>
                                         </div>
                                     </td>
                                     <td>

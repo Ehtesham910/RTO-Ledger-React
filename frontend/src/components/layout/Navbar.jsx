@@ -32,8 +32,7 @@ function Navbar() {
 
   const handleLogout = (e) => {
     e.preventDefault();
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('user');
+    sessionStorage.clear();
     navigate('/');
   };
 
