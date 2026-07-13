@@ -284,6 +284,10 @@ function ViewReceipt() {
                         <span className="receipt-value text-green">{receipt.payment_mode || '-'}</span>
                     </div>
                     <div className="receipt-row">
+                        <span className="receipt-label">Reference No</span>
+                        <span className="receipt-value">{receipt.transaction_reference || '-'}</span>
+                    </div>
+                    <div className="receipt-row">
                         <span className="receipt-label">Receipt Date</span>
                         <span className="receipt-value">{formatReceiptDate(receipt.received_at)}</span>
                     </div>
