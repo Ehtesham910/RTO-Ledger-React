@@ -195,7 +195,7 @@ function PortalAddServiceRequestModal({ isOpen, onClose, onSuccess }) {
                     email: currentUser.email || 'customer@example.com',
                 },
                 theme: {
-                    color: "#4f46e5"
+                    color: "#00c292"
                 }
             };
 

@@ -59,11 +59,11 @@
     outline: none; 
 }
 
-.form-group input:focus, .form-group textarea:focus { border-color: #4f46e5; }
+.form-group input:focus, .form-group textarea:focus { border-color: #00c292; }
 .form-group textarea { resize: none; }
 
 .save-btn {
-    background-color: #4f46e5; 
+    background-color: #00c292; 
     color: white; 
     padding: 10px 20px; 
     border: none; 
@@ -73,4 +73,4 @@
     font-weight: 500;
 }
 
-.save-btn:hover { background-color: #4338ca; }
+.save-btn:hover { background-color: #00a67d; }

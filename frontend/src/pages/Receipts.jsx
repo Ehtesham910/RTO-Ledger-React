@@ -90,7 +90,7 @@ function Receipts() {
                                 <tr key={receipt.id}>
                                     <td>{indexOfFirstItem + index + 1}</td>
                                     
-                                    <td className="font-medium" style={{ color: '#4f46e5' }}>
+                                    <td className="font-medium" style={{ color: '#00c292' }}>
                                         <span className="badge">
                                             {receipt.receipt_no}
                                         </span>

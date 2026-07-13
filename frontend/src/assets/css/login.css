@@ -34,7 +34,7 @@
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.5px;
-    background: linear-gradient(135deg, #4f46e5, #ec4899);
+    background: linear-gradient(135deg, #00c292, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 8px;
@@ -68,7 +68,7 @@
 
 .login-type-toggle button.active {
     background: white;
-    color: #4f46e5;
+    color: #00c292;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
@@ -103,12 +103,12 @@
 }
 
 .input-group input:focus {
-    border-color: #4f46e5;
+    border-color: #00c292;
     box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
 }
 
 .login-button {
-    background: #4f46e5;
+    background: #00c292;
     color: white;
     border: none;
     padding: 14px;
@@ -121,7 +121,7 @@
 }
 
 .login-button:hover {
-    background: #4338ca;
+    background: #00a67d;
 }
 
 .login-button:active {

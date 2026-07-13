@@ -154,7 +154,7 @@ function Users() {
                                     <td className="font-medium">{user.username}</td>
                                     <td>{user.email}</td>
                                     <td>
-                                        <span className="badge" style={{ backgroundColor: '#e0e7ff', color: '#4338ca' }}>
+                                        <span className="badge" style={{ backgroundColor: '#e0e7ff', color: '#00a67d' }}>
                                             {user.roles?.name || 'No Role'}
                                         </span>
                                     </td>
