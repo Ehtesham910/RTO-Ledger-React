@@ -31,7 +31,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #2563eb;
+    background-color: #4f46e5;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -43,7 +43,7 @@
 }
 
 .btn-add:hover {
-    background-color: #1d4ed8;
+    background-color: #4338ca;
 }
 
 /* Card Container for Table */
