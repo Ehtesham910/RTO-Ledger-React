@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
 function Sidebar({ isCollapsed }) {
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const location = useLocation();
+
+    useEffect(() => {
+        if (!location.pathname.startsWith('/services')) {
+            setIsServicesOpen(false);
+        }
+    }, [location.pathname]);
 
     // Get user from sessionStorage
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
