@@ -3,25 +3,44 @@
 ========================= */
 
 .sidebar {
-    position: fixed;
-    top: 60px;
-    /* Navbar ke theek niche se start hoga */
-    left: 0;
-    width: 205px;
-    height: calc(100vh - 60px);
-
+    position: sticky;
+    top: 0;
+    width: 260px;
+    height: 100vh;
+    flex-shrink: 0;
+    transition: width 0.3s ease;
+    box-sizing: border-box;
     background: #ffffff;
     border-right: 1px solid rgba(226, 232, 240, 0.8);
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.02);
-
     overflow-y: auto;
-    padding: 24px 16px;
-    z-index: 999;
+    padding: 0;
+    z-index: 1001;
+}
+
+.sidebar-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.sidebar-logo {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    background: #4f46e5;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .sidebar-menu {
     list-style: none;
-    padding: 0;
+    padding: 16px;
     margin: 0;
     display: flex;
     flex-direction: column;
@@ -140,4 +159,39 @@
 
 .submenu li a.active-submenu .submenu-dot {
     background: #4f46e5;
+}
+
+/* Sidebar animation */
+.sidebar {
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+}
+
+/* Collapsed state styles */
+.sidebar.collapsed {
+    width: 70px;
+}
+
+/* Hide text and icons when collapsed */
+.sidebar.collapsed .menu-label,
+.sidebar.collapsed .chevron,
+.sidebar.collapsed .sidebar-divider {
+    display: none;
+}
+
+/* Hide submenus completely when collapsed */
+.sidebar.collapsed .submenu {
+    display: none !important;
+}
+
+/* Center icons when collapsed */
+.sidebar.collapsed .menu-item > a,
+.sidebar.collapsed .menu-toggle {
+    justify-content: center;
+    padding: 12px 0;
+}
+
+/* Remove margin from icon so it stays perfectly centered */
+.sidebar.collapsed .menu-icon {
+    margin-right: 0;
 }

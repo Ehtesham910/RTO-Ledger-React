@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import PortalSidebar from './PortalSidebar';
 
 function PortalLayout() {
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const token = sessionStorage.getItem('token');
 
@@ -12,13 +13,19 @@ function PortalLayout() {
         return <Navigate to="/" replace />;
     }
 
+    const toggleSidebar = () => {
+        setIsSidebarCollapsed(!isSidebarCollapsed);
+    };
+
     return (
-        <div>
-            <Navbar />
-            <PortalSidebar />
-            <main style={{ marginLeft: '205px', marginTop: '60px', padding: '8px 24px 24px 24px' }}>
-                <Outlet />
-            </main>
+        <div style={{ display: 'flex', minHeight: '100vh' }}>
+            <PortalSidebar isCollapsed={isSidebarCollapsed} />
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+                <Navbar toggleSidebar={toggleSidebar} isCollapsed={isSidebarCollapsed} />
+                <main style={{ padding: '24px' }}>
+                    <Outlet />
+                </main>
+            </div>
         </div>
     );
 }

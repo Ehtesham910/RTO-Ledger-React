@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../../assets/css/navbar.css'; 
 import EditProfileModal from '../modals/EditProfileModal';
 
-function Navbar() {
+function Navbar({ toggleSidebar, isCollapsed }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [user, setUser] = useState(null);
@@ -44,7 +44,13 @@ function Navbar() {
       
       {/* LEFT LOGO */}
       <div className="navbar-left">
-        <div className="navbar-logo">RTO Ledger</div>
+        <button onClick={toggleSidebar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#4f46e5', display: 'flex', alignItems: 'center', padding: '0', marginRight: '16px' }}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
       </div>
 
       {/* CENTER SEARCH */}

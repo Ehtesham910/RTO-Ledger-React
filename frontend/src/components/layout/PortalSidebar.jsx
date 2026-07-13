@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
-function PortalSidebar() {
+function PortalSidebar({ isCollapsed }) {
     const navigate = useNavigate();
     const location = useLocation();
     const isActive = (path) => {
@@ -11,7 +11,10 @@ function PortalSidebar() {
 
     return (
         <>
-            <aside className="sidebar">
+            <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+                <div className="sidebar-logo-container">
+                    {!isCollapsed && <span className="sidebar-logo"><h3>RTO Ledger</h3></span>}
+                </div>
                 <ul className="sidebar-menu">
                     <li className={`menu-item ${isActive('/portal/dashboard') ? 'active' : ''}`}>
                         <NavLink to="/portal/dashboard">

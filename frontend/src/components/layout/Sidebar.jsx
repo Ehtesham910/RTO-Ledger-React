@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
-function Sidebar() {
+function Sidebar({ isCollapsed }) {
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const location = useLocation();
 
@@ -19,7 +19,10 @@ function Sidebar() {
     };
 
     return (
-        <aside className='sidebar'>
+       <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+            <div className="sidebar-logo-container">
+                {!isCollapsed && <span className="sidebar-logo"><h3>RTO Ledger</h3></span>}
+            </div>
             <ul className='sidebar-menu'>
 
                 {/* Dashboard */}
