@@ -189,9 +189,21 @@ body {
 @media (max-width: 768px) {
     .navbar {
         padding: 0 16px;
+        gap: 10px;
     }
     .navbar-center {
-        display: none; /* Hide search on small screens for cleaner look */
+        padding: 0 10px;
+    }
+    .navbar-search {
+        height: 36px;
+    }
+    .navbar-search input {
+        padding: 0 12px;
+        font-size: 13px;
+    }
+    .navbar-search button {
+        padding: 0 12px;
+        font-size: 13px;
     }
     .user-greet {
         display: none;
