@@ -32,7 +32,7 @@ const ViewReceiptModal = ({ isOpen, onClose, receipt }) => {
                 <div className="form-row">
                     <div className="form-group">
                         <label>Receipt No.</label>
-                        <input type="text" value={receipt.receipt_no || "-"} readOnly style={{ fontWeight: '600', color: '#00c292' }} />
+                        <input type="text" value={receipt.receipt_no || "-"} readOnly style={{ fontWeight: '600', color: '#10b981' }} />
                     </div>
                     <div className="form-group">
                         <label>Date & Time</label>

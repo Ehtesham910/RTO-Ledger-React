@@ -59,11 +59,11 @@
     outline: none; 
 }
 
-.form-group input:focus, .form-group textarea:focus { border-color: #00c292; }
+.form-group input:focus, .form-group textarea:focus { border-color: #10b981; }
 .form-group textarea { resize: none; }
 
 .save-btn {
-    background-color: #00c292; 
+    background-color: #10b981; 
     color: white; 
     padding: 10px 20px; 
     border: none; 

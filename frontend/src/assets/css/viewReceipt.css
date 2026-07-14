@@ -70,7 +70,7 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: #00c292;
+                    color: #10b981;
                     font-weight: 900;
                     font-size: 30px;
                     font-family: 'Inter', sans-serif;
@@ -327,7 +327,7 @@
                     }
                     .brand-logo-placeholder {
                         background-color: #0f172a !important;
-                        color: #00c292 !important;
+                        color: #10b981 !important;
                         -webkit-print-color-adjust: exact;
                         print-color-adjust: exact;
                     }

@@ -31,7 +31,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background-color: #00c292;
+    background-color: #10b981;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -286,9 +286,9 @@
 }
 
 .pagination-number.active {
-    background: #00c292;
+    background: #10b981;
     color: white;
-    border-color: #00c292;
+    border-color: #10b981;
 }
 
 .pagination-number.dots {

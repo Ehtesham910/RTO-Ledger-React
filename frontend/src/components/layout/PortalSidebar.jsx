@@ -22,7 +22,7 @@ function PortalSidebar({ isCollapsed, onExpand }) {
                 <div className="sidebar-logo-container" style={{ borderBottom: 'none', height: 'auto', padding: '24px 16px 16px 16px' }}>
                     {!isCollapsed ? (
                         <span className="sidebar-logo" style={{ fontSize: '32px', display: 'flex', alignItems: 'center', letterSpacing: '0.5px', fontFamily: "'Inter', sans-serif" }}>
-                            <span style={{ color: '#00c292', fontWeight: '900' }}>RTO</span> 
+                            <span style={{ color: '#10b981', fontWeight: '900' }}>RTO</span> 
                             <span style={{ color: '#0f172a', fontWeight: '900', marginLeft: '6px' }}>LEDGER</span>
                         </span>
                     ) : (
@@ -36,7 +36,7 @@ function PortalSidebar({ isCollapsed, onExpand }) {
                                 alignItems: 'center', 
                                 justifyContent: 'center' 
                             }}>
-                                <span style={{ color: '#00c292', fontWeight: '900', fontSize: '24px', fontFamily: "'Inter', sans-serif" }}>R</span> 
+                                <span style={{ color: '#10b981', fontWeight: '900', fontSize: '24px', fontFamily: "'Inter', sans-serif" }}>R</span> 
                             </div>
                         </div>
                     )}
@@ -63,7 +63,7 @@ function PortalSidebar({ isCollapsed, onExpand }) {
                                     outline: 'none',
                                     boxSizing: 'border-box'
                                 }}
-                                onFocus={(e) => e.target.style.borderColor = '#00c292'}
+                                onFocus={(e) => e.target.style.borderColor = '#10b981'}
                                 onBlur={(e) => e.target.style.borderColor = '#e2e8f0'}
                             />
                         </div>

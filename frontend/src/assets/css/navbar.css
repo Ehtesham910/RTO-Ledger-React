@@ -9,7 +9,7 @@
     --nav-border: rgba(226, 232, 240, 0.8);
     --text-main: #1e293b;
     --text-muted: #64748b;
-    --primary-color: #00c292;
+    --primary-color: #10b981;
     --primary-hover: #00a67d;
     --bg-light: #f8fafc;
 }
@@ -55,7 +55,7 @@ body {
     font-size: 22px;
     font-weight: 700;
     letter-spacing: -0.5px;
-    background: #00c292;
+    background: #10b981;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     cursor: pointer;
@@ -154,7 +154,7 @@ body {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #00c292;
+    background: #10b981;
     color: white;
     display: flex;
     align-items: center;
