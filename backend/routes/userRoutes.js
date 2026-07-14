@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const prisma = require('../prismaClient');
+const bcrypt = require('bcryptjs');
 
 // 1. Get all users with their assigned roles and specific permissions
 router.get('/', async (req, res) => {
@@ -43,11 +44,17 @@ router.post('/', async (req, res) => {
     try {
         const { username, email, password, role_id } = req.body;
         
+        let password_hash = password;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            password_hash = await bcrypt.hash(password, salt);
+        }
+
         const newUser = await prisma.users.create({
             data: {
                 username,
                 email,
-                password_hash: password,
+                password_hash: password_hash,
                 role_id: role_id ? BigInt(role_id) : null,
                 is_active: true
             },
@@ -55,6 +62,23 @@ router.post('/', async (req, res) => {
                 roles: true
             }
         });
+
+        // Automatically assign permissions based on the selected role
+        if (role_id) {
+            const rolePermissions = await prisma.role_permissions.findMany({
+                where: { role_id: BigInt(role_id) }
+            });
+            
+            if (rolePermissions.length > 0) {
+                await prisma.user_permissions.createMany({
+                    data: rolePermissions.map(rp => ({
+                        user_id: newUser.id,
+                        permission_id: rp.permission_id
+                    }))
+                });
+            }
+        }
+
         res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -89,8 +113,12 @@ router.put('/:id', async (req, res) => {
             role_id: role_id ? BigInt(role_id) : null
         };
         
-        // Only update password if provided
-        if (password) {
+        // Only update password if provided and changed
+        if (password && !password.startsWith('$2')) { // bcrypt hashes start with $2
+            const salt = await bcrypt.genSalt(10);
+            dataToUpdate.password_hash = await bcrypt.hash(password, salt);
+        } else if (password && password.startsWith('$2')) {
+            // Keep existing hash if they didn't change it
             dataToUpdate.password_hash = password;
         }
 

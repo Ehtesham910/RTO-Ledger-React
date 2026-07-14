@@ -14,6 +14,7 @@ function ServiceRequests() {
     const [selectedEditRequest, setSelectedEditRequest] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    const canCreate = ['Admin', 'Operator', 'Agent'].includes(user.role);
     const canEdit = ['Admin', 'Operator'].includes(user.role);
 
     const [requests, setRequests] = useState(() => {
@@ -118,7 +119,7 @@ function ServiceRequests() {
                     <h2 className="page-title">Service Requests</h2>
                     <p className="page-subtitle">Manage all customer service requests and their status</p>
                 </div>
-                {canEdit && (
+                {canCreate && (
                     <button className="btn-add" onClick={() => setIsModalOpen(true)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         Create Request

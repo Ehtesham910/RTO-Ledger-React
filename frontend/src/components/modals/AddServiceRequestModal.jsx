@@ -158,12 +158,12 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
                             <label>Payment Method (New Requests Only) <span style={{color: 'red'}}>*</span></label>
                             <select name="payment_method" value={formData.payment_method} onChange={handleChange} required style={{ padding: '10px 12px', border: '1px solid #cbd5e1', borderRadius: '6px', fontSize: '15px', outline: 'none' }}>
                                 <option value="Pay Later (Unpaid)">Pay Later (Unpaid)</option>
-                                <option value="Cash (Paid)">Cash (Paid)</option>
-                                <option value="Razorpay (Online)">Razorpay (Online)</option>
+                                <option value="Cash (Advance / Full)">Cash (Advance / Full)</option>
+                                <option value="Online (Advance / Full)">Online (Advance / Full)</option>
                             </select>
                         </div>
                         <div className="form-group">
-                            <label>Payable Amount (₹)</label>
+                            <label>Advance / Amount Paid (₹)</label>
                             <input 
                                 type="number" 
                                 name="amount_paid" 

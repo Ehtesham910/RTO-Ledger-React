@@ -150,7 +150,7 @@ function Sidebar({ isCollapsed, onExpand }) {
                         </a>
                         {/* Submenu List */}
                         <ul className="submenu" style={{ display: (isServicesOpen || searchQuery) ? 'flex' : 'none' }}>
-                            {matchQuery('Service List') && (
+                            {matchQuery('Service List') && ['Admin', 'Operator'].includes(role) && (
                                 <li>
                                     <Link to="/services" className={location.pathname === '/services' ? 'active-submenu' : ''} onClick={() => setIsServicesOpen(false)}>
                                         <span className="submenu-dot"></span>

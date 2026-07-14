@@ -14,7 +14,7 @@ function Services() {
     const [selectedEditService, setSelectedEditService] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canEdit = ['Admin', 'Operator', 'Agent'].includes(user.role);
+    const canEdit = ['Admin'].includes(user.role);
 
     const [services, setServices] = useState(() => {
         const savedData = sessionStorage.getItem('servicesData');
