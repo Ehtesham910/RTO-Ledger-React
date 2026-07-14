@@ -3,7 +3,13 @@ const { generateReceiptNo } = require("./receiptController");
 
 const getLedger = async (req, res) => {
     try {
+        let whereClause = {};
+        if (req.user.role === 'Agent') {
+            whereClause = { customers: { agent_id: BigInt(req.user.id) } };
+        }
+
         const ledgerRecords = await prisma.ledgers.findMany({
+            where: whereClause,
             include: {
                 customers: {
                     select: { 
@@ -93,8 +99,13 @@ const updateLedger = async (req, res) => {
 const getCustomerLedger = async (req, res) => {
     try {
         const { id } = req.params;
+        let whereClause = { customer_id: BigInt(id) };
+        if (req.user.role === 'Agent') {
+            whereClause.customers = { agent_id: BigInt(req.user.id) };
+        }
+
         const ledgerRecords = await prisma.ledgers.findMany({
-            where: { customer_id: BigInt(id) },
+            where: whereClause,
             include: {
                 customers: {
                     select: { name: true, customer_code: true }

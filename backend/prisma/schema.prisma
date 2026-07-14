@@ -14,11 +14,13 @@ model customers {
   email            String?            @unique @db.VarChar(100)
   address          String?
   created_by       BigInt?
+  agent_id         BigInt?
   created_at       DateTime?          @default(now()) @db.Timestamp(6)
   updated_at       DateTime?          @default(now()) @db.Timestamp(6)
   is_active        Boolean?           @default(true)
   password         String?
-  users            users?             @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users            users?             @relation("CustomerCreatedBy", fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  agent            users?             @relation("CustomerAgent", fields: [agent_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   ledgers          ledgers[]
   service_requests service_requests[]
   vehicles         vehicles[]
@@ -128,7 +130,8 @@ model users {
   is_active        Boolean?           @default(true)
   created_at       DateTime?          @default(now()) @db.Timestamp(6)
   updated_at       DateTime?          @default(now()) @db.Timestamp(6)
-  customers        customers[]
+  created_customers customers[]       @relation("CustomerCreatedBy")
+  agent_customers   customers[]       @relation("CustomerAgent")
   receipts         receipts[]
   service_requests service_requests[]
   user_permissions user_permissions[]

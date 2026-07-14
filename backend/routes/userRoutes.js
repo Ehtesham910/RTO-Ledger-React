@@ -22,6 +22,33 @@ router.get('/', async (req, res) => {
     }
 });
 
+// 1.2 Get all active Agents
+router.get('/agents/list', async (req, res) => {
+    try {
+        const agents = await prisma.users.findMany({
+            where: {
+                roles: {
+                    name: 'Agent'
+                },
+                is_active: true
+            },
+            select: {
+                id: true,
+                username: true,
+                email: true
+            }
+        });
+        // Convert BigInt id to string for JSON serialization
+        const formattedAgents = agents.map(a => ({
+            ...a,
+            id: a.id.toString()
+        }));
+        res.json(formattedAgents);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // 1.5 Get user by ID
 router.get('/:id', async (req, res) => {
     try {

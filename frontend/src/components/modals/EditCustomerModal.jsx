@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import '../../assets/css/addCustomerModal.css'; 
 
-const EditCustomerModal = ({ isOpen, onClose, onSave, customer }) => {
+const EditCustomerModal = ({ isOpen, onClose, onSave, customer, agents }) => {
+    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
+    const isAdmin = user.role === 'Admin';
+
     const [formData, setFormData] = useState({
         name: '',
         mobile: '',
         email: '',
-        address: ''
+        address: '',
+        agent_id: ''
     });
 
     useEffect(() => {
@@ -15,7 +19,8 @@ const EditCustomerModal = ({ isOpen, onClose, onSave, customer }) => {
                 name: customer.name || '',
                 mobile: customer.mobile || '',
                 email: customer.email || '',
-                address: customer.address || ''
+                address: customer.address || '',
+                agent_id: customer.agent_id ? customer.agent_id.toString() : ''
             });
         }
     }, [customer]);
@@ -83,8 +88,39 @@ const EditCustomerModal = ({ isOpen, onClose, onSave, customer }) => {
 
                     <div className="form-group full-width">
                         <label>Address</label>
-                        <textarea rows="4" placeholder="Enter Address" name="address" value={formData.address} onChange={handleChange}></textarea>
+                        <textarea 
+                            name="address" 
+                            value={formData.address} 
+                            onChange={handleChange}
+                            placeholder="Enter full address"
+                            rows="2"
+                        ></textarea>
                     </div>
+                    
+                    {isAdmin && (
+                        <div className="form-group full-width">
+                            <label>Assign Agent (Optional)</label>
+                            <select 
+                                name="agent_id" 
+                                value={formData.agent_id} 
+                                onChange={handleChange}
+                                className="form-control"
+                                style={{
+                                    padding: '10px 12px',
+                                    border: '1px solid #cbd5e1',
+                                    borderRadius: '6px',
+                                    fontSize: '15px',
+                                    outline: 'none',
+                                    backgroundColor: 'white'
+                                }}
+                            >
+                                <option value="">-- No Agent (Self / Admin) --</option>
+                                {agents && agents.map(agent => (
+                                    <option key={agent.id} value={agent.id}>{agent.username}</option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     <div className="modal-footer">
                         <button type="submit" className="save-btn">Update Customer</button>

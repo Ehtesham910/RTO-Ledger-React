@@ -3,8 +3,13 @@ const prisma = require("../prismaClient");
 const getReceiptById = async (req, res) => {
     try {
         const { id } = req.params;
-        const receiptRecord = await prisma.receipts.findUnique({
-            where: { id: BigInt(id) },
+        let whereClause = { id: BigInt(id) };
+        if (req.user.role === 'Agent') {
+            whereClause.ledgers = { customers: { agent_id: BigInt(req.user.id) } };
+        }
+
+        const receiptRecord = await prisma.receipts.findFirst({
+            where: whereClause,
             include: {
                 ledgers: {
                     include: {
@@ -35,7 +40,13 @@ const getReceiptById = async (req, res) => {
 
 const getReceipts = async (req, res) => {
     try {
+        let whereClause = {};
+        if (req.user.role === 'Agent') {
+            whereClause = { ledgers: { customers: { agent_id: BigInt(req.user.id) } } };
+        }
+
         const receiptRecords = await prisma.receipts.findMany({
+            where: whereClause,
             include: {
                 ledgers: {
                     include: {

@@ -28,6 +28,8 @@ function Customers() {
     });
     const [searchQuery, setSearchQuery] = useState('');
     const [loading, setLoading] = useState(!sessionStorage.getItem('customersData'));
+    const [agents, setAgents] = useState([]);
+    const [nextCode, setNextCode] = useState('CUST-0001');
 
     // Pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -48,12 +50,48 @@ function Customers() {
                 setLoading(false);
             });
 
+        // Fetch agents for the dropdown if Admin
+        if (user.role === 'Admin') {
+            axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/agents/list`)
+                .then(res => setAgents(res.data))
+                .catch(err => console.error("Error fetching agents:", err));
+        }
+
         const handleGlobalSearch = (e) => {
             setSearchQuery(e.detail.toLowerCase());
         };
-        window.addEventListener('globalSearch', handleGlobalSearch);
-        return () => window.removeEventListener('globalSearch', handleGlobalSearch);
-    }, []);
+
+        window.addEventListener('global-search', handleGlobalSearch);
+        return () => window.removeEventListener('global-search', handleGlobalSearch);
+    }, [user.role]);
+
+    const handleAgentChange = async (customerId, newAgentId) => {
+        try {
+            await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/${customerId}`, {
+                agent_id: newAgentId || null
+            });
+            
+            // Update local state directly to avoid full reload delay
+            const updateCustomerData = (list) => list.map(c => {
+                if (c.id === customerId) {
+                    const newAgent = newAgentId ? agents.find(a => a.id == newAgentId) : null;
+                    return { ...c, agent_id: newAgentId, agent: newAgent ? { username: newAgent.username } : null };
+                }
+                return c;
+            });
+            
+            setCustomers(prev => {
+                const updated = updateCustomerData(prev);
+                sessionStorage.setItem('customersData', JSON.stringify(updated));
+                return updated;
+            });
+            setFilteredCustomers(prev => updateCustomerData(prev));
+
+        } catch (error) {
+            console.error("Error updating agent:", error);
+            alert("Failed to assign agent. Please try again.");
+        }
+    };
 
     useEffect(() => {
         if (!searchQuery) {
@@ -116,34 +154,20 @@ function Customers() {
     };
 
     // Calculate Next Customer Code
-    const getNextCustomerCode = () => {
-        if (!customers || customers.length === 0) return 'CUST-0001';
-
-        let maxNum = 0;
-        customers.forEach(c => {
-            if (c.customer_code) {
-                // Sirf numbers ko extract karega
-                const numMatch = String(c.customer_code).match(/\d+/);
-                if (numMatch) {
-                    const numPart = parseInt(numMatch[0], 10);
-                    if (numPart > maxNum) {
-                        maxNum = numPart;
-                    }
-                }
-            }
-        });
-
-        // Agar pehle se stored customers me koi valid number na mile, 
-        // toh array ke length ke hisaab se number dega (eg. 10 customers hain toh maxNum 10 ho jayega)
-        if (maxNum === 0) {
-            maxNum = customers.length;
+    const fetchNextCode = async () => {
+        try {
+            const res = await axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/customers/utils/next-code`, {
+                headers: { Authorization: `Bearer ${sessionStorage.getItem('token')}` }
+            });
+            setNextCode(res.data.nextCode);
+        } catch (error) {
+            console.error("Error fetching next customer code:", error);
         }
-
-        const nextNum = maxNum + 1;
-        return `CUST-${nextNum.toString().padStart(4, '0')}`;
     };
 
-    const nextCode = getNextCustomerCode();
+    useEffect(() => {
+        fetchNextCode();
+    }, [customers]);
 
     return (
         <div className="page-container">
@@ -173,6 +197,7 @@ function Customers() {
                                 <th>Mobile</th>
                                 <th>Email</th>
                                 <th>Address</th>
+                                <th>Agent</th>
                                 <th>Status</th>
                                 <th className="text-center">Actions</th>
                             </tr>
@@ -186,6 +211,38 @@ function Customers() {
                                     <td>{customer.mobile}</td>
                                     <td>{customer.email || '-'}</td>
                                     <td>{customer.address || '-'}</td>
+                                    <td>
+                                        {user.role === 'Admin' ? (
+                                            <select 
+                                                value={customer.agent_id ? customer.agent_id.toString() : ""}
+                                                onChange={(e) => handleAgentChange(customer.id, e.target.value)}
+                                                style={{
+                                                    padding: '6px 10px',
+                                                    border: '1px solid #cbd5e1',
+                                                    borderRadius: '6px',
+                                                    fontSize: '13px',
+                                                    backgroundColor: customer.agent_id ? '#e0e7ff' : '#f8fafc',
+                                                    color: customer.agent_id ? '#3730a3' : '#64748b',
+                                                    fontWeight: '500',
+                                                    outline: 'none',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                <option value="">-- Unassigned --</option>
+                                                {agents.map(agent => (
+                                                    <option key={agent.id} value={agent.id}>
+                                                        {agent.username}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            customer.agent?.username ? (
+                                                <span className="badge" style={{ backgroundColor: '#e0e7ff', color: '#3730a3' }}>
+                                                    {customer.agent.username}
+                                                </span>
+                                            ) : '-'
+                                        )}
+                                    </td>
                                     <td>
                                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
                                             <span style={{ fontSize: '12px', fontWeight: '500', color: customer.is_active ? '#22c55e' : '#ef4444' }}>
@@ -258,6 +315,7 @@ function Customers() {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 nextCode={nextCode}
+                agents={agents}
                 onSave={async (newCustomerData) => {
                     setIsModalOpen(false); // Close modal instantly
                     try {
@@ -286,6 +344,7 @@ function Customers() {
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 customer={selectedEditCustomer}
+                agents={agents}
                 onSave={async (updatedCustomerData) => {
                     setIsEditModalOpen(false); // Close modal instantly
                     try {

@@ -2,7 +2,13 @@ const prisma = require("../prismaClient");
 
 const getVehicles = async(req,res) => {
     try{
+        let whereClause = {};
+        if (req.user.role === 'Agent') {
+            whereClause = { customers: { agent_id: BigInt(req.user.id) } };
+        }
+
         const vehicles = await prisma.vehicles.findMany({
+            where: whereClause,
             include: {
                 customers: {
                     select: {

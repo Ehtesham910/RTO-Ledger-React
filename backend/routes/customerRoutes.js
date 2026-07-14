@@ -5,6 +5,9 @@ const customerController = require('../controllers/customerController');
 // GET /api/customers
 router.get('/', customerController.getCustomers);
 
+// GET /api/customers/utils/next-code
+router.get('/utils/next-code', customerController.getNextCustomerCode);
+
 // GET /api/customers/:id
 router.get('/:id', customerController.getCustomerById);
 

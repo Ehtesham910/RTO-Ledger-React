@@ -3,7 +3,13 @@ const { generateReceiptNo } = require("./receiptController");
 
 const getServiceRequests = async (req, res) => {
     try {
+        let whereClause = {};
+        if (req.user.role === 'Agent') {
+            whereClause = { customers: { agent_id: BigInt(req.user.id) } };
+        }
+
         const requests = await prisma.service_requests.findMany({
+            where: whereClause,
             include: {
                 customers: {
                     select: { name: true }
