@@ -14,7 +14,9 @@ function Customers() {
     const [selectedEditCustomer, setSelectedEditCustomer] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canEdit = ['Admin', 'Operator', 'Agent'].includes(user.role);
+    const permissions = user.permissions || [];
+    const canCreate = permissions.includes('customer.create');
+    const canEdit = permissions.includes('customer.edit');
 
     const [customers, setCustomers] = useState(() => {
         const savedData = sessionStorage.getItem('customersData');
@@ -151,7 +153,7 @@ function Customers() {
                     <h2 className="page-title">Customers</h2>
                     <p className="page-subtitle">Manage your clients and their details</p>
                 </div>
-                {canEdit && (
+                {canCreate && (
                     <button className="btn-add" onClick={() => setIsModalOpen(true)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         Add Customer
@@ -190,7 +192,7 @@ function Customers() {
                                                 {customer.is_active ? 'Active' : 'Inactive'}
                                             </span>
                                             <label className="switch">
-                                                <input type="checkbox" checked={customer.is_active} onChange={() => handleStatusToggle(customer.id, customer.is_active)} />
+                                                <input type="checkbox" checked={customer.is_active} onChange={() => handleStatusToggle(customer.id, customer.is_active)} disabled={!canEdit} />
                                                 <span className="slider"></span>
                                             </label>
                                         </div>

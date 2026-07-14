@@ -14,7 +14,8 @@ function Ledger() {
     const [selectedEditEntry, setSelectedEditEntry] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canEdit = ['Admin', 'Accountant'].includes(user.role);
+    const permissions = user.permissions || [];
+    const canEdit = permissions.includes('ledger.create');
 
     const [ledgers, setLedgers] = useState(() => {
         const savedData = sessionStorage.getItem('ledgerData');

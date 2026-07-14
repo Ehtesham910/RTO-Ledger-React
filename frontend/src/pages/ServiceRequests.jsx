@@ -14,8 +14,9 @@ function ServiceRequests() {
     const [selectedEditRequest, setSelectedEditRequest] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canCreate = ['Admin', 'Operator', 'Agent'].includes(user.role);
-    const canEdit = ['Admin', 'Operator'].includes(user.role);
+    const permissions = user.permissions || [];
+    const canCreate = permissions.includes('service.create');
+    const canEdit = permissions.includes('service_request.edit');
 
     const [requests, setRequests] = useState(() => {
         const savedData = sessionStorage.getItem('serviceRequestsData');

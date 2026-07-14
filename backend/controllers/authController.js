@@ -16,10 +16,21 @@ const login = async (req, res) => {
             return res.status(400).json({ error: "Username and password are required" });
         }
 
-        // Find user
+        // Find user with permissions
         const user = await prisma.users.findUnique({
             where: { username },
-            include: { roles: true }
+            include: { 
+                roles: {
+                    include: {
+                        role_permissions: {
+                            include: { permissions: true }
+                        }
+                    }
+                },
+                user_permissions: {
+                    include: { permissions: true }
+                }
+            }
         });
 
         if (!user) {
@@ -47,6 +58,20 @@ const login = async (req, res) => {
             { expiresIn: '24h' }
         );
 
+        let permissions = [];
+        if (user.roles && user.roles.role_permissions) {
+            user.roles.role_permissions.forEach(rp => {
+                if (rp.permissions) permissions.push(rp.permissions.code);
+            });
+        }
+        if (user.user_permissions) {
+            user.user_permissions.forEach(up => {
+                if (up.permissions && !permissions.includes(up.permissions.code)) {
+                    permissions.push(up.permissions.code);
+                }
+            });
+        }
+
         res.json({
             message: "Login successful",
             token,
@@ -54,7 +79,8 @@ const login = async (req, res) => {
                 id: user.id.toString(),
                 username: user.username,
                 email: user.email,
-                role: user.roles ? user.roles.name : 'user'
+                role: user.roles ? user.roles.name : 'user',
+                permissions
             }
         });
     } catch (error) {
@@ -211,8 +237,73 @@ const customerRegister = async (req, res) => {
     }
 };
 
+const getMe = async (req, res) => {
+    try {
+        if (req.user.role === 'Customer') {
+            const customer = await prisma.customers.findUnique({
+                where: { id: BigInt(req.user.id) }
+            });
+            if (!customer) return res.status(404).json({ error: "Customer not found" });
+            return res.json({
+                id: customer.id.toString(),
+                username: customer.name,
+                mobile: customer.mobile,
+                role: 'Customer',
+                permissions: []
+            });
+        }
+
+        const user = await prisma.users.findUnique({
+            where: { id: BigInt(req.user.id) },
+            include: { 
+                roles: {
+                    include: {
+                        role_permissions: {
+                            include: { permissions: true }
+                        }
+                    }
+                },
+                user_permissions: {
+                    include: { permissions: true }
+                }
+            }
+        });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        let permissions = [];
+        if (user.roles && user.roles.role_permissions) {
+            user.roles.role_permissions.forEach(rp => {
+                if (rp.permissions) permissions.push(rp.permissions.code);
+            });
+        }
+        if (user.user_permissions) {
+            user.user_permissions.forEach(up => {
+                if (up.permissions && !permissions.includes(up.permissions.code)) {
+                    permissions.push(up.permissions.code);
+                }
+            });
+        }
+
+        res.json({
+            id: user.id.toString(),
+            username: user.username,
+            email: user.email,
+            role: user.roles ? user.roles.name : 'user',
+            permissions
+        });
+
+    } catch (error) {
+        console.error("GetMe Error:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 module.exports = {
     login,
     customerLogin,
-    customerRegister
+    customerRegister,
+    getMe
 };

@@ -16,6 +16,9 @@ function Sidebar({ isCollapsed, onExpand }) {
     // Get user from sessionStorage
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const role = user.role || 'user';
+    const permissions = user.permissions || [];
+    
+    const hasPermission = (perm) => permissions.includes(perm);
 
     // Helper to check active path
     const isActive = (path) => {
@@ -150,7 +153,7 @@ function Sidebar({ isCollapsed, onExpand }) {
                         </a>
                         {/* Submenu List */}
                         <ul className="submenu" style={{ display: (isServicesOpen || searchQuery) ? 'flex' : 'none' }}>
-                            {matchQuery('Service List') && ['Admin', 'Operator'].includes(role) && (
+                            {matchQuery('Service List') && hasPermission('service_catalog.view') && (
                                 <li>
                                     <Link to="/services" className={location.pathname === '/services' ? 'active-submenu' : ''} onClick={() => setIsServicesOpen(false)}>
                                         <span className="submenu-dot"></span>
@@ -170,10 +173,10 @@ function Sidebar({ isCollapsed, onExpand }) {
                     </li>
                 )}
 
-                {/* Ledger & Receipts: Hidden for Operator and Agent */}
-                {role !== 'Operator' && role !== 'Agent' && (
+                {/* Ledger & Receipts: Guarded by permissions */}
+                {(hasPermission('ledger.view') || hasPermission('receipt.view')) && (
                     <>
-                        {matchQuery('Ledger') && (
+                        {matchQuery('Ledger') && hasPermission('ledger.view') && (
                             <li className={`menu-item ${isActive('/ledger') ? 'active' : ''}`}>
                                 <Link to="/ledger">
                                     <span className="menu-icon">
@@ -187,7 +190,7 @@ function Sidebar({ isCollapsed, onExpand }) {
                             </li>
                         )}
 
-                        {matchQuery('Receipts') && (
+                        {matchQuery('Receipts') && hasPermission('receipt.view') && (
                             <li className={`menu-item ${isActive('/receipts') ? 'active' : ''}`}>
                                 <Link to="/receipts">
                                     <span className="menu-icon">
@@ -205,12 +208,12 @@ function Sidebar({ isCollapsed, onExpand }) {
                     </>
                 )}
                 
-                {/* System Management: Only for Admin */}
-                {role === 'Admin' && (
+                {/* System Management: Guarded by permissions */}
+                {(hasPermission('role.manage') || hasPermission('user.manage')) && (
                     <>
                         <hr className="sidebar-divider" />
                         
-                        {matchQuery('Roles & Permissions') && (
+                        {matchQuery('Roles & Permissions') && hasPermission('role.manage') && (
                             <li className={`menu-item ${isActive('/roles') ? 'active' : ''}`}>
                                 <Link to="/roles">
                                     <span className="menu-icon">
@@ -223,7 +226,7 @@ function Sidebar({ isCollapsed, onExpand }) {
                             </li>
                         )}
 
-                        {matchQuery('Users & Permissions') && (
+                        {matchQuery('Users & Permissions') && hasPermission('user.manage') && (
                             <li className={`menu-item ${isActive('/users') ? 'active' : ''}`}>
                                 <Link to="/users">
                                     <span className="menu-icon">

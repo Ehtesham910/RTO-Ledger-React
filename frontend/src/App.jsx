@@ -43,22 +43,37 @@ axios.interceptors.response.use((response) => {
         sessionStorage.removeItem('token');
         sessionStorage.removeItem('user');
         window.location.href = '/';
+    } else if (error.response && error.response.status === 403) {
+        // Automatically reload to fetch fresh permissions if backend rejects access
+        if (!sessionStorage.getItem('reloading')) {
+            sessionStorage.setItem('reloading', 'true');
+            alert("Your access permissions have been updated. The page will now refresh.");
+            window.location.reload();
+        } else {
+            sessionStorage.removeItem('reloading');
+        }
     }
     return Promise.reject(error);
 });
 
 // Protected Route Wrapper
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const ProtectedRoute = ({ children, allowedRoles, allowedPermissions }) => {
     const token = sessionStorage.getItem('token');
     const location = useLocation();
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
     const role = user.role;
+    const permissions = user.permissions || [];
 
     if (!token) {
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(role)) {
+    if (allowedPermissions && allowedPermissions.length > 0) {
+        const hasPerm = allowedPermissions.some(perm => permissions.includes(perm));
+        if (!hasPerm) {
+            return <Navigate to="/dashboard" replace />;
+        }
+    } else if (allowedRoles && !allowedRoles.includes(role)) {
         if (role === 'Customer') {
             return <Navigate to="/portal/dashboard" replace />;
         }
@@ -69,6 +84,30 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 };
 
 function App() {
+    const [authLoading, setAuthLoading] = React.useState(!!sessionStorage.getItem('token'));
+
+    React.useEffect(() => {
+        const token = sessionStorage.getItem('token');
+        if (token) {
+            axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/me`)
+                .then(res => {
+                    sessionStorage.setItem('user', JSON.stringify(res.data));
+                })
+                .catch(err => {
+                    console.error("Failed to refresh user:", err);
+                    if (err.response && err.response.status === 401) {
+                        sessionStorage.removeItem('token');
+                        sessionStorage.removeItem('user');
+                    }
+                })
+                .finally(() => {
+                    setAuthLoading(false);
+                });
+        }
+    }, []);
+
+    if (authLoading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '18px', color: '#64748b' }}>Loading...</div>;
+
     return (
         <BrowserRouter>
             <Routes>
@@ -84,15 +123,15 @@ function App() {
                     <Route path="/services" element={<Services />} />
                     <Route path="/services/requests" element={<ServiceRequests />} />
                     
-                    {/* Accessible to Admin, Accountant, Viewer */}
-                    <Route path="/ledger" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Ledger /></ProtectedRoute>} />
-                    <Route path="/ledger/customer/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><CustomerLedger /></ProtectedRoute>} />
-                    <Route path="/receipts" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><Receipts /></ProtectedRoute>} />
-                    <Route path="/receipts/:id" element={<ProtectedRoute allowedRoles={['Admin', 'Accountant', 'Viewer']}><ViewReceipt /></ProtectedRoute>} />
+                    {/* Protected by Permissions */}
+                    <Route path="/ledger" element={<ProtectedRoute allowedPermissions={['ledger.view']}><Ledger /></ProtectedRoute>} />
+                    <Route path="/ledger/customer/:id" element={<ProtectedRoute allowedPermissions={['ledger.view']}><CustomerLedger /></ProtectedRoute>} />
+                    <Route path="/receipts" element={<ProtectedRoute allowedPermissions={['receipt.view']}><Receipts /></ProtectedRoute>} />
+                    <Route path="/receipts/:id" element={<ProtectedRoute allowedPermissions={['receipt.view']}><ViewReceipt /></ProtectedRoute>} />
                     
-                    {/* Accessible to Admin Only */}
-                    <Route path="/roles" element={<ProtectedRoute allowedRoles={['Admin']}><Roles /></ProtectedRoute>} />
-                    <Route path="/users" element={<ProtectedRoute allowedRoles={['Admin']}><Users /></ProtectedRoute>} />
+                    {/* System Management */}
+                    <Route path="/roles" element={<ProtectedRoute allowedPermissions={['role.manage']}><Roles /></ProtectedRoute>} />
+                    <Route path="/users" element={<ProtectedRoute allowedPermissions={['user.manage']}><Users /></ProtectedRoute>} />
 
                     {/* Global Search */}
                     <Route path="/search" element={<Search />} />
@@ -108,7 +147,6 @@ function App() {
                     <Route path="receipts" element={<MyReceipts />} />
                     <Route path="receipts/:id" element={<ViewReceipt />} />
                     <Route path="search" element={<PortalSearch />} />
-                    {/* ViewReceipt works for both because it just relies on state.receipt or API fetch */}
                 </Route>
             </Routes>
         </BrowserRouter>

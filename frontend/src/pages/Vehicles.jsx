@@ -14,7 +14,9 @@ function Vehicles(){
     const [selectedEditVehicle, setSelectedEditVehicle] = useState(null);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canEdit = ['Admin', 'Operator', 'Agent'].includes(user.role);
+    const permissions = user.permissions || [];
+    const canCreate = permissions.includes('vehicle.create');
+    const canEdit = permissions.includes('vehicle.edit');
 
     // State initialize karte waqt hi LocalStorage se purana data nikal lenge
     const [vehicles, setVehicles] = useState(() => {
@@ -132,7 +134,7 @@ function Vehicles(){
                     <h2 className="page-title">Vehicles</h2>
                     <p className="page-subtitle">Manage customer vehicles and their details</p>
                 </div>
-                {canEdit && (
+                {canCreate && (
                     <button className="btn-add" onClick={() => setIsModalOpen(true)}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                         Add Vehicle
@@ -191,7 +193,7 @@ function Vehicles(){
                                                     {vehicle.is_active ? 'Active' : 'Inactive'}
                                                 </span>
                                                 <label className="switch">
-                                                    <input type="checkbox" checked={vehicle.is_active} onChange={() => handleStatusToggle(vehicle.id, vehicle.is_active)} />
+                                                    <input type="checkbox" checked={vehicle.is_active} onChange={() => handleStatusToggle(vehicle.id, vehicle.is_active)} disabled={!canEdit} />
                                                     <span className="slider"></span>
                                                 </label>
                                             </div>

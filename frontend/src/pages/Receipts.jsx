@@ -11,7 +11,8 @@ function Receipts() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canEdit = ['Admin', 'Accountant'].includes(user.role);
+    const permissions = user.permissions || [];
+    const canEdit = permissions.includes('receipt.print');
 
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedReceipt, setSelectedReceipt] = useState(null);

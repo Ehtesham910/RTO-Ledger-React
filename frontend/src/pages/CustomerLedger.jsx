@@ -16,7 +16,6 @@ function CustomerLedger() {
     const itemsPerPage = 10;
 
     const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const canEdit = ['Admin', 'Accountant'].includes(user.role);
 
     useEffect(() => {
         const fetchCustomerLedger = async () => {

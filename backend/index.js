@@ -19,7 +19,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const authRoutes = require('./routes/authRoutes');
 const portalRoutes = require('./routes/portalRoutes');
 const searchRoutes = require('./routes/searchRoutes');
-const { verifyToken, checkRole } = require('./middlewares/authMiddleware');
+const { verifyToken, checkRole, checkPermission } = require('./middlewares/authMiddleware');
 const app = express();
 
 // Middlewares
@@ -35,13 +35,13 @@ app.use('/api/vehicles', verifyToken, vehicleRoutes);
 app.use('/api/services', verifyToken, serviceRoutes);
 app.use('/api/servicerequests', verifyToken, serviceRequestRoutes);
 
-// Ledger & Receipts: Restricted from Operator
-app.use('/api/ledger', verifyToken, checkRole(['Admin', 'Accountant', 'Viewer']), ledgerRoutes);
-app.use('/api/receipts', verifyToken, checkRole(['Admin', 'Accountant', 'Viewer']), receiptRoutes);
+// Ledger & Receipts: Guarded by permissions
+app.use('/api/ledger', verifyToken, checkPermission(['ledger.view', 'ledger.create']), ledgerRoutes);
+app.use('/api/receipts', verifyToken, checkPermission(['receipt.view', 'receipt.print']), receiptRoutes);
 
-// System Management: Restricted to Admin only
-app.use('/api/roles', verifyToken, checkRole(['Admin']), roleRoutes);
-app.use('/api/users', verifyToken, checkRole(['Admin']), userRoutes);
+// System Management: Guarded by permissions
+app.use('/api/roles', verifyToken, checkPermission(['role.manage']), roleRoutes);
+app.use('/api/users', verifyToken, checkPermission(['user.manage']), userRoutes);
 
 app.use('/api/dashboard', verifyToken, dashboardRoutes);
 
