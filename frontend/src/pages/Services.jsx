@@ -83,7 +83,7 @@ function Services() {
         <div className="page-container">
             <div className="page-header">
                 <div>
-                    <h2 className="page-title">Services</h2>
+                    <h2 className="page-title">Service List</h2>
                     <p className="page-subtitle">Manage service offerings and their fees</p>
                 </div>
                 {canEdit && (

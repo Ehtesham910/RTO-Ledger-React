@@ -164,18 +164,97 @@
 /* Collapsed state styles */
 .sidebar.collapsed {
     width: 70px;
+    overflow: visible !important;
 }
 
-/* Hide text and icons when collapsed */
-.sidebar.collapsed .menu-label,
+/* Hide elements when collapsed */
 .sidebar.collapsed .chevron,
-.sidebar.collapsed .sidebar-divider {
+.sidebar.collapsed .sidebar-divider,
+.sidebar.collapsed .sidebar-search-container {
     display: none;
 }
 
-/* Hide submenus completely when collapsed */
-.sidebar.collapsed .submenu {
+/* Hide text by default in collapsed state */
+.sidebar.collapsed .menu-label {
+    display: none;
+}
+
+/* Hover flyout for collapsed sidebar (ALL Items) */
+.sidebar.collapsed .menu-item {
+    position: relative;
+}
+
+.sidebar.collapsed .menu-item .menu-label {
+    display: block;
+    position: absolute;
+    left: 54px;
+    top: 50%;
+    transform: translateY(-50%) translateX(-10px);
+    background: white;
+    color: #0f172a;
+    padding: 10px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 1000;
+}
+
+.sidebar.collapsed .menu-item:hover .menu-label {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) translateX(0);
+}
+
+/* Hide label when submenu is open */
+.sidebar.collapsed .menu-item.service-menu.flyout-open .menu-label {
     display: none !important;
+}
+
+/* Submenu Flyout (Appears only on Click/Open) */
+.sidebar.collapsed .menu-item.service-menu .submenu {
+    display: flex !important;
+    flex-direction: column;
+    position: absolute;
+    left: 45px; /* Moved box closer to the icon */
+    top: 0;
+    width: max-content;
+    min-width: 150px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    padding: 8px 0;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-10px);
+    transition: all 0.2s ease;
+}
+
+.sidebar.collapsed .menu-item.service-menu.flyout-open .submenu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+/* Invisible hover bridge to prevent flyout from closing */
+.sidebar.collapsed .menu-item .menu-label::before,
+.sidebar.collapsed .menu-item.service-menu .submenu::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 30px;
+    height: 100%;
+}
+
+/* Reduce left padding of submenu items when in flyout mode */
+.sidebar.collapsed .submenu li a {
+    padding-left: 16px !important;
 }
 
 /* Center icons when collapsed */

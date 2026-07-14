@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
-function Sidebar({ isCollapsed }) {
+function Sidebar({ isCollapsed, onExpand }) {
     const [isServicesOpen, setIsServicesOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
@@ -133,7 +133,7 @@ function Sidebar({ isCollapsed }) {
 
                 {/* Services Dropdown */}
                 {matchQuery('Services') && (
-                    <li className={`menu-item service-menu ${isActive('/services') || isServicesOpen ? 'open' : ''} ${isActive('/services') ? 'active' : ''}`}>
+                    <li className={`menu-item service-menu ${isActive('/services') || isServicesOpen ? 'open' : ''} ${isServicesOpen ? 'flyout-open' : ''} ${isActive('/services') ? 'active' : ''}`}>
                         <a className="menu-toggle" onClick={() => setIsServicesOpen(!isServicesOpen)} style={{ cursor: 'pointer' }}>
                             <span className="menu-icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -152,7 +152,7 @@ function Sidebar({ isCollapsed }) {
                         <ul className="submenu" style={{ display: (isServicesOpen || searchQuery) ? 'flex' : 'none' }}>
                             {matchQuery('Service List') && (
                                 <li>
-                                    <Link to="/services" className={location.pathname === '/services' ? 'active-submenu' : ''}>
+                                    <Link to="/services" className={location.pathname === '/services' ? 'active-submenu' : ''} onClick={() => setIsServicesOpen(false)}>
                                         <span className="submenu-dot"></span>
                                         Service List
                                     </Link>
@@ -160,7 +160,7 @@ function Sidebar({ isCollapsed }) {
                             )}
                             {matchQuery('Service Requests') && (
                                 <li>
-                                    <Link to="/services/requests" className={location.pathname === '/services/requests' ? 'active-submenu' : ''}>
+                                    <Link to="/services/requests" className={location.pathname === '/services/requests' ? 'active-submenu' : ''} onClick={() => setIsServicesOpen(false)}>
                                         <span className="submenu-dot"></span>
                                         Service Requests
                                     </Link>

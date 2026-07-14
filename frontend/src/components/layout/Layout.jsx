@@ -12,7 +12,7 @@ function Layout() {
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <Sidebar isCollapsed={isSidebarCollapsed} />
+            <Sidebar isCollapsed={isSidebarCollapsed} onExpand={() => setIsSidebarCollapsed(false)} />
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                 <Navbar toggleSidebar={toggleSidebar} isCollapsed={isSidebarCollapsed} />
                 <main>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
-function PortalSidebar({ isCollapsed }) {
+function PortalSidebar({ isCollapsed, onExpand }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
