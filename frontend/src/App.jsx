@@ -85,6 +85,23 @@ const ProtectedRoute = ({ children, allowedRoles, allowedPermissions }) => {
 
 function App() {
     const [authLoading, setAuthLoading] = React.useState(!!sessionStorage.getItem('token'));
+    React.useEffect(() => {
+        const channel = new BroadcastChannel('rto_ledger_app_channel');
+        
+        // Naya tab open hote hi, apna current URL baaki tabs ko bhej do
+        channel.postMessage({ type: 'SYNC_TAB', url: window.location.pathname });
+        
+        channel.onmessage = (event) => {
+            if (event.data && event.data.type === 'SYNC_TAB') {
+                // Agar kisi aur tab me naya page khula hai, toh is purane tab ko bhi wahi bhej do
+                if (window.location.pathname !== event.data.url) {
+                    window.location.href = event.data.url;
+                }
+            }
+        };
+
+        return () => channel.close();
+    }, []);
 
     React.useEffect(() => {
         const token = sessionStorage.getItem('token');
