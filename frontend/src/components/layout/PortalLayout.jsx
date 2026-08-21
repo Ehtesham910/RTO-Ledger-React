@@ -1,33 +1,46 @@
-import React, { useState } from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
-import Navbar from './Navbar';
-import PortalSidebar from './PortalSidebar';
+import React, { useState } from "react";
+import { Outlet, Navigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import PortalSidebar from "./PortalSidebar";
 
 function PortalLayout() {
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const token = sessionStorage.getItem('token');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+  const token = sessionStorage.getItem("token");
 
-    // Make sure only Customer role can access the portal layout
-    if (!token || user.role !== 'Customer') {
-        return <Navigate to="/" replace />;
-    }
+  // Make sure only Customer role can access the portal layout
+  if (!token || user.role !== "Customer") {
+    return <Navigate to="/login" replace />;
+  }
 
-    const toggleSidebar = () => {
-        setIsSidebarCollapsed(!isSidebarCollapsed);
-    };
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
 
-    return (
-        <div style={{ display: 'flex', minHeight: '100vh' }}>
-            <PortalSidebar isCollapsed={isSidebarCollapsed} onExpand={() => setIsSidebarCollapsed(false)} />
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                <Navbar toggleSidebar={toggleSidebar} isCollapsed={isSidebarCollapsed} />
-                <main>
-                    <Outlet />
-                </main>
-            </div>
-        </div>
-    );
+  return (
+    <div style={{ display: "flex", minHeight: "100vh" }}>
+      <PortalSidebar
+        isCollapsed={isSidebarCollapsed}
+        onExpand={() => setIsSidebarCollapsed(false)}
+      />
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minWidth: 0,
+        }}
+      >
+        <Navbar
+          toggleSidebar={toggleSidebar}
+          isCollapsed={isSidebarCollapsed}
+        />
+        <main>
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
 }
 
 export default PortalLayout;

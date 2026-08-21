@@ -1,173 +1,270 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
-import Layout from './components/layout/Layout';
-import Dashboard from './pages/Dashboard';
-import Customers from './pages/Customers';
-import Vehicles from './pages/Vehicles';
-import Services from './pages/Services';
-import ServiceRequests from './pages/ServiceRequests';
-import Ledger from './pages/Ledger';
-import CustomerLedger from './pages/CustomerLedger';
-import Receipts from './pages/Receipts';
-import ViewReceipt from './pages/ViewReceipt';
-import Roles from './pages/Roles';
-import Users from './pages/Users';
-import Login from './pages/Login';
-import Search from './pages/Search';
+import React, { useEffect } from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import axios from "axios";
+import Layout from "./components/layout/Layout";
+import Dashboard from "./pages/Dashboard";
+import Customers from "./pages/Customers";
+import Vehicles from "./pages/Vehicles";
+import Services from "./pages/Services";
+import ServiceRequests from "./pages/ServiceRequests";
+import Ledger from "./pages/Ledger";
+import CustomerLedger from "./pages/CustomerLedger";
+import Receipts from "./pages/Receipts";
+import ViewReceipt from "./pages/ViewReceipt";
+import Roles from "./pages/Roles";
+import Users from "./pages/Users";
+import Login from "./pages/Login";
+import Search from "./pages/Search";
 
 // Portal Imports
-import PortalLayout from './components/layout/PortalLayout';
-import PortalDashboard from './pages/portal/PortalDashboard';
-import MyVehicles from './pages/portal/MyVehicles';
-import MyServiceRequests from './pages/portal/MyServiceRequests';
-import MyLedger from './pages/portal/MyLedger';
-import MyReceipts from './pages/portal/MyReceipts';
-import PortalSearch from './pages/portal/PortalSearch';
+import PortalLayout from "./components/layout/PortalLayout";
+import PortalDashboard from "./pages/portal/PortalDashboard";
+import MyVehicles from "./pages/portal/MyVehicles";
+import MyServiceRequests from "./pages/portal/MyServiceRequests";
+import MyLedger from "./pages/portal/MyLedger";
+import MyReceipts from "./pages/portal/MyReceipts";
+import PortalSearch from "./pages/portal/PortalSearch";
 
 // Setup global axios interceptor
-axios.interceptors.request.use((config) => {
-    const token = sessionStorage.getItem('token');
+axios.interceptors.request.use(
+  (config) => {
+    const token = sessionStorage.getItem("token");
     if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
-}, (error) => {
+  },
+  (error) => {
     return Promise.reject(error);
-});
+  },
+);
 
-axios.interceptors.response.use((response) => {
+axios.interceptors.response.use(
+  (response) => {
     return response;
-}, (error) => {
+  },
+  (error) => {
     if (error.response && error.response.status === 401) {
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
-        window.location.href = '/';
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("user");
+      window.location.href = "/login";
     } else if (error.response && error.response.status === 403) {
-        // Automatically reload to fetch fresh permissions if backend rejects access
-        if (!sessionStorage.getItem('reloading')) {
-            sessionStorage.setItem('reloading', 'true');
-            alert("Your access permissions have been updated. The page will now refresh.");
-            window.location.reload();
-        } else {
-            sessionStorage.removeItem('reloading');
-        }
+      // Automatically reload to fetch fresh permissions if backend rejects access
+      if (!sessionStorage.getItem("reloading")) {
+        sessionStorage.setItem("reloading", "true");
+        alert(
+          "Your access permissions have been updated. The page will now refresh.",
+        );
+        window.location.reload();
+      } else {
+        sessionStorage.removeItem("reloading");
+      }
     }
     return Promise.reject(error);
-});
+  },
+);
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles, allowedPermissions }) => {
-    const token = sessionStorage.getItem('token');
-    const location = useLocation();
-    const user = JSON.parse(sessionStorage.getItem('user') || '{}');
-    const role = user.role;
-    const permissions = user.permissions || [];
+  const token = sessionStorage.getItem("token");
+  const location = useLocation();
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}");
+  const role = user.role;
+  const permissions = user.permissions || [];
 
-    if (!token) {
-        return <Navigate to="/" state={{ from: location }} replace />;
+  if (!token) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (allowedPermissions && allowedPermissions.length > 0) {
+    const hasPerm = allowedPermissions.some((perm) =>
+      permissions.includes(perm),
+    );
+    if (!hasPerm) {
+      return <Navigate to="/dashboard" replace />;
     }
-
-    if (allowedPermissions && allowedPermissions.length > 0) {
-        const hasPerm = allowedPermissions.some(perm => permissions.includes(perm));
-        if (!hasPerm) {
-            return <Navigate to="/dashboard" replace />;
-        }
-    } else if (allowedRoles && !allowedRoles.includes(role)) {
-        if (role === 'Customer') {
-            return <Navigate to="/portal/dashboard" replace />;
-        }
-        return <Navigate to="/dashboard" replace />;
+  } else if (allowedRoles && !allowedRoles.includes(role)) {
+    if (role === "Customer") {
+      return <Navigate to="/portal/dashboard" replace />;
     }
+    return <Navigate to="/dashboard" replace />;
+  }
 
-    return children;
+  return children;
 };
 
 function App() {
-    const [authLoading, setAuthLoading] = React.useState(!!sessionStorage.getItem('token'));
-    React.useEffect(() => {
-        const channel = new BroadcastChannel('rto_ledger_app_channel');
-        
-        // Naya tab open hote hi, apna current URL baaki tabs ko bhej do
-        channel.postMessage({ type: 'SYNC_TAB', url: window.location.pathname });
-        
-        channel.onmessage = (event) => {
-            if (event.data && event.data.type === 'SYNC_TAB') {
-                // Agar kisi aur tab me naya page khula hai, toh is purane tab ko bhi wahi bhej do
-                if (window.location.pathname !== event.data.url) {
-                    window.location.href = event.data.url;
-                }
-            }
-        };
+  const [authLoading, setAuthLoading] = React.useState(
+    !!sessionStorage.getItem("token"),
+  );
+  React.useEffect(() => {
+    const channel = new BroadcastChannel("rto_ledger_app_channel");
 
-        return () => channel.close();
-    }, []);
+    // Naya tab open hote hi, apna current URL baaki tabs ko bhej do
+    channel.postMessage({ type: "SYNC_TAB", url: window.location.pathname });
 
-    React.useEffect(() => {
-        const token = sessionStorage.getItem('token');
-        if (token) {
-            axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/me`)
-                .then(res => {
-                    sessionStorage.setItem('user', JSON.stringify(res.data));
-                })
-                .catch(err => {
-                    console.error("Failed to refresh user:", err);
-                    if (err.response && err.response.status === 401) {
-                        sessionStorage.removeItem('token');
-                        sessionStorage.removeItem('user');
-                    }
-                })
-                .finally(() => {
-                    setAuthLoading(false);
-                });
+    channel.onmessage = (event) => {
+      if (event.data && event.data.type === "SYNC_TAB") {
+        // Agar kisi aur tab me naya page khula hai, toh is purane tab ko bhi wahi bhej do
+        if (window.location.pathname !== event.data.url) {
+          window.location.href = event.data.url;
         }
-    }, []);
+      }
+    };
 
-    if (authLoading) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '18px', color: '#64748b' }}>Loading...</div>;
+    return () => channel.close();
+  }, []);
 
+  React.useEffect(() => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      axios
+        .get(
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/me`,
+        )
+        .then((res) => {
+          sessionStorage.setItem("user", JSON.stringify(res.data));
+        })
+        .catch((err) => {
+          console.error("Failed to refresh user:", err);
+          if (err.response && err.response.status === 401) {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+          }
+        })
+        .finally(() => {
+          setAuthLoading(false);
+        });
+    }
+  }, []);
+
+  if (authLoading)
     return (
-        <BrowserRouter>
-            <Routes>
-                {/* Public Route */}
-                <Route path="/" element={<Login />} />
-
-                {/* Protected Routes */}
-                <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
-                    {/* Accessible to All Protected Roles */}
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/customers" element={<Customers />} />
-                    <Route path="/vehicles" element={<Vehicles />} />
-                    <Route path="/services" element={<Services />} />
-                    <Route path="/services/requests" element={<ServiceRequests />} />
-                    
-                    {/* Protected by Permissions */}
-                    <Route path="/ledger" element={<ProtectedRoute allowedPermissions={['ledger.view']}><Ledger /></ProtectedRoute>} />
-                    <Route path="/ledger/customer/:id" element={<ProtectedRoute allowedPermissions={['ledger.view']}><CustomerLedger /></ProtectedRoute>} />
-                    <Route path="/receipts" element={<ProtectedRoute allowedPermissions={['receipt.view']}><Receipts /></ProtectedRoute>} />
-                    <Route path="/receipts/:id" element={<ProtectedRoute allowedPermissions={['receipt.view']}><ViewReceipt /></ProtectedRoute>} />
-                    
-                    {/* System Management */}
-                    <Route path="/roles" element={<ProtectedRoute allowedPermissions={['role.manage']}><Roles /></ProtectedRoute>} />
-                    <Route path="/users" element={<ProtectedRoute allowedPermissions={['user.manage']}><Users /></ProtectedRoute>} />
-
-                    {/* Global Search */}
-                    <Route path="/search" element={<Search />} />
-                </Route>
-
-                {/* Customer Portal Routes */}
-                <Route path="/portal" element={<ProtectedRoute allowedRoles={['Customer']}><PortalLayout /></ProtectedRoute>}>
-                    <Route index element={<Navigate to="/portal/dashboard" replace />} />
-                    <Route path="dashboard" element={<PortalDashboard />} />
-                    <Route path="vehicles" element={<MyVehicles />} />
-                    <Route path="service-requests" element={<MyServiceRequests />} />
-                    <Route path="ledger" element={<MyLedger />} />
-                    <Route path="receipts" element={<MyReceipts />} />
-                    <Route path="receipts/:id" element={<ViewReceipt />} />
-                    <Route path="search" element={<PortalSearch />} />
-                </Route>
-            </Routes>
-        </BrowserRouter>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+          fontSize: "18px",
+          color: "#64748b",
+        }}
+      >
+        Loading...
+      </div>
     );
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+
+        {/* Public demo dashboard */}
+        <Route element={<Layout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+        </Route>
+
+        {/* Protected Routes */}
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
+          {/* Accessible to All Protected Roles */}
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/vehicles" element={<Vehicles />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/requests" element={<ServiceRequests />} />
+
+          {/* Protected by Permissions */}
+          <Route
+            path="/ledger"
+            element={
+              <ProtectedRoute allowedPermissions={["ledger.view"]}>
+                <Ledger />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ledger/customer/:id"
+            element={
+              <ProtectedRoute allowedPermissions={["ledger.view"]}>
+                <CustomerLedger />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/receipts"
+            element={
+              <ProtectedRoute allowedPermissions={["receipt.view"]}>
+                <Receipts />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/receipts/:id"
+            element={
+              <ProtectedRoute allowedPermissions={["receipt.view"]}>
+                <ViewReceipt />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* System Management */}
+          <Route
+            path="/roles"
+            element={
+              <ProtectedRoute allowedPermissions={["role.manage"]}>
+                <Roles />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedPermissions={["user.manage"]}>
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Global Search */}
+          <Route path="/search" element={<Search />} />
+        </Route>
+
+        {/* Customer Portal Routes */}
+        <Route
+          path="/portal"
+          element={
+            <ProtectedRoute allowedRoles={["Customer"]}>
+              <PortalLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/portal/dashboard" replace />} />
+          <Route path="dashboard" element={<PortalDashboard />} />
+          <Route path="vehicles" element={<MyVehicles />} />
+          <Route path="service-requests" element={<MyServiceRequests />} />
+          <Route path="ledger" element={<MyLedger />} />
+          <Route path="receipts" element={<MyReceipts />} />
+          <Route path="receipts/:id" element={<ViewReceipt />} />
+          <Route path="search" element={<PortalSearch />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
