@@ -158,19 +158,6 @@ function Navbar({ toggleSidebar, isCollapsed }) {
               </a>
             </div>
           )}
-          {!user && (
-            <Link
-              to="/login"
-              style={{
-                display: "block",
-                padding: "8px 14px",
-                color: "#2563eb",
-                textDecoration: "none",
-              }}
-            >
-              Login
-            </Link>
-          )}
         </div>
       </div>
 
