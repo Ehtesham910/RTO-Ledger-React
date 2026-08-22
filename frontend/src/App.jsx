@@ -100,9 +100,7 @@ const ProtectedRoute = ({ children, allowedRoles, allowedPermissions }) => {
 };
 
 function App() {
-  const [authLoading, setAuthLoading] = React.useState(
-    !!sessionStorage.getItem("token"),
-  );
+  const [authLoading, setAuthLoading] = React.useState(true);
   React.useEffect(() => {
     const channel = new BroadcastChannel("rto_ledger_app_channel");
 
@@ -141,6 +139,23 @@ function App() {
         .finally(() => {
           setAuthLoading(false);
         });
+    } else if (window.location.pathname !== "/login") {
+      axios
+        .post(
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/auth/demo-login`,
+        )
+        .then((res) => {
+          sessionStorage.setItem("token", res.data.token);
+          sessionStorage.setItem("user", JSON.stringify(res.data.user));
+        })
+        .catch((err) => {
+          console.error("Failed to start demo session:", err);
+        })
+        .finally(() => {
+          setAuthLoading(false);
+        });
+    } else {
+      setAuthLoading(false);
     }
   }, []);
 
