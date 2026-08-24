@@ -55,7 +55,18 @@ const createServiceRequest = async (req, res) => {
 
         // 2. Calculate Ledger details
         const fee = parseFloat(amount) || 0;
-        const paid = payment_method === 'Pay Later (Unpaid)' ? 0 : (parseFloat(amount_paid) || 0);
+        let paid = 0;
+        
+        if (payment_method && payment_method !== 'Pay Later (Unpaid)') {
+            const parsedPaid = parseFloat(amount_paid);
+            if (!isNaN(parsedPaid) && parsedPaid > 0) {
+                paid = parsedPaid;
+            } else {
+                // If payment method selected but amount_paid not specified, default to full fee
+                paid = fee;
+            }
+        }
+        
         const due = fee - paid > 0 ? fee - paid : 0;
         
         let ledgerStatus = 'Pending';
@@ -90,7 +101,7 @@ const createServiceRequest = async (req, res) => {
                     amount_received: paid,
                     payment_mode: payment_method || 'Cash',
                     transaction_reference: null,
-                    remarks: "Auto-generated on service request creation",
+                    remarks: paid >= fee ? "Auto-generated on full payment service request" : "Auto-generated advance receipt",
                     received_by: receivedByUserId
                 }
             });

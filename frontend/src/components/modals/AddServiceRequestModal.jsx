@@ -55,7 +55,7 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
         if (name === 'customer_id') {
             const customerVehicles = allVehicles.filter(v => String(v.customer_id) === String(value));
             setFilteredVehicles(customerVehicles);
-            setFormData({ ...formData, customer_id: value, vehicle_id: '' }); // reset vehicle on customer change
+            setFormData({ ...formData, customer_id: value, vehicle_id: '' });
         } else if (name === 'service_id') {
             const selectedService = services.find(s => String(s.id) === String(value));
             const newAmount = selectedService ? selectedService.default_fee : '';
@@ -64,6 +64,12 @@ const AddServiceRequestModal = ({ isOpen, onClose, onSave, nextRequestNo }) => {
                 service_id: value, 
                 amount: newAmount,
                 amount_paid: formData.payment_method === 'Pay Later (Unpaid)' ? 0 : newAmount
+            });
+        } else if (name === 'amount') {
+            setFormData({
+                ...formData,
+                amount: value,
+                amount_paid: formData.payment_method === 'Pay Later (Unpaid)' ? 0 : value
             });
         } else if (name === 'payment_method') {
             setFormData({
