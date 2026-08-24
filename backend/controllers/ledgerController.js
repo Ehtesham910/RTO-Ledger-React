@@ -68,8 +68,8 @@ const updateLedger = async (req, res) => {
             }
         });
         
-        const previousPaid = parseFloat(existingRecord.amount_paid || 0);
-        const newPaid = parseFloat(amount_paid) || 0;
+        const previousPaid = parseFloat(existingRecord.amount_paid?.toString() || '0');
+        const newPaid = parseFloat(amount_paid?.toString() || '0');
         const difference = newPaid - previousPaid;
         
         if (difference > 0) {
@@ -84,7 +84,7 @@ const updateLedger = async (req, res) => {
                     amount_received: difference,
                     payment_mode: payment_mode || 'Cash',
                     transaction_reference: null,
-                    remarks: "Payment updated in ledger",
+                    remarks: status === 'Paid' ? "Full payment received" : "Payment updated in ledger",
                     received_by: receivedByUserId
                 }
             });
@@ -92,6 +92,7 @@ const updateLedger = async (req, res) => {
         
         res.json(updatedRecord);
     } catch (error) {
+        console.error("Error updating ledger:", error);
         res.status(500).json({ error: error.message });
     }
 };

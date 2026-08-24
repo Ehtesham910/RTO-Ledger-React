@@ -137,9 +137,9 @@ const createReceipt = async (req, res) => {
         });
 
         // Update the ledger details
-        const fee = parseFloat(ledger.service_fee || 0);
-        const currentPaid = parseFloat(ledger.amount_paid || 0);
-        const addedPaid = parseFloat(amount_received) || 0;
+        const fee = parseFloat(ledger.service_fee?.toString() || '0');
+        const currentPaid = parseFloat(ledger.amount_paid?.toString() || '0');
+        const addedPaid = parseFloat(amount_received?.toString() || '0') || 0;
         const newPaid = currentPaid + addedPaid;
         const due = fee - newPaid > 0 ? fee - newPaid : 0;
 
@@ -177,7 +177,7 @@ const deleteReceipt = async (req, res) => {
             return res.status(404).json({ error: "Receipt not found" });
         }
 
-        const amountReceived = parseFloat(receipt.amount_received || 0);
+        const amountReceived = parseFloat(receipt.amount_received?.toString() || '0');
         const ledgerId = receipt.ledger_id;
 
         // Delete the receipt
@@ -192,8 +192,8 @@ const deleteReceipt = async (req, res) => {
             });
 
             if (ledger) {
-                const fee = parseFloat(ledger.service_fee || 0);
-                const currentPaid = parseFloat(ledger.amount_paid || 0);
+                const fee = parseFloat(ledger.service_fee?.toString() || '0');
+                const currentPaid = parseFloat(ledger.amount_paid?.toString() || '0');
                 const newPaid = Math.max(0, currentPaid - amountReceived);
                 const due = fee - newPaid > 0 ? fee - newPaid : 0;
 
@@ -203,6 +203,7 @@ const deleteReceipt = async (req, res) => {
                 } else if (newPaid > 0 && newPaid < fee) {
                     ledgerStatus = 'Partial';
                 }
+
 
                 await prisma.ledgers.update({
                     where: { id: BigInt(ledgerId) },

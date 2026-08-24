@@ -31,6 +31,12 @@ const EditLedgerModal = ({ isOpen, onClose, onSave, record }) => {
         
         let newFormData = { ...formData, [name]: value };
 
+        if (name === 'status' && value === 'Paid') {
+            const fee = parseFloat(newFormData.service_fee) || 0;
+            newFormData.amount_paid = fee;
+            newFormData.due_amount = 0;
+        }
+
         // Auto calculate due amount if service_fee or amount_paid changes
         if (name === 'service_fee' || name === 'amount_paid') {
             const fee = parseFloat(newFormData.service_fee) || 0;
