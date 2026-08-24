@@ -166,4 +166,61 @@ const createReceipt = async (req, res) => {
     }
 };
 
-module.exports = { getReceipts, getReceiptById, createReceipt, generateReceiptNo };
+const deleteReceipt = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const receipt = await prisma.receipts.findUnique({
+            where: { id: BigInt(id) }
+        });
+
+        if (!receipt) {
+            return res.status(404).json({ error: "Receipt not found" });
+        }
+
+        const amountReceived = parseFloat(receipt.amount_received || 0);
+        const ledgerId = receipt.ledger_id;
+
+        // Delete the receipt
+        await prisma.receipts.delete({
+            where: { id: BigInt(id) }
+        });
+
+        // Recalculate ledger if associated
+        if (ledgerId) {
+            const ledger = await prisma.ledgers.findUnique({
+                where: { id: BigInt(ledgerId) }
+            });
+
+            if (ledger) {
+                const fee = parseFloat(ledger.service_fee || 0);
+                const currentPaid = parseFloat(ledger.amount_paid || 0);
+                const newPaid = Math.max(0, currentPaid - amountReceived);
+                const due = fee - newPaid > 0 ? fee - newPaid : 0;
+
+                let ledgerStatus = 'Pending';
+                if (newPaid >= fee && fee > 0) {
+                    ledgerStatus = 'Paid';
+                } else if (newPaid > 0 && newPaid < fee) {
+                    ledgerStatus = 'Partial';
+                }
+
+                await prisma.ledgers.update({
+                    where: { id: BigInt(ledgerId) },
+                    data: {
+                        amount_paid: newPaid,
+                        due_amount: due,
+                        status: ledgerStatus
+                    }
+                });
+            }
+        }
+
+        res.json({ message: "Receipt deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting receipt:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getReceipts, getReceiptById, createReceipt, deleteReceipt, generateReceiptNo };
+

@@ -45,6 +45,19 @@ function Receipts() {
         fetchReceipts();
     }, []);
 
+    const handleDeleteReceipt = (receiptId, receiptNo) => {
+        if (window.confirm(`Are you sure you want to delete receipt "${receiptNo}"? This will reverse the payment in the ledger.`)) {
+            axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/receipts/${receiptId}`)
+                .then(() => {
+                    fetchReceipts();
+                })
+                .catch((error) => {
+                    console.error("Error deleting receipt:", error);
+                    alert("Failed to delete receipt");
+                });
+        }
+    };
+
     const totalPages = Math.ceil(receipts.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -136,6 +149,15 @@ function Receipts() {
                                             >
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                                             </button>
+                                            {canEdit && (
+                                                <button 
+                                                    className="btn-action delete" 
+                                                    title="Delete Receipt"
+                                                    onClick={() => handleDeleteReceipt(receipt.id, receipt.receipt_no)}
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
