@@ -5,6 +5,7 @@ import PortalSidebar from "./PortalSidebar";
 
 function PortalLayout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const user = JSON.parse(sessionStorage.getItem("user") || "{}");
   const token = sessionStorage.getItem("token");
 
@@ -14,13 +15,29 @@ function PortalLayout() {
   }
 
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
+    if (window.innerWidth <= 768) {
+      setIsMobileOpen(!isMobileOpen);
+    } else {
+      setIsSidebarCollapsed(!isSidebarCollapsed);
+    }
+  };
+
+  const closeMobileSidebar = () => {
+    setIsMobileOpen(false);
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div style={{ display: "flex", minHeight: "100vh", position: "relative" }}>
+      {isMobileOpen && (
+        <div 
+          className="sidebar-mobile-backdrop"
+          onClick={closeMobileSidebar}
+        />
+      )}
       <PortalSidebar
         isCollapsed={isSidebarCollapsed}
+        isMobileOpen={isMobileOpen}
+        closeMobile={closeMobileSidebar}
         onExpand={() => setIsSidebarCollapsed(false)}
       />
       <div
@@ -35,7 +52,7 @@ function PortalLayout() {
           toggleSidebar={toggleSidebar}
           isCollapsed={isSidebarCollapsed}
         />
-        <main>
+        <main style={{ flex: 1 }}>
           <Outlet />
         </main>
       </div>

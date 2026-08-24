@@ -356,3 +356,41 @@
                 .amt-pending { font-weight: 700; color: #ef4444; }
                 .amt-paid { color: #2563eb; }
                 .footer-note { display: block; margin-top: 15px; color: #94a3b8; }
+
+@media screen and (max-width: 768px) {
+    .invoice-box {
+        transform: none !important;
+        margin-bottom: 0 !important;
+    }
+    .invoice-content-inner {
+        padding: 20px 16px;
+    }
+    .inv-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .inv-title {
+        text-align: left;
+    }
+    .receipt-meta-grid {
+        text-align: left;
+    }
+    .inv-details {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .inv-summary-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .payment-info, .summary-box {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .inv-footer {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        text-align: center;
+    }
+}

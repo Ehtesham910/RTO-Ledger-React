@@ -137,3 +137,16 @@
     margin-bottom: 15px;
     border: 1px solid #fecaca;
 }
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 16px;
+        align-items: flex-start;
+        padding-top: 40px;
+    }
+    .login-card {
+        padding: 24px 20px;
+        border-radius: 16px;
+    }
+}
+

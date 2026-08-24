@@ -2,10 +2,14 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import '../../assets/css/sidebar.css';
 
-function PortalSidebar({ isCollapsed, onExpand }) {
+function PortalSidebar({ isCollapsed, onExpand, isMobileOpen, closeMobile }) {
     const navigate = useNavigate();
     const location = useLocation();
     const [searchQuery, setSearchQuery] = useState('');
+
+    React.useEffect(() => {
+        closeMobile?.();
+    }, [location.pathname]);
 
     const isActive = (path) => {
         return location.pathname === path || location.pathname.startsWith(path + '/');
@@ -18,7 +22,7 @@ function PortalSidebar({ isCollapsed, onExpand }) {
 
     return (
         <>
-            <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+            <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isMobileOpen ? 'mobile-open' : ''}`}>
                 <div className="sidebar-logo-container" style={{ borderBottom: 'none', height: 'auto', padding: '24px 16px 16px 16px' }}>
                     {!isCollapsed ? (
                         <span className="sidebar-logo" style={{ fontSize: '32px', display: 'flex', alignItems: 'center', letterSpacing: '0.5px', fontFamily: "'Inter', sans-serif" }}>

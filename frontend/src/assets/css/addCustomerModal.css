@@ -15,10 +15,14 @@
 /* Modal ka white box */
 .modal-container {
     background-color: #ffffff;
-    width: 600px;
-    border-radius: 8px;
-    padding: 30px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 92%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
 }
 
 .modal-header {
@@ -51,15 +55,16 @@
     color: #475569; 
 }
 
-.form-group input, .form-group textarea { 
+.form-group input, .form-group textarea, .form-group select { 
     padding: 10px 12px; 
     border: 1px solid #cbd5e1; 
     border-radius: 6px; 
     font-size: 15px; 
     outline: none; 
+    box-sizing: border-box;
 }
 
-.form-group input:focus, .form-group textarea:focus { border-color: #10b981; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #10b981; }
 .form-group textarea { resize: none; }
 
 .save-btn {
@@ -71,6 +76,19 @@
     font-size: 15px; 
     cursor: pointer; 
     font-weight: 500;
+    width: 100%;
 }
 
 .save-btn:hover { background-color: #00a67d; }
+
+@media (max-width: 640px) {
+    .modal-container {
+        padding: 16px;
+    }
+    .form-row {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+}
+

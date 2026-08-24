@@ -209,3 +209,48 @@ input:checked + .slider {
 input:checked + .slider:before {
   transform: translateX(16px);
 }
+
+/* =========================
+   MOBILE RESPONSIVE RULES
+========================= */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .page-container {
+        padding: 0.75rem;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 1.25rem;
+    }
+
+    .page-header > div:last-child {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .btn-add {
+        width: 100%;
+        justify-content: center;
+        padding: 0.625rem 1rem;
+    }
+
+    .data-table th {
+        padding: 0.6rem 0.85rem;
+        font-size: 0.8rem;
+    }
+
+    .data-table td {
+        padding: 0.75rem 0.85rem;
+        font-size: 0.8rem;
+    }
+}
+
