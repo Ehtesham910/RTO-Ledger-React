@@ -273,6 +273,11 @@ function ServiceRequests() {
                     try {
                         const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests`, newRequestData);
                         
+                        // Clear stale caches so Receipts, Ledger & Dashboard update instantly
+                        sessionStorage.removeItem('receiptsData');
+                        sessionStorage.removeItem('ledgerData');
+                        sessionStorage.removeItem('dashboardStats');
+
                         // Update UI
                         const updatedRequests = [response.data, ...requests];
                         setRequests(updatedRequests);

@@ -232,6 +232,10 @@ function Ledger() {
                     try {
                         const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ledger/${updatedData.id}`, updatedData);
                         
+                        // Clear stale receipts and dashboard cache
+                        sessionStorage.removeItem('receiptsData');
+                        sessionStorage.removeItem('dashboardStats');
+                        
                         // Update UI
                         const updatedLedger = ledgers.map(l => 
                             l.id === updatedData.id ? response.data : l
