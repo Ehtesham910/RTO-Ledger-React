@@ -77,24 +77,14 @@ const generateReceiptNo = async () => {
     const lastReceipt = await prisma.receipts.findFirst({
         orderBy: { id: 'desc' }
     });
-    let nextNum = 1;
-    if (lastReceipt && lastReceipt.receipt_no) {
-        const numMatch = String(lastReceipt.receipt_no).match(/\d+/);
-        if (numMatch) {
-            nextNum = parseInt(numMatch[0], 10) + 1;
-        }
+    if (!lastReceipt) return 'REC-0001';
+    const lastNo = lastReceipt.receipt_no;
+    const numMatch = String(lastNo).match(/\d+/);
+    if (numMatch) {
+        const nextNum = parseInt(numMatch[0], 10) + 1;
+        return `REC-${nextNum.toString().padStart(4, '0')}`;
     }
-    
-    let candidate = `REC-${nextNum.toString().padStart(4, '0')}`;
-    let exists = await prisma.receipts.findUnique({ where: { receipt_no: candidate } });
-    
-    while (exists) {
-        nextNum++;
-        candidate = `REC-${nextNum.toString().padStart(4, '0')}`;
-        exists = await prisma.receipts.findUnique({ where: { receipt_no: candidate } });
-    }
-    
-    return candidate;
+    return `REC-${Date.now()}`;
 };
 
 const createReceipt = async (req, res) => {

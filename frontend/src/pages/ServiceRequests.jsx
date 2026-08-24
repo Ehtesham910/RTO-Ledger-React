@@ -52,7 +52,7 @@ function ServiceRequests() {
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-IN'); 
+        return date.toLocaleDateString('en-IN');
     }
 
     const getNextRequestNo = () => {
@@ -80,13 +80,13 @@ function ServiceRequests() {
         if (match) {
             return [match[1], match[2], match[3], match[4]].filter(Boolean).join(' ');
         }
-        return vNum; 
+        return vNum;
     };
 
     const handleStatusUpdate = async (id, newStatus) => {
         try {
             await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${id}/status`, { status: newStatus });
-            const updatedRequests = requests.map(req => req.id === id ? {...req, status: newStatus} : req);
+            const updatedRequests = requests.map(req => req.id === id ? { ...req, status: newStatus } : req);
             setRequests(updatedRequests);
             sessionStorage.setItem('serviceRequestsData', JSON.stringify(updatedRequests));
         } catch (error) {
@@ -149,27 +149,27 @@ function ServiceRequests() {
                                 <tr key={req.id}>
                                     <td>{indexOfFirstItem + index + 1}</td>
                                     <td><span className="badge">{req.request_no || '-'}</span></td>
-                                    
+
                                     <td className="font-medium" style={{ color: '#0f172a' }}>
                                         {req.customers?.name || 'Unknown'}
                                     </td>
-                                    
+
                                     <td>
                                         <span className="badge" style={{ whiteSpace: 'nowrap' }}>
                                             {formatVehicleNumber(req.vehicles?.vehicle_number)}
                                         </span>
                                     </td>
-                                    
+
                                     <td>{req.services?.service_name || '-'}</td>
-                                    
+
                                     <td>
                                         <span style={{ fontWeight: '500' }}>
                                             {req.amount ? `₹ ${req.amount}` : '-'}
                                         </span>
                                     </td>
-                                    
+
                                     <td>
-                                        <select 
+                                        <select
                                             value={req.status || 'Pending'}
                                             onChange={(e) => handleStatusUpdate(req.id, e.target.value)}
                                             disabled={!canEdit}
@@ -179,34 +179,34 @@ function ServiceRequests() {
                                                 fontSize: '14px',
                                                 fontWeight: '600',
                                                 border: 'none',
-                                                backgroundColor: 
-                                                    req.status === 'Completed' ? '#bbf7d0' : 
-                                                    req.status === 'In Progress' ? '#bfdbfe' : 
-                                                    req.status === 'Cancelled' ? '#fecaca' : 
-                                                    '#fef08a',
-                                                color: 
-                                                    req.status === 'Completed' ? '#166534' : 
-                                                    req.status === 'In Progress' ? '#1e40af' : 
-                                                    req.status === 'Cancelled' ? '#991b1b' : 
-                                                    '#854d0e',
+                                                backgroundColor:
+                                                    req.status === 'Completed' ? '#bbf7d0' :
+                                                        req.status === 'In Progress' ? '#bfdbfe' :
+                                                            req.status === 'Cancelled' ? '#fecaca' :
+                                                                '#fef08a',
+                                                color:
+                                                    req.status === 'Completed' ? '#166534' :
+                                                        req.status === 'In Progress' ? '#1e40af' :
+                                                            req.status === 'Cancelled' ? '#991b1b' :
+                                                                '#854d0e',
                                                 cursor: canEdit ? 'pointer' : 'not-allowed',
                                                 outline: 'none',
                                                 appearance: 'auto'
                                             }}
                                         >
-                                            <option value="Pending" style={{backgroundColor: '#fff', color: '#000'}}>Pending</option>
-                                            <option value="In Progress" style={{backgroundColor: '#fff', color: '#000'}}>In Progress</option>
-                                            <option value="Completed" style={{backgroundColor: '#fff', color: '#000'}}>Completed</option>
-                                            <option value="Cancelled" style={{backgroundColor: '#fff', color: '#000'}}>Cancelled</option>
+                                            <option value="Pending" style={{ backgroundColor: '#fff', color: '#000' }}>Pending</option>
+                                            <option value="In Progress" style={{ backgroundColor: '#fff', color: '#000' }}>In Progress</option>
+                                            <option value="Completed" style={{ backgroundColor: '#fff', color: '#000' }}>Completed</option>
+                                            <option value="Cancelled" style={{ backgroundColor: '#fff', color: '#000' }}>Cancelled</option>
                                         </select>
                                     </td>
 
                                     <td>{formatDate(req.created_at)}</td>
-                                    
+
                                     <td>
                                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
-                                            <button 
-                                                className="btn-action view" 
+                                            <button
+                                                className="btn-action view"
                                                 title="View Details"
                                                 onClick={() => {
                                                     setSelectedRequest(req);
@@ -217,8 +217,8 @@ function ServiceRequests() {
                                             </button>
                                             {canEdit && (
                                                 <>
-                                                    <button 
-                                                        className="btn-action edit" 
+                                                    <button
+                                                        className="btn-action edit"
                                                         title="Edit Request"
                                                         onClick={() => {
                                                             setSelectedEditRequest(req);
@@ -227,9 +227,9 @@ function ServiceRequests() {
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                                     </button>
-                                                    <button 
-                                                        className="btn-action delete" 
-                                                        title="Delete Request" 
+                                                    <button
+                                                        className="btn-action delete"
+                                                        title="Delete Request"
                                                         onClick={() => handleDelete(req.id)}
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -255,12 +255,12 @@ function ServiceRequests() {
                         </tbody>
                     </table>
                 </div>
-                <Pagination 
-                    currentPage={currentPage} 
+                <Pagination
+                    currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={setCurrentPage} 
-                    totalItems={requests.length} 
-                    itemsPerPage={itemsPerPage} 
+                    onPageChange={setCurrentPage}
+                    totalItems={requests.length}
+                    itemsPerPage={itemsPerPage}
                 />
             </div>
 
@@ -272,11 +272,6 @@ function ServiceRequests() {
                     setIsModalOpen(false); // Close instantly
                     try {
                         const response = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests`, newRequestData);
-                        
-                        // Clear stale caches so Receipts, Ledger & Dashboard update instantly
-                        sessionStorage.removeItem('receiptsData');
-                        sessionStorage.removeItem('ledgerData');
-                        sessionStorage.removeItem('dashboardStats');
 
                         // Update UI
                         const updatedRequests = [response.data, ...requests];
@@ -289,13 +284,13 @@ function ServiceRequests() {
                 }}
             />
 
-            <ViewServiceRequestModal 
+            <ViewServiceRequestModal
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 request={selectedRequest}
             />
 
-            <EditServiceRequestModal 
+            <EditServiceRequestModal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 request={selectedRequest}
@@ -303,9 +298,9 @@ function ServiceRequests() {
                     setIsEditModalOpen(false); // Close instantly
                     try {
                         const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/servicerequests/${updatedData.id}`, updatedData);
-                        
+
                         // Update UI
-                        const updatedRequests = requests.map(req => 
+                        const updatedRequests = requests.map(req =>
                             req.id === updatedData.id ? response.data : req
                         );
                         setRequests(updatedRequests);

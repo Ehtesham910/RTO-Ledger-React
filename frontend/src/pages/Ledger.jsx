@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import '../assets/css/ledger.css'; 
+import '../assets/css/ledger.css';
 import ViewLedgerModal from '../components/modals/ViewLedgerModal';
 import EditLedgerModal from '../components/modals/EditLedgerModal';
 import Pagination from '../components/Pagination';
@@ -51,7 +51,7 @@ function Ledger() {
     const formatDate = (dateString) => {
         if (!dateString) return '-';
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-IN'); 
+        return date.toLocaleDateString('en-IN');
     }
 
     const formatVehicleNumber = (vNum) => {
@@ -110,23 +110,23 @@ function Ledger() {
                             {paginatedLedgers.map((record, index) => (
                                 <tr key={record.id}>
                                     <td>{indexOfFirstItem + index + 1}</td>
-                                    
+
                                     <td className="font-medium" style={{ color: '#0043deff', whiteSpace: 'nowrap' }} >
-                                        {record.customers?.name || 'Unknown'} <br/>
+                                        {record.customers?.name || 'Unknown'} <br />
                                         <span style={{ fontSize: '12px', color: '#64748b', fontWeight: 'normal' }}>
                                             {record.customers?.customer_code ? `${record.customers.customer_code}` : ''}
                                         </span>
                                     </td>
-                                    
+
                                     <td>
                                         <span className="badge" style={{ whiteSpace: 'nowrap' }}>
                                             {formatVehicleNumber(record.vehicles?.vehicle_number)}
                                         </span>
                                     </td>
                                     <td>{record.service_requests?.request_no || '-'}</td>
-                                    
+
                                     <td>{record.service_requests?.services?.service_name || '-'}</td>
-                                    
+
                                     <td style={{ fontWeight: '500', color: '#334155' }}>
                                         ₹ {record.service_fee || 0}
                                     </td>
@@ -136,7 +136,7 @@ function Ledger() {
                                     <td style={{ fontWeight: '600', color: '#ef4444' }}>
                                         ₹ {record.due_amount || 0}
                                     </td>
-                                    
+
                                     <td>
                                         <span style={{
                                             padding: '4px 8px',
@@ -151,11 +151,11 @@ function Ledger() {
                                     </td>
 
                                     <td>{formatDate(record.created_at)}</td>
-                                    
+
                                     <td>
                                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem' }}>
-                                            <button 
-                                                className="btn-action view" 
+                                            <button
+                                                className="btn-action view"
                                                 title="View Details"
                                                 onClick={() => {
                                                     if (record.customer_id) {
@@ -170,8 +170,8 @@ function Ledger() {
                                             </button>
                                             {canEdit && (
                                                 <>
-                                                    <button 
-                                                        className="btn-action edit" 
+                                                    <button
+                                                        className="btn-action edit"
                                                         title="Edit Ledger"
                                                         onClick={() => {
                                                             setSelectedLedger(record);
@@ -180,8 +180,8 @@ function Ledger() {
                                                     >
                                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                                                     </button>
-                                                    <button 
-                                                        className="btn-action delete" 
+                                                    <button
+                                                        className="btn-action delete"
                                                         title="Delete Ledger"
                                                         onClick={() => handleDeleteLedger(record.id, record.customers?.name)}
                                                     >
@@ -201,29 +201,29 @@ function Ledger() {
                             ) : paginatedLedgers.length === 0 && (
                                 <tr>
                                     <td colSpan="11" className="empty-state">
-                                        No ledger records found. 
+                                        No ledger records found.
                                     </td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
                 </div>
-                <Pagination 
-                    currentPage={currentPage} 
+                <Pagination
+                    currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={setCurrentPage} 
-                    totalItems={ledgers.length} 
-                    itemsPerPage={itemsPerPage} 
+                    onPageChange={setCurrentPage}
+                    totalItems={ledgers.length}
+                    itemsPerPage={itemsPerPage}
                 />
             </div>
 
-            <ViewLedgerModal 
+            <ViewLedgerModal
                 isOpen={isViewModalOpen}
                 onClose={() => setIsViewModalOpen(false)}
                 record={selectedLedger}
             />
 
-            <EditLedgerModal 
+            <EditLedgerModal
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 record={selectedLedger}
@@ -231,13 +231,9 @@ function Ledger() {
                     setIsEditModalOpen(false);
                     try {
                         const response = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/ledger/${updatedData.id}`, updatedData);
-                        
-                        // Clear stale receipts and dashboard cache
-                        sessionStorage.removeItem('receiptsData');
-                        sessionStorage.removeItem('dashboardStats');
-                        
+
                         // Update UI
-                        const updatedLedger = ledgers.map(l => 
+                        const updatedLedger = ledgers.map(l =>
                             l.id === updatedData.id ? response.data : l
                         );
                         setLedgers(updatedLedger);

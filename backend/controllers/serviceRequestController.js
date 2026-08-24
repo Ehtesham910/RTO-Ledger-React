@@ -34,7 +34,7 @@ const getServiceRequests = async (req, res) => {
 const createServiceRequest = async (req, res) => {
     try {
         const { request_no, customer_id, vehicle_id, service_id, amount, status, remarks, payment_method, amount_paid } = req.body;
-        
+
         // 1. Create the Service Request
         const newRequest = await prisma.service_requests.create({
             data: {
@@ -56,7 +56,7 @@ const createServiceRequest = async (req, res) => {
         // 2. Calculate Ledger details
         const fee = parseFloat(amount) || 0;
         let paid = 0;
-        
+
         if (payment_method && payment_method !== 'Pay Later (Unpaid)') {
             const parsedPaid = parseFloat(amount_paid);
             if (!isNaN(parsedPaid) && parsedPaid > 0) {
@@ -66,9 +66,9 @@ const createServiceRequest = async (req, res) => {
                 paid = fee;
             }
         }
-        
+
         const due = fee - paid > 0 ? fee - paid : 0;
-        
+
         let ledgerStatus = 'Pending';
         if (paid >= fee && fee > 0) {
             ledgerStatus = 'Paid';
@@ -91,24 +91,20 @@ const createServiceRequest = async (req, res) => {
 
         // 4. Create receipt if payment is made
         if (paid > 0) {
-            try {
-                const defaultUser = await prisma.users.findFirst();
-                const receivedByUserId = req.user?.id ? BigInt(req.user.id) : (defaultUser ? defaultUser.id : null);
-                const receiptNo = await generateReceiptNo();
-                await prisma.receipts.create({
-                    data: {
-                        receipt_no: receiptNo,
-                        ledger_id: newLedger.id,
-                        amount_received: paid,
-                        payment_mode: payment_method || 'Cash',
-                        transaction_reference: null,
-                        remarks: paid >= fee ? "Auto-generated on full payment service request" : "Auto-generated advance receipt",
-                        received_by: receivedByUserId
-                    }
-                });
-            } catch (receiptError) {
-                console.error("Receipt generation error in createServiceRequest:", receiptError);
-            }
+            const defaultUser = await prisma.users.findFirst();
+            const receivedByUserId = defaultUser ? defaultUser.id : null;
+            const receiptNo = await generateReceiptNo();
+            await prisma.receipts.create({
+                data: {
+                    receipt_no: receiptNo,
+                    ledger_id: newLedger.id,
+                    amount_received: paid,
+                    payment_mode: payment_method || 'Cash',
+                    transaction_reference: null,
+                    remarks: paid >= fee ? "Auto-generated on full payment service request" : "Auto-generated advance receipt",
+                    received_by: receivedByUserId
+                }
+            });
         }
 
         res.status(201).json(newRequest);

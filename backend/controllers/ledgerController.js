@@ -12,7 +12,7 @@ const getLedger = async (req, res) => {
             where: whereClause,
             include: {
                 customers: {
-                    select: { 
+                    select: {
                         name: true,
                         customer_code: true
                     }
@@ -21,7 +21,7 @@ const getLedger = async (req, res) => {
                     select: { vehicle_number: true }
                 },
                 service_requests: {
-                    select: { 
+                    select: {
                         request_no: true,
                         services: {
                             select: { service_name: true }
@@ -43,16 +43,16 @@ const updateLedger = async (req, res) => {
     try {
         const { id } = req.params;
         const { service_fee, amount_paid, due_amount, status, payment_mode } = req.body;
-        
+
         // Fetch the existing record to check if amount_paid has increased
         const existingRecord = await prisma.ledgers.findUnique({
             where: { id: BigInt(id) }
         });
-        
+
         if (!existingRecord) {
             return res.status(404).json({ error: "Ledger record not found" });
         }
-        
+
         const updatedRecord = await prisma.ledgers.update({
             where: { id: BigInt(id) },
             data: {
@@ -67,25 +67,16 @@ const updateLedger = async (req, res) => {
                 service_requests: { select: { request_no: true, services: { select: { service_name: true } } } }
             }
         });
-        
+
         const previousPaid = parseFloat(existingRecord.amount_paid?.toString() || '0');
         const newPaid = parseFloat(amount_paid?.toString() || '0');
-        let difference = newPaid - previousPaid;
-        
-        // If difference is 0 (or no increase), BUT no receipt exists at all for this ledger and newPaid > 0:
-        const existingReceiptsCount = await prisma.receipts.count({
-            where: { ledger_id: BigInt(id) }
-        });
-
-        if (difference <= 0 && existingReceiptsCount === 0 && newPaid > 0) {
-            difference = newPaid;
-        }
+        const difference = newPaid - previousPaid;
 
         if (difference > 0) {
             const defaultUser = await prisma.users.findFirst();
-            const receivedByUserId = req.user?.id ? BigInt(req.user.id) : (defaultUser ? defaultUser.id : null);
+            const receivedByUserId = defaultUser ? defaultUser.id : null;
             const receiptNo = await generateReceiptNo();
-            
+
             await prisma.receipts.create({
                 data: {
                     receipt_no: receiptNo,
@@ -98,7 +89,7 @@ const updateLedger = async (req, res) => {
                 }
             });
         }
-        
+
         res.json(updatedRecord);
     } catch (error) {
         console.error("Error updating ledger:", error);
@@ -124,7 +115,7 @@ const getCustomerLedger = async (req, res) => {
                     select: { vehicle_number: true }
                 },
                 service_requests: {
-                    select: { 
+                    select: {
                         request_no: true,
                         services: { select: { service_name: true } }
                     }
