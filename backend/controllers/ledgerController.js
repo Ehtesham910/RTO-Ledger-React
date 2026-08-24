@@ -128,4 +128,33 @@ const getCustomerLedger = async (req, res) => {
     }
 };
 
-module.exports = { getLedger, updateLedger, getCustomerLedger };
+const deleteLedger = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const ledger = await prisma.ledgers.findUnique({
+            where: { id: BigInt(id) }
+        });
+
+        if (!ledger) {
+            return res.status(404).json({ error: "Ledger record not found" });
+        }
+
+        // Delete associated receipts first to prevent foreign key errors
+        await prisma.receipts.deleteMany({
+            where: { ledger_id: BigInt(id) }
+        });
+
+        // Delete the ledger entry
+        await prisma.ledgers.delete({
+            where: { id: BigInt(id) }
+        });
+
+        res.json({ message: "Ledger record deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting ledger record:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+module.exports = { getLedger, updateLedger, getCustomerLedger, deleteLedger };
+
