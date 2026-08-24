@@ -70,11 +70,20 @@ const updateLedger = async (req, res) => {
         
         const previousPaid = parseFloat(existingRecord.amount_paid?.toString() || '0');
         const newPaid = parseFloat(amount_paid?.toString() || '0');
-        const difference = newPaid - previousPaid;
+        let difference = newPaid - previousPaid;
         
+        // If difference is 0 (or no increase), BUT no receipt exists at all for this ledger and newPaid > 0:
+        const existingReceiptsCount = await prisma.receipts.count({
+            where: { ledger_id: BigInt(id) }
+        });
+
+        if (difference <= 0 && existingReceiptsCount === 0 && newPaid > 0) {
+            difference = newPaid;
+        }
+
         if (difference > 0) {
             const defaultUser = await prisma.users.findFirst();
-            const receivedByUserId = defaultUser ? defaultUser.id : null;
+            const receivedByUserId = req.user?.id ? BigInt(req.user.id) : (defaultUser ? defaultUser.id : null);
             const receiptNo = await generateReceiptNo();
             
             await prisma.receipts.create({
